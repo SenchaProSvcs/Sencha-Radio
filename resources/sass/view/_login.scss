@@ -1,0 +1,13 @@
+.sr-loginpanel {
+    .x-toolbar {
+		height: 120px;
+		left: 0;
+		@include transition(left 0.1s linear);
+	}
+	.hidden-toolbar {
+	    left: 100%;
+	}
+	.x-field-text {
+	    width: auto;
+	}
+}

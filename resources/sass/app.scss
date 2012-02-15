@@ -1,0 +1,44 @@
+// global vars
+$base-color: #666;
+$base-gradient: 'matte';
+$form-bg-color: rgba(1,1,1,0);
+$page-bg-color: rgba(1,1,1,0);
+$list-bg-color: rgba(1,1,1,0);
+
+// touch 2
+@import 'sencha-touch/default/all';
+@include sencha-panel;
+@include sencha-buttons;
+@include sencha-sheet;
+@include sencha-picker;
+@include sencha-tabs;
+@include sencha-toolbar;
+@include sencha-toolbar-forms;
+@include sencha-indexbar;
+@include sencha-list;
+@include sencha-list-paging;
+@include sencha-list-pullrefresh;
+@include sencha-layout;
+@include sencha-carousel;
+@include sencha-form;
+@include sencha-msgbox;
+@include sencha-loading-spinner;
+
+// views
+@import "overrides";
+@import "view/animation";
+@import "view/login";
+@import "view/player";
+@import "view/playlist";
+@import "view/viewport";
+
+// widgets
+@import "widgets/button";
+
+//ux
+@import "../../lib/Ext.ux.BevelButton";
+@import "../../lib/Ext.ux.InsetButton";
+@import "../../lib/Ext.ux.StarRating";
+@include ux-bevelbutton;
+@include ux-insetbutton;
+@include ux-starrating;

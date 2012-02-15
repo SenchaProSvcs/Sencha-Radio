@@ -1,0 +1,37 @@
+body {
+	background-image:  url("../img/background.png") !important;
+	// This allows for hi-res retina display images to scale appropriately.
+	-webkit-background-size: cover !important;
+	background-size: cover !important;
+	background-repeat: no-repeat;
+	background-position: center center;
+	cursor: default;
+}
+
+#animation-wrapper {
+    background-color: #333;
+    -webkit-animation: fade 1s;
+	-webkit-animation-delay: 11s;
+	-webkit-animation-fill-mode: forwards;
+   }
+
+   @-webkit-keyframes fade {
+   from {background-color: #333;}
+   to {background-color: transparent;}
+}
+
+// UI Controls
+.space {
+	background-image:  url("../img/VR.png") !important;
+	background-repeat: no-repeat;
+	background-position: center center;	
+}
+
+	// Purchase Panel
+		.purchase {
+			text-align: center;
+			width: 200px;
+			color: #fff;
+			text-shadow: -1px -1px 1px rgba(0,0,0,.5);
+			font-size: .75em;
+		}

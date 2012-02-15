@@ -1,0 +1,16 @@
+// Sencha Touch2 issue with form inputs in toolbars not aligning to the vertical center of the box. This is a known bug for formfields in toolbars.
+.x-component-outer .x-field-input {
+	padding-top: 5px;
+	width: 100%;
+}
+
+// This overides the default button padding for the added space using 3D bevels
+.x-button-small{
+	padding: 0px !important;
+}
+
+// Fixes audio player not hiding properly on iOs devices.
+audio {
+	display: none;
+}
+

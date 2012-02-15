@@ -1,0 +1,24 @@
+@mixin ux-bevelbutton {
+    $size: 5em;
+    .x-bevelbutton {
+        width: $size;
+        height: $size;
+        padding: $size * 0.11;
+        border-radius: 100%;
+        @include background-image(linear-gradient(color-stops(rgba(125,125,125, 1.0), rgba(0,0,0, 0.3))));
+        .x-button-inner {
+            @extend .x-button;
+            width: 100%;
+            height: 100%;
+            border-radius: 100%;
+            margin: 0 !important;
+            @include box-pack(center);
+            * {
+                -webkit-box-flex: 0;
+            }
+        }
+	}
+	.x-toolbar .x-bevelbutton {
+	    margin: 0 .2em;
+	}
+}

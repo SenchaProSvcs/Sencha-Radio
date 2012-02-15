@@ -1,0 +1,89 @@
+// Button UI Styles
+
+// Global Variables
+	// "Default" Button Sizes [FIXME] NEED TO CHANGE TO EM's
+		$button-size-large: 60px;
+		$button-size-small: 50px;
+		
+	// "Default" Button Borders [FIXME] NEED TO CHANGE TO EM's
+		$button-border: 2px;
+
+	// DO NOT CHANGE THESE VALUES - Calculating outer bevels "auto-magically" for button values set above..[FIXME] NEED TO CHANGE TO EM's
+		$button-bevel-large: ($button-size-large+20px);
+		$button-bevel-small: ($button-size-small+15px);
+
+// Global Button Styles
+	.x-button {
+		cursor: hand;
+	    .social_google, .social_twitter, .social_facebook {
+	        width: 1.3em;
+	        height: 1.3em;
+	    }
+	}
+	
+	.x-button-small .x-button-label {
+		color: #fff;
+		margin-top: 0.5em;
+	}
+	
+// Theme specific styles
+	// Login
+	@include pictos-iconmask('cloud_black_upload2');
+	.cloud_black_upload2.x-icon-mask { background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(179,216,244)), to(rgb(64,172,243))) !important; }
+		
+	// Like
+	@include pictos-iconmask('like');
+	.like.x-icon-mask {background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(140,198,63)), to(rgb(140,198,63))) !important;}
+		
+	// Play
+	@include pictos-iconmask('play1');
+	.play1.x-icon-mask {
+		background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(255,255,255)), to(rgb(200,200,200))) !important;
+		// This fixes icon offset
+		margin-right: -0.4em;
+	}
+	
+	// Pause
+	@include pictos-iconmask('pause');
+	.pause.x-icon-mask { background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(255,255,255)), to(rgb(200,200,200))) !important; }	
+		
+	// Dislike
+	@include pictos-iconmask('dislike');
+	.dislike.x-icon-mask {background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(249,118,163)), to(rgb(199,47,61))) !important;}
+		
+	// Back
+	@include pictos-iconmask('left2');
+	.left2.x-icon-mask { background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(217,224,33)), to(rgb(217,224,33))) !important; }
+
+	// Share
+	@include pictos-iconmask('chat');
+	.chat.x-icon-mask { background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(255,255,255)), to(rgb(200,200,200))) !important; }
+		// Google
+		.social_google { background-image: url(../img/social_google.png); }
+		// Twitter
+		.social_twitter { background-image: url(../img/social_twitter.png); }
+		// Facebook
+		.social_facebook { background-image: url(../img/social_facebook.png); }
+		
+	// Rate
+	@include pictos-iconmask('heart');
+	.heart.x-icon-mask { background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(249,118,163)), to(rgb(199,47,61))) !important; }
+		// Stars
+		
+	// Buy
+	@include pictos-iconmask('music1');
+	.music1.x-icon-mask { background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(251,176,59)), to(rgb(247,115,30))) !important; }
+		// Purchase
+				.x-button-buy {
+					background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(251,176,59)), to(rgb(247,115,30))) !important;
+					height: 3em;
+					font-size: 1em;
+				}
+
+				.btn-bevel-buy {
+					padding: 5px;
+					margin: 10px 10px 10px 20px;
+					border-radius: 8px;
+					background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0,0,0, 0.5)), to(rgba(102,102,102, 0.3))) !important;
+					height: 45px;
+				}
