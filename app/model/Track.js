@@ -20,13 +20,6 @@ Ext.define('SenchaRadio.model.Track',{
             'collectionId', 
             'artistId', 
             'primaryGenreName'
-        ],
-        proxy: {
-            type: 'ajax',
-            url: 'http://' + DEPLOYMENT_SITE + '/serverside/get_details.php',
-            extraParams: {
-                sencha_radio : null
-            }
-        }
+        ]
     }
 });

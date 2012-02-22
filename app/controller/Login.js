@@ -39,30 +39,12 @@ Ext.define('SenchaRadio.controller.Login', {
             xtype: 'loadmask',
             message: 'Loading...'
         });
-
-        Ext.Ajax.request({
-            method: 'POST',
-            url: 'http://' + DEPLOYMENT_SITE + '/serverside/login.php',
-            params: {
-                user : credentials.user,
-                pass : credentials.pass
-            },
-            callback: function() {
-                Ext.Viewport.unmask();
-            },
-            success: function(request) {
-                request = Ext.decode(request.responseText);
-                
-                if (!request.done) {
-                    Ext.Msg.alert('Error', request.msg, Ext.emptyFn);
-                    return;
-                }
-                    
-                //For production usage on your site store the serverside and client code at the same server!
-                SESSION_COOKIE = request.sencha_radio; //we set session id in the variable and access it later.
-                me.launchMainView();
-            }
-        });
+        
+        //Fake login request delay
+        Ext.defer(function(){
+            Ext.Viewport.unmask();
+            me.launchMainView();
+        }, 500);
     },
 
     launchMainView: function() {

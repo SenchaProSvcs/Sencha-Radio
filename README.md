@@ -1,28 +1,35 @@
-Sencha Radio - Beta1
-=============
+# Sencha Radio
+      
+  Sample app to test and showcase Sencha Tools. 
 
-Developers:
-Ryan Collier - ryan.collier@sencha.com (Layout & Workflow, Visual Design, UI Design, SASS)
-Juris Vecvanags  - juris@extjs.com (Sencha i.o backend and application development)
+  * Startup-screen animation using CSS3 powered by [Sencha Animator](http://www.sencha.com/products/animator/)
+  *	[Sencha Touch 2](http://www.sencha.com/products/touch/) mobile interface
+  * JavaScript MVC Architecture
+  * Application Events
+  * Customized JSONP proxy that consumes [YQL queries](http://developer.yahoo.com/yql)
+  * Audio capabilities - play, stop and navigate sound tracks
 
+# Running
+  
+  Designed for iPhone browser and screen size, but works in any Webkit powered browser, desktop like Chrome and 
+  Safari, or mobile on Android, Blackberry, etc...
 
-An app to demonstrate [Sencha Touch 2] (http://www.sencha.com/products/touch/), with a "Pandora Like" Music player. 
+## Contributors
 
-* TBD
-* TBD
-* TBD
-* TBD
+```
+Bruno Tavares
+Juris Vecvanags
+Ryan Collier
+```
 
-*developed using Sencha Animator, Sencha Developer, Sencha IO, and Sencha Touch2.
+## License 
 
-Running
-------------
-* Webkit based browsers, like Google Chrome and Safari.
-* Mobile, iPhone, Android based...
+  Check touch/license.txt.
 
-TODO
-------------
-* Add "in-app" purchasing demo component
-* Add "in-app" advertisments demo component
-* Add theme switching demo component
-* Add playback timeline
+## TODO
+
+  * replace serverside for JSONP webservices
+  * replace console.log
+  * deploy
+  * review all CSS rules
+  * document classes with JSDoc

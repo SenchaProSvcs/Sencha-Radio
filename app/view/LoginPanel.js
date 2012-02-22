@@ -19,12 +19,14 @@ Ext.define('SenchaRadio.view.LoginPanel',{
                             {
                                 xtype: 'textfield',
                                 placeHolder: 'Username',
-                                name:'user'
+                                name:'user',
+                                value: 'Sencha Test'
                             },
                             {
                                 xtype: 'passwordfield',
                                 placeHolder: 'Password',
-                                name:'pass'
+                                name:'pass',
+                                value: 'test'
                             }
                         ]
                     },

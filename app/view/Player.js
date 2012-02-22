@@ -4,6 +4,7 @@ Ext.define('SenchaRadio.view.Player', {
     config: {
         title: 'Sencha Radio Player',
         html: '<div class="coming-up"> Coming up next ...</div>',
+        emptyText: 'No Tracks',
         store: 'Player',
         masked: {
             xtype: 'loadmask',

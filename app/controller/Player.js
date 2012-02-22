@@ -9,7 +9,6 @@ Ext.define('SenchaRadio.controller.Player', {
         },
         control: {
             player: {
-                show: 'onPanelShow',
                 hide: 'onPanelHide'
             },
             audio: {
@@ -61,47 +60,41 @@ Ext.define('SenchaRadio.controller.Player', {
     },
     
     onPlaylistSelected: function(playlist) {
-        var navigation = this.getMain();
+        var store,
+            me = this;
         
-        this.currentPlaylist = playlist.getId();
-        this.currentPlaylistName = playlist.get('name');
-        
-        navigation.push({
-            xtype: 'player'
+        //add player panel    
+        player = me.getMain().push({
+            xtype: 'player',
+            playlist: playlist
         });
-    },
+        
+        store = player.getStore();
     
-    onPanelShow: function(player) {
-        
-        var me = this,
-            model = SenchaRadio.model.Track;
-        
         //pause music
         me.pausePlayer();
         
         //reset the player
+        store.removeAll();
         player.setHtml('');
-        player.getStore().removeAll();
-        player.setMasked(true);
         
         //load tracks
-        model.getProxy().setExtraParam('sencha_radio', SESSION_COOKIE);
-        model.load(this.currentPlaylist, {
-            success: function(details) {
-                player.setMasked(false);
-                
+        store.getProxy().setQuery(playlist.getId());
+        store.load({
+            callback: function(details) {
+                debugger;
                 //play only if there is data and we assume that more than 1 track present
-                if (details.raw.total > 1) {
+                if (details.length > 1) {
                     player.setHtml('<div class="coming-up"> Coming up next ...</div>');
                     me.radioData = details.raw.tracks;
-                    me.getApplication().setNavigationBarTitle(me.currentPlaylistName);
+                    me.getApplication().setNavigationBarTitle(playlist.get('name'));
                     
                     //starting from zero
                     me.currentTrack = 0;
                     me.setTrack(me.radioData[0], me.radioData[1]);
                     
                 } else {
-                    player.setHtml('No Tracks');
+                    player.setHtml('');
                 }
             }
         });

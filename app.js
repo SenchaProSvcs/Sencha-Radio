@@ -1,18 +1,16 @@
-//deployment site, change to site , where Your serverside code will reside
-DEPLOYMENT_SITE ='radio.stju.info';
-SESSION_COOKIE = null;
-
 Ext.Loader.setConfig({ 
     enabled: true,
     paths: {
         'Ext.ux.BevelButton': 'lib/Ext.ux.BevelButton.js',
-        'Ext.ux.InsetButton': 'lib/Ext.ux.InsetButton.js'
+        'Ext.ux.InsetButton': 'lib/Ext.ux.InsetButton.js',
+        'Ext.data.proxy.YMusic': 'lib/YMusicProxy.js'
     }
 });
 
 Ext.require([
     'Ext.Anim',
     'Ext.Audio',
+    'Ext.data.proxy.YMusic',
     'Ext.field.Password',
     'Ext.MessageBox',
     'Ext.ux.BevelButton',
@@ -46,7 +44,7 @@ Ext.application({
         Ext.ComponentQuery.query('mainview')[0].getNavigationBar().titleComponent.setTitle(title);
     },
     launch: function() {
-        var onAnimationEnd, btnSkip,
+        var onAnimationEnd, audio,
             me = this;
         
         //adjust viewport
@@ -56,27 +54,35 @@ Ext.application({
         
         //init animation
         onAnimationEnd = function() {
-            btnSkip.destroy();
+            Ext.getBody().un('tap', onAnimationEnd);
+            audio.pause();
+            audio = null;
+            
             me.fireEvent('animationend');
         };
-        
+
+        audio = new Audio('resources/media/intro.mp3');
+        audio.play();
+		
         AN.Controller.setConfig({
             parentId: 'AN-sObj-parentOl',
             ormma: false,
-            scenes: [{id: 0, animationCount: 134, duration: 10, dimensions: {height: 480, width: 320, expanded: true, fit: true},
+            scenes: [{
+                id: 0, 
+                animationCount: 134, 
+                duration: 10, 
+                dimensions: {
+                    height: 480, 
+                    width: 320, 
+                    expanded: true, 
+                    fit: true
+                },
                 endAction: onAnimationEnd
             }],
             events: []
         });
         
-        //create skip animation button for Desktop
-        btnSkip = Ext.widget('button', {
-            cls: 'btn-skip-animation',
-            text: 'Skip Animation >>>',
-            ui: 'plain',
-            hidden: !Ext.os.is.Desktop,
-            renderTo: Ext.getBody(),
-            handler: onAnimationEnd
-        });
+        //tap event to stop
+        Ext.getBody().on('tap', onAnimationEnd);
     }
 });

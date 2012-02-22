@@ -13,10 +13,7 @@ Ext.define('SenchaRadio.controller.Playlist', {
     },
     
     onPanelShow: function(list) {
-        var store = list.getStore();
-        
         this.getApplication().setNavigationBarTitle('Select Playlist');
-        store.getProxy().setExtraParam('sencha_radio', SESSION_COOKIE);
         list.getStore().load();
     },
 
