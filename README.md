@@ -28,8 +28,5 @@ Ryan Collier
 
 ## TODO
 
-  * replace serverside for JSONP webservices
-  * replace console.log
-  * deploy
   * review all CSS rules
   * document classes with JSDoc

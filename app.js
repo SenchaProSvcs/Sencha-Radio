@@ -54,6 +54,11 @@ Ext.application({
         
         //init animation
         onAnimationEnd = function() {
+            
+            if (!audio) {
+                return;
+            }
+            
             Ext.getBody().un('tap', onAnimationEnd);
             audio.pause();
             audio = null;

@@ -60,41 +60,33 @@ Ext.define('SenchaRadio.controller.Player', {
     },
     
     onPlaylistSelected: function(playlist) {
-        var store,
-            me = this;
+        var me = this,
+            store = Ext.getStore('Player');
         
         //add player panel    
         player = me.getMain().push({
             xtype: 'player',
-            playlist: playlist
+            title: playlist.get('name')
         });
         
-        store = player.getStore();
-    
         //pause music
+        me.currentTrack = 0;
         me.pausePlayer();
-        
-        //reset the player
-        store.removeAll();
-        player.setHtml('');
-        
+
         //load tracks
+        player.onBeforeLoad();
+        
         store.getProxy().setQuery(playlist.getId());
         store.load({
-            callback: function(details) {
-                debugger;
+            callback: function(tracks) {
+                
+                player.onLoad();
+                
                 //play only if there is data and we assume that more than 1 track present
-                if (details.length > 1) {
-                    player.setHtml('<div class="coming-up"> Coming up next ...</div>');
-                    me.radioData = details.raw.tracks;
-                    me.getApplication().setNavigationBarTitle(playlist.get('name'));
+                if (tracks.length > 1) {
                     
                     //starting from zero
-                    me.currentTrack = 0;
-                    me.setTrack(me.radioData[0], me.radioData[1]);
-                    
-                } else {
-                    player.setHtml('');
+                    me.setTrack(tracks[0], tracks[1]);
                 }
             }
         });
@@ -113,7 +105,7 @@ Ext.define('SenchaRadio.controller.Player', {
     },
     
     onLikeButtonPress: function(button) {
-        this.slideToolbar(1, 'left');
+        this.getPlayer().slideToolbar(1, 'left');
     },
     
     onPlayButtonPress: function(button) {
@@ -124,45 +116,63 @@ Ext.define('SenchaRadio.controller.Player', {
     },
 
     onBackButtonPress: function(button) {
-        this.slideToolbar(0, 'right');
+        this.getPlayer().slideToolbar(0, 'right');
     },
 
     onShareButtonPress: function(button) {
-        console.log('share');
-        this.slideToolbar(2, 'left');
+        
+        //<debug>
+        Ext.Logger.log('Share');
+        //</debug>
+        
+        this.getPlayer().slideToolbar(2, 'left');
     },
 
     onFavoriteButtonPress: function(button) {
-        console.log('favorite');
-        this.slideToolbar(3, 'left');
+        
+        //<debug>
+        Ext.Logger.log('Favorite');
+        //</debug>
+        
+        this.getPlayer().slideToolbar(3, 'left');
     },
 
     onBuyButtonPress: function(button) {
-        console.log('buy');
-        var placeholder = Ext.getCmp('buyPlaceholder');
-        var trackData = this.radioData[this.currentTrack];
-        placeholder.setHtml('Do You want "'+ trackData.song+'" by ' + trackData.artist);
-        this.slideToolbar(4, 'left');
+        var placeholder = Ext.getCmp('buyPlaceholder'),
+            trackData = this.getCurrentTrack();
+        
+        placeholder.setHtml('Do You want "'+ trackData.get('title')+'" by ' + trackData.get('artist'));
+        this.getPlayer().slideToolbar(4, 'left');
     },
 
     onGoToStoreButtonPress: function(button) {
-        console.log('go to store');
-        //implement logic here
+        Ext.Msg.alert("TODO: Go to Store");
     },
 
     onShareOnGooglePlusButtonPress: function(button) {
-        console.log('onShareOnGooglePlusButtonPress');
-        //implement logic here
+        Ext.Msg.alert("TODO: Share on Plus");
     },
 
     onShareOnTwitterButtonPress: function(button) {
-        console.log('onShareOnTwitterButtonPress');
-        //implement logic here
+        var track = this.getCurrentTrack(),
+            text = Ext.String.format(
+                "I'm listening to {0} - {1} via #SenchaRadio",
+                track.get('artist'),
+                track.get('title')
+            );
+        
+        window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text));
     },
 
     onShareOnFacebookButtonPress: function(button) {
-        console.log('onShareOnFacebookButtonPress');
-        //implement logic here
+        var track = this.getCurrentTrack(),
+            text = Ext.String.format(
+                "I'm listening to {0} - {1} via #SenchaRadio",
+                track.get('artist'),
+                track.get('title')
+            );
+
+        window.open('http://www.facebook.com/sharer/sharer.php?t=' + encodeURIComponent(text));
     },
     
     pausePlayer: function() {
@@ -173,7 +183,7 @@ Ext.define('SenchaRadio.controller.Player', {
         var me = this,
             audio = me.getAudio(),
             data = [currentTrack];
-            
+        
         //load store    
         if (nextTrack) {
             data.unshift(nextTrack);
@@ -181,36 +191,29 @@ Ext.define('SenchaRadio.controller.Player', {
         me.getPlayer().getStore().setData(data);
 
         //play audio
-        audio.setUrl(currentTrack.previewUrl);
-        audio.play();
-        
-        //adjust UI
-        me.getPlayButton().setIconCls('pause');
+        currentTrack.loadItunesInfo(function(data) {
+            audio.setUrl(data.previewUrl);
+            audio.play();
+            
+            //adjust UI
+            me.getPlayButton().setIconCls('pause');
+        });
     },
     
     nextTrack: function(dislike) {
         var me = this,
-            data = me.radioData;
+            store = Ext.getStore('Player');
             
         dislike = dislike||false;
         
-        if (data.length > (me.currentTrack + 2)) {
+        if (store.getCount() !== 0) {
             
             //<debug>
             Ext.Logger.log('Next track');
             //</debug>
             
             me.currentTrack++;
-            me.setTrack(data[me.currentTrack], data[me.currentTrack+1]);
-            
-        } else if (data.length == (me.currentTrack + 2)) {
-            
-            //<debug>
-            Ext.Logger.log('Last track');
-            //</debug>
-            
-            me.currentTrack++;
-            me.setTrack(data[me.currentTrack]);
+            me.setTrack(me.getCurrentTrack(), me.getNextTrack());
             
         } else {
             
@@ -224,9 +227,11 @@ Ext.define('SenchaRadio.controller.Player', {
         //TODO: if dislike = true, mark the music as "not liked".
     },
     
-    slideToolbar: function(cardId, direction) {
-        var toolbarCt = this.getPlayer().child('#ct-toolbar');
-        toolbarCt.getLayout().setAnimation({type:'slide', direction:direction});
-        toolbarCt.setActiveItem(cardId);
+    getCurrentTrack: function() {
+        return Ext.getStore('Player').getAt(this.currentTrack);
+    },
+    
+    getNextTrack: function() {
+        return Ext.getStore('Player').getAt(this.currentTrack + 1);
     }
 });
