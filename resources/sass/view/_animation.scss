@@ -1,40 +1,16 @@
-// Intro Animation Styles
-// Global Variables (these are just placeholders for now, we will need to come up with a good set.)
-$eq-bg-color: '';
-$eq-base-color: '';
-$eq-peak-color: '';
-$animation-light-top-color:'';
-$animation-light-bottom-color:'';
-
-
-
-// Splash Animation Logo (State 1)
-#logo-lit {
-	background-image: url('../img/logo-lit.png');
-	background-repeat: no-repeat;
-	width: 100%;
-	height: 100%;
-}
-
-// Splash Animation Logo (State 2)
-#logo-dimmed {
-	background-image: url('../img/logo-dimmed.png');
-	background-repeat: no-repeat;
-	width: 100%;
-	height: 100%;
-}
-
-// Font for sencha branding
-span.brand {
-	font-family: 'Helvetica';
-	font-style: normal;
-	font-weight: bold;
+@-webkit-keyframes fade {
+  from {background-color: #333;}
+  to {background-color: transparent;}
 }
 
 #animation-wrapper {
     width: 100%;
     height: 100%;
     position: absolute;
+    background-color: #333;
+    -webkit-animation: fade 1s;
+    -webkit-animation-delay: 11s;
+    -webkit-animation-fill-mode: forwards;
     > ol {
         width: 320px;
         height: 480px;
@@ -42,17 +18,18 @@ span.brand {
     }
 }
 
-.btn-skip-animation {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 0 !important;
-    min-height: 0 !important;
-    .x-button-label {
-        color: #FFF;
-        font-size: 50%;
-        line-height: auto !important;
-    }
+#logo-lit {
+	background-image: url('../img/logo-lit.png');
+	background-repeat: no-repeat;
+	width: 100%;
+	height: 100%;
+}
+
+#logo-dimmed {
+	background-image: url('../img/logo-dimmed.png');
+	background-repeat: no-repeat;
+	width: 100%;
+	height: 100%;
 }
 
 /**

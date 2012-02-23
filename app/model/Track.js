@@ -6,6 +6,7 @@ Ext.define('SenchaRadio.model.Track',{
             { name: 'artist',   mapping: 'Artist.name' },
             { name: 'title' },
             { name: 'album', mapping: 'Album.Release.title' },
+            { name: 'unavailable', type: 'bool', 'default': false },
             { name: 'artworkUrl65', convert: function(v, r) {
                 return r.raw.Album.Release.Image[1].url;
             }}

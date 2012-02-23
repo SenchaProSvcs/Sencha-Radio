@@ -41658,6 +41658,7 @@ Ext.define('SenchaRadio.model.Track',{
             { name: 'artist',   mapping: 'Artist.name' },
             { name: 'title' },
             { name: 'album', mapping: 'Album.Release.title' },
+            { name: 'unavailable', type: 'bool', 'default': false },
             { name: 'artworkUrl65', convert: function(v, r) {
                 return r.raw.Album.Release.Image[1].url;
             }}
@@ -41754,6 +41755,7 @@ Ext.define('SenchaRadio.controller.Player', {
         refs: {
             main: 'mainview',
             player: 'player',
+            dataView: 'player dataview',
             audio: 'player audio',
             playButton: 'button[action=playme]'
         },
@@ -41814,10 +41816,12 @@ Ext.define('SenchaRadio.controller.Player', {
             store = Ext.getStore('Player');
         
         //add player panel    
-        player = me.getMain().push({
+        me.getMain().push({
             xtype: 'player',
             title: playlist.get('name')
         });
+        
+        player = me.getDataView();
         
         //pause music
         me.currentTrack = 0;
@@ -41884,11 +41888,10 @@ Ext.define('SenchaRadio.controller.Player', {
     },
 
     onBuyButtonPress: function(button) {
-        var placeholder = Ext.getCmp('buyPlaceholder'),
-            trackData = this.getCurrentTrack();
+        var trackData = this.getCurrentTrack();
         
-        placeholder.setHtml('Do You want "'+ trackData.get('title')+'" by ' + trackData.get('artist'));
         this.getPlayer().slideToolbar(4, 'left');
+        Ext.getCmp('buyPlaceholder').setHtml('Do You want "'+ trackData.get('title')+'" by ' + trackData.get('artist'));
     },
 
     onGoToStoreButtonPress: function(button) {
@@ -41934,10 +41937,17 @@ Ext.define('SenchaRadio.controller.Player', {
         if (nextTrack) {
             data.unshift(nextTrack);
         }
-        me.getPlayer().getStore().setData(data);
+        me.getDataView().getStore().setData(data);
 
         //play audio
         currentTrack.loadItunesInfo(function(data) {
+            
+            if (!data) {
+                audio.stop();
+                currentTrack.set('unavailable', true);
+                return;
+            }
+            
             audio.setUrl(data.previewUrl);
             audio.play();
             
@@ -47793,12 +47803,44 @@ Ext.define('Ext.dataview.DataView', {
 });
 
 Ext.define('SenchaRadio.view.Player', {
-    extend: 'Ext.dataview.DataView',
+    extend: 'Ext.Container',
     xtype: 'player',
     config: {
-        emptyText: 'No Tracks',
-        loadingText: 'Loading songs...',
+        cls: 'sr-player',
+        layout: {
+            type: 'vbox',
+            align: 'stretch',
+            pack: 'end'
+        },
         items: [{
+            xtype: 'dataview',
+            emptyText: 'No Tracks',
+            loadingText: 'Loading songs...',
+            itemTpl: Ext.create('Ext.XTemplate',
+                '<tpl if="this.isFirst()">',
+                    '<div class="coming-up"> Coming up next ...</div>',
+                '<tpl else>',
+                    '<div class="now-playing">Now Playing <tpl if="unavailable">(unavailable)</tpl>...</div>',
+                '</tpl>',
+                '<div class="track-row">',
+                    '<img src="{artworkUrl65}" />',
+                    '<div class="player-info">',
+                        '<h1>{artist}</h1>',
+                        '<h2>Song: {title}</h2>',
+                        '<h3>Album: {album}</h3>',
+                    '</div>',
+                '</div>',
+                {
+                    isFirst: function() {
+                        if (!this.flagFirst) {
+                            this.flagFirst = true;
+                            return true;
+                        }
+                        return false;
+                    }
+                }
+            )
+        },{
             xtype: 'container',
             docked: 'bottom',
             itemId: 'ct-toolbar',
@@ -47809,38 +47851,14 @@ Ext.define('SenchaRadio.view.Player', {
             xtype: 'audio',
             enableControls: false,
             hidden: true
-        }],
-        itemTpl: Ext.create('Ext.XTemplate',
-            '<tpl if="this.isFirst()">',
-                '<div class="coming-up"> Coming up next ...</div>',
-            '<tpl else>',
-                '<div class="now-playing">Now Playing ...</div>',
-            '</tpl>',
-            '<div class="song">',
-                '<img src="{artworkUrl65}" />',
-                '<div class="player-info">',
-                    '<h1>{artist}</h1>',
-                    '<h2>Song: {title}</h2>',
-                    '<h3>Album: {album}</h3>',
-                '</div>',
-            '</div>',
-            {
-                isFirst: function() {
-                    if (!this.flagFirst) {
-                        this.flagFirst = true;
-                        return true;
-                    }
-                    return false;
-                }
-            }
-        )
+        }]
     },
     
     initialize: function() {
         var me = this;
         
         //set new instance of Player store
-        me.setStore(Ext.create('SenchaRadio.store.Player'));
+        me.child('dataview').setStore(Ext.create('SenchaRadio.store.Player'));
         
         me.toolbars = [
             {
@@ -47888,8 +47906,7 @@ Ext.define('SenchaRadio.view.Player', {
                         iconMask: true
                     },
                     {
-                        xtype: 'spacer',
-                        cls: 'space'
+                        xtype: 'spacer'
                     },
                     {
                         xtype: 'insetbutton',
@@ -47914,7 +47931,8 @@ Ext.define('SenchaRadio.view.Player', {
                         iconCls: 'music1',
                         text: 'Buy',
                         iconMask: true
-                    },{
+                    },
+                    {
                         xtype: 'spacer'
                     }
                 ]
@@ -47935,8 +47953,7 @@ Ext.define('SenchaRadio.view.Player', {
                         iconMask: true
                     },
                     {
-                        xtype: 'spacer',
-                        cls: 'space'
+                        xtype: 'spacer'
                     },
                     {
                         xtype: 'insetbutton',
@@ -47961,7 +47978,8 @@ Ext.define('SenchaRadio.view.Player', {
                         action: 'shareOnFacebook',
                         iconCls: 'social_facebook',
                         text: 'Facebook'
-                    },{
+                    },
+                    {
                         xtype: 'spacer'
                     }
                 ]
@@ -47982,28 +48000,25 @@ Ext.define('SenchaRadio.view.Player', {
                         iconMask: true
                     },
                     {
-                        xtype: 'spacer',
-                        cls: 'space'
+                        xtype: 'spacer'
                     },
-                    
-					
 					{
-                    xtype:'container',
-                    layout:{
-                        type:'vbox'
-                    },
-                    items:[
-						{
-                            xtype: 'component',
-							html: 'TODO: star'
+                        xtype:'container',
+                        layout:{
+                            type:'vbox'
                         },
-						{
-							xtype: 'container',
-							html: "Eh, it's okay ..."
-						}
-						
+                        items:[
+					    	{
+                                xtype: 'component',
+    							html: 'TODO: star'
+                            },
+    						{
+    							xtype: 'container',
+    							html: "Eh, it's okay ..."
+    						}
 						]
-					},{
+					},
+					{
                         xtype: 'spacer'
                     }
                 ]
@@ -48024,40 +48039,40 @@ Ext.define('SenchaRadio.view.Player', {
                         iconMask: true
                     },
                     {
-                        xtype: 'spacer',
-                        cls: 'space'
+                        xtype: 'spacer'
                     },
-                {
-                    xtype:'container',
-                    layout:{
-                        type:'vbox',
-                        pack: 'center'
-                    },
-                    items:[
                     {
                         xtype:'container',
-						cls: 'purchase',
-                        id:'buyPlaceholder',
-                        html: 'woo',
+                        layout:{
+                            type:'vbox',
+                            pack: 'center'
+                        },
                         items:[
-                        {
-                            xtype: 'container',
-                            cls: 'btn-bevel-buy',
-                            items:[
                             {
-                                xtype: 'button',
-                                ui: 'buy',
-								action: 'back',
-                                action: 'goToStore',
-                                text:'Purchase for $1.99',
-                                iconMask: true
+                                xtype:'container',
+        						cls: 'purchase-ct',
+                                id:'buyPlaceholder',
+                                html: 'woo',
+                                items:[
+                                    {
+                                        xtype: 'container',
+                                        cls: 'btn-bevel-buy',
+                                        items:[
+                                            {
+                                                xtype: 'button',
+                                                ui: 'buy',
+                								action: 'back',
+                                                action: 'goToStore',
+                                                text:'Purchase for $1.99',
+                                                iconMask: true
+                                            }
+                                        ]
+                                    }
+                                ]
                             }
-                            ]
-                        }
                         ]
-                    }
-                    ]
-                },{
+                    },
+                    {
                         xtype: 'spacer'
                     }
                 ]

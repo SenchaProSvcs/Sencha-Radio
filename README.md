@@ -6,8 +6,11 @@
   *	[Sencha Touch 2](http://www.sencha.com/products/touch/) mobile interface
   * JavaScript MVC Architecture
   * Application Events
+  * Custom Theming
   * Customized JSONP proxy that consumes [YQL queries](http://developer.yahoo.com/yql)
+  * Integration with Yahoo!Music and iTunes Music API
   * Audio capabilities - play, stop and navigate sound tracks
+  * Custom componentes BevelButton and InsetButton
 
 # Running
   

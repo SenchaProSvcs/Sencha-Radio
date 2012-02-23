@@ -1,19 +1,14 @@
-// "PLAYER" Styling
-	// Playlist Title
-		.x-innerhtml:first-of-type {
-			color: #fff;
-			//font-family: 'Pacifico';
-			text-align: center;
-			left: -40px;
-			text-shadow: -1px -1px 1px rgba(0,0,0,.5);
-		}
-		
-		.song {
-			h1,h2,h3 {font-size: .7em;}
-		}
-
-	// Album Artwork
-		.song img:first-of-type {
+.sr-player {
+    .x-dataview {
+        height: 316px;
+    }
+    .track-row {
+        height: 119px;
+	    padding: 20px;
+    	h1,h2,h3 {
+    	    font-size: .7em;
+    	}
+        img {
 			width: 75px;
 			height: 75px;
 			border: 2px solid rgba(255,255,255,0.7);
@@ -21,61 +16,28 @@
 			margin-right: 20px;
 			float: left;
 		}
-
-	// Coming Up Next
-		// Section Header
-			.coming-up, .now-playing {
-				color: #fff;
-				background-color: rgba(0,0,0,.5);
-				padding: 5px 10px 5px 20px;
-				border-bottom: 1px solid rgba(0,0,0,.8);
-				border-top: 1px solid rgba(255,255,255,.2);
-				text-shadow: -1px -1px 1px rgba(0,0,0,.5);
-			}
-	
-		// Hiding the Album Summary of the "Coming Up Next ..." section
-			.x-dataview-item:first-of-type p {
-				display: none;
-			}
-
-	// Now Playing
-		// Section Header
-			.now-playing {
-				clear: both;
-				margin-top: 30px;
-				
-				// Dirty fix
-				margin-left: -20px;
-				margin-right: -20px;
-			}
-			
-			.song:first-of-type {
-				margin: 10px 10px 0px 10px;
-				padding: 10px;
-			}
-
-		// Album Summary
-			.x-dataview-item:last-of-type p {
-				text-shadow: none;
-				clear: both;
-				padding-top: 20px;
-				font-size: .7em;
-			}
-		
-			.x-dataview-item:last-of-type {
-				margin: 10px 10px 0px 10px;
-				background-color: rgba(0, 0, 0, .5);
-				border-top: 1px solid rgba(0, 0, 0, .4);
-				border-left: 1px solid rgba(0, 0, 0, .4);
-				border-right: 1px solid rgba(0, 0, 0, .4);
-				-webkit-border-top-left-radius: 8px;
-				-webkit-border-top-right-radius: 8px;
-				color: rgba(255, 255, 255, 0.5);
-				// Setting a min-height incase the Album Summary is empty
-				min-height: 800px;
-			}
-		
-			// Hide the "Now PLaying ..." section header from the album summary
-			.x-dataview-item:last-of-type div.now-playing {
-				display: none;
-			}
+	}
+	.x-dataview-item:last-of-type .track-row{
+		margin: 10px 10px 0 10px;
+		background-color: rgba(0, 0, 0, .5);
+		border: 1px solid rgba(0, 0, 0, .4);
+		border-bottom: none;
+		@include border-radius(8px 8px 0 0);
+    	color: #CCC;
+	}
+    .coming-up, .now-playing {
+        color: #fff;
+        background-color: rgba(0,0,0,.5);
+        padding: 5px 10px 5px 20px;
+        border-bottom: 1px solid rgba(0,0,0,.8);
+        border-top: 1px solid rgba(255,255,255,.2);
+        text-shadow: -1px -1px 1px rgba(0,0,0,.5);
+    }
+	.purchase-ct {
+		text-align: center;
+		width: 200px;
+		color: #fff;
+		text-shadow: -1px -1px 1px rgba(0,0,0,.5);
+		font-size: .75em;
+	}			
+}

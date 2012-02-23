@@ -4,6 +4,7 @@ Ext.define('SenchaRadio.controller.Player', {
         refs: {
             main: 'mainview',
             player: 'player',
+            dataView: 'player dataview',
             audio: 'player audio',
             playButton: 'button[action=playme]'
         },
@@ -64,10 +65,12 @@ Ext.define('SenchaRadio.controller.Player', {
             store = Ext.getStore('Player');
         
         //add player panel    
-        player = me.getMain().push({
+        me.getMain().push({
             xtype: 'player',
             title: playlist.get('name')
         });
+        
+        player = me.getDataView();
         
         //pause music
         me.currentTrack = 0;
@@ -138,11 +141,10 @@ Ext.define('SenchaRadio.controller.Player', {
     },
 
     onBuyButtonPress: function(button) {
-        var placeholder = Ext.getCmp('buyPlaceholder'),
-            trackData = this.getCurrentTrack();
+        var trackData = this.getCurrentTrack();
         
-        placeholder.setHtml('Do You want "'+ trackData.get('title')+'" by ' + trackData.get('artist'));
         this.getPlayer().slideToolbar(4, 'left');
+        Ext.getCmp('buyPlaceholder').setHtml('Do You want "'+ trackData.get('title')+'" by ' + trackData.get('artist'));
     },
 
     onGoToStoreButtonPress: function(button) {
@@ -188,10 +190,17 @@ Ext.define('SenchaRadio.controller.Player', {
         if (nextTrack) {
             data.unshift(nextTrack);
         }
-        me.getPlayer().getStore().setData(data);
+        me.getDataView().getStore().setData(data);
 
         //play audio
         currentTrack.loadItunesInfo(function(data) {
+            
+            if (!data) {
+                audio.stop();
+                currentTrack.set('unavailable', true);
+                return;
+            }
+            
             audio.setUrl(data.previewUrl);
             audio.play();
             
