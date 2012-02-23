@@ -16,3 +16,8 @@ body {
 audio {
 	display: none;
 }
+
+//no lateral padding on small buttons
+.x-button-small, .x-toolbar .x-button-small {
+    padding: .2em 0;
+}

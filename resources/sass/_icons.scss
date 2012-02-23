@@ -3,8 +3,8 @@
 .social_facebook { background-image: url(../img/social_facebook.png); }
 
 .social_google, .social_twitter, .social_facebook {
-  width: 1.3em;
-  height: 1.3em;
+  width: 1.3em !important;
+  height: 1.3em !important;
 }
 
 //icon masks
@@ -17,6 +17,7 @@
 @include pictos-iconmask('music1');
 @include pictos-iconmask('pause');
 @include pictos-iconmask('play1');
+@include pictos-iconmask('star');
 
 //icon masks colors
 .cloud_black_upload2.x-icon-mask { 
@@ -46,6 +47,13 @@
 }
 .music1.x-icon-mask { 
     background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(251,176,59)), to(rgb(247,115,30))) !important; 
+}
+.star.x-icon-mask { 
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#EDE61C), to(#C7C232)) !important; 
+}
+.star-off.x-icon-mask {
+    @extend .star.x-icon-mask;
+    background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#999), to(#777)) !important; 
 }
 
 //button ui

@@ -13,10 +13,10 @@ Ext.define('SenchaRadio.view.Player', {
             emptyText: 'No Tracks',
             loadingText: 'Loading songs...',
             itemTpl: Ext.create('Ext.XTemplate',
-                '<tpl if="this.isFirst()">',
-                    '<div class="coming-up"> Coming up next ...</div>',
-                '<tpl else>',
+                '<tpl if="this.isPlaying(values)">',
                     '<div class="now-playing">Now Playing <tpl if="unavailable">(unavailable)</tpl>...</div>',
+                '<tpl else>',
+                    '<div class="coming-up"> Coming up next ...</div>',
                 '</tpl>',
                 '<div class="track-row">',
                     '<img src="{artworkUrl65}" />',
@@ -27,12 +27,9 @@ Ext.define('SenchaRadio.view.Player', {
                     '</div>',
                 '</div>',
                 {
-                    isFirst: function() {
-                        if (!this.flagFirst) {
-                            this.flagFirst = true;
-                            return true;
-                        }
-                        return false;
+                    isPlaying: function(values) {
+                        var store = Ext.ComponentQuery.query('player')[0].child('dataview').getStore();
+                        return store.getCount() === 1 || store.indexOf(store.getById(values.id)) === 1;
                     }
                 }
             )
@@ -96,7 +93,7 @@ Ext.define('SenchaRadio.view.Player', {
                 items: [
                     {
                         xtype: 'bevelbutton',
-                        action: 'back',
+                        action: 'back0',
                         iconCls: 'left2',
                         text: 'Back',
                         iconMask: true
@@ -143,7 +140,7 @@ Ext.define('SenchaRadio.view.Player', {
                 items: [
                     {
                         xtype: 'bevelbutton',
-                        action: 'back',
+                        action: 'back1',
                         iconCls: 'left2',
                         text: 'Back',
                         iconMask: true
@@ -154,7 +151,6 @@ Ext.define('SenchaRadio.view.Player', {
                     {
                         xtype: 'insetbutton',
                         scale: 'small',
-						action: 'back',
                         action: 'shareOnGooglePlus',
                         iconCls: 'social_google',
                         text: 'Google+'
@@ -162,7 +158,6 @@ Ext.define('SenchaRadio.view.Player', {
                     {
                         xtype: 'insetbutton',
                         scale: 'small',
-						action: 'back',
                         action: 'shareOnTwitter',
                         iconCls: 'social_twitter',
                         text: 'Twitter'
@@ -170,7 +165,6 @@ Ext.define('SenchaRadio.view.Player', {
                     {
                         xtype: 'insetbutton',
                         scale: 'small',
-						action: 'back',
                         action: 'shareOnFacebook',
                         iconCls: 'social_facebook',
                         text: 'Facebook'
@@ -190,7 +184,7 @@ Ext.define('SenchaRadio.view.Player', {
                 items: [
                     {
                         xtype: 'bevelbutton',
-                        action: 'back',
+                        action: 'back1',
                         iconCls: 'left2',
                         text: 'Back',
                         iconMask: true
@@ -199,18 +193,37 @@ Ext.define('SenchaRadio.view.Player', {
                         xtype: 'spacer'
                     },
 					{
-                        xtype:'container',
-                        layout:{
-                            type:'vbox'
+                        xtype: 'container',
+                        layout: 'hbox',
+                        itemId: 'rating-ct',
+                        cls: 'rating-ct',
+                        defaults: {
+                            xtype: 'button',
+                            iconCls: 'star-off',
+                            ui: 'plain',
+                            iconMask: true
                         },
                         items:[
-					    	{
-                                xtype: 'component',
-    							html: 'TODO: star'
+                            {
+                                rating: 1
+                            },
+                            {
+                                rating: 2
+                            },
+                            {
+                                rating: 3
+                            },
+                            {
+                                rating: 4
+                            },
+                            {
+                                rating: 5
                             },
     						{
     							xtype: 'container',
-    							html: "Eh, it's okay ..."
+    							cls: 'rating-text',
+    							itemId: 'rating-text',
+    							hidden: Ext.os.is('Phone')
     						}
 						]
 					},
@@ -229,7 +242,7 @@ Ext.define('SenchaRadio.view.Player', {
                 items: [
                     {
                         xtype: 'bevelbutton',
-                        action: 'back',
+                        action: 'back1',
                         iconCls: 'left2',
                         text: 'Back',
                         iconMask: true
@@ -257,7 +270,6 @@ Ext.define('SenchaRadio.view.Player', {
                                             {
                                                 xtype: 'button',
                                                 ui: 'buy',
-                								action: 'back',
                                                 action: 'goToStore',
                                                 text:'Purchase for $1.99',
                                                 iconMask: true

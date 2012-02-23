@@ -6,7 +6,8 @@ Ext.define('SenchaRadio.controller.Player', {
             player: 'player',
             dataView: 'player dataview',
             audio: 'player audio',
-            playButton: 'button[action=playme]'
+            playButton: 'button[action=playme]',
+            ratingCt: 'player #rating-ct'
         },
         control: {
             player: {
@@ -24,8 +25,11 @@ Ext.define('SenchaRadio.controller.Player', {
             playButton: {
                 tap: 'onPlayButtonPress'
             },
-            'button[action=back]': {
-                tap: 'onBackButtonPress'
+            'button[action=back0]': {
+                tap: 'onBtnBack0Tap' 
+            },
+            'button[action=back1]': {
+                tap: 'onBtnBack1Tap' 
             },
             'button[action=share]': {
                 tap: 'onShareButtonPress'
@@ -47,6 +51,9 @@ Ext.define('SenchaRadio.controller.Player', {
             },
             'button[action=shareOnFacebook]': {
                 tap: 'onShareOnFacebookButtonPress'
+            },
+            'player #rating-ct > button': {
+                tap: 'onStarButtonPress'
             }
         }
     },
@@ -75,7 +82,7 @@ Ext.define('SenchaRadio.controller.Player', {
         //pause music
         me.currentTrack = 0;
         me.pausePlayer();
-
+        
         //load tracks
         player.onBeforeLoad();
         
@@ -118,8 +125,12 @@ Ext.define('SenchaRadio.controller.Player', {
         button.setIconCls(audio.isPlaying() ? 'pause' : 'play1');
     },
 
-    onBackButtonPress: function(button) {
+    onBtnBack0Tap: function(button) {
         this.getPlayer().slideToolbar(0, 'right');
+    },
+    
+    onBtnBack1Tap: function(button) {
+        this.getPlayer().slideToolbar(1, 'right');
     },
 
     onShareButtonPress: function(button) {
@@ -138,6 +149,7 @@ Ext.define('SenchaRadio.controller.Player', {
         //</debug>
         
         this.getPlayer().slideToolbar(3, 'left');
+        this.setRating(5);
     },
 
     onBuyButtonPress: function(button) {
@@ -177,14 +189,25 @@ Ext.define('SenchaRadio.controller.Player', {
         window.open('http://www.facebook.com/sharer/sharer.php?t=' + encodeURIComponent(text));
     },
     
+    onStarButtonPress: function(btn) {
+        this.setRating(btn.config.rating);
+    },
+    
     pausePlayer: function() {
         this.getAudio().pause();
     },
     
     setTrack: function(currentTrack, nextTrack) {
         var me = this,
+            playButton = me.getPlayButton(),
             audio = me.getAudio(),
             data = [currentTrack];
+        
+        if (!currentTrack) {
+           audio.stop(); 
+           me.getDataView().getStore().setData([]);
+           return;
+        }
         
         //load store    
         if (nextTrack) {
@@ -205,7 +228,9 @@ Ext.define('SenchaRadio.controller.Player', {
             audio.play();
             
             //adjust UI
-            me.getPlayButton().setIconCls('pause');
+            if (playButton){
+                me.getPlayButton().setIconCls('pause');
+            }
         });
     },
     
@@ -242,5 +267,27 @@ Ext.define('SenchaRadio.controller.Player', {
     
     getNextTrack: function() {
         return Ext.getStore('Player').getAt(this.currentTrack + 1);
+    },
+
+    setRating: function(rate) {
+        var star, 
+            ratingCt = this.getRatingCt(),
+            stars = ratingCt.query('button'),
+            i = 0,
+            len = stars.length,
+            rateTexts = [
+                'ZZzzz...',
+                'I\'ve heard beter...',
+                'It\'s ok.',
+                'I like it.',
+                'Turn it up!'
+            ];
+            
+        for (; i < len ; i++ ) {
+            star = stars[i];
+            star.setIconCls(star.config.rating <= rate ? 'star' : 'star-off');
+        }
+        
+        ratingCt.child('#rating-text').setHtml(rateTexts[rate-1]);
     }
 });

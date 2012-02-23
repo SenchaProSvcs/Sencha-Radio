@@ -24,6 +24,7 @@ Ext.define('SenchaRadio.model.Track',{
         
         //normalize title for itunes
         title = title.replace('(Album Version (Explicit))', '');
+        title = title.replace('(Explicit Version)', '');
         
         Ext.data.JsonP.request({
             url: 'http://ax.phobos.apple.com.edgesuite.net/WebObjects/MZStoreServices.woa/wa/wsSearch',

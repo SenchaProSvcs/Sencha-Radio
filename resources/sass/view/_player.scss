@@ -33,11 +33,24 @@
         border-top: 1px solid rgba(255,255,255,.2);
         text-shadow: -1px -1px 1px rgba(0,0,0,.5);
     }
+    
 	.purchase-ct {
 		text-align: center;
 		width: 200px;
 		color: #fff;
 		text-shadow: -1px -1px 1px rgba(0,0,0,.5);
 		font-size: .75em;
-	}			
+	}
+	
+	.rating-ct {
+	    .x-button {
+	        padding-left: 0px;
+	        padding-right: 0px;
+	    }
+	}
+	.rating-text .x-innerhtml{
+	    line-height: 43px;
+	    color: #FFF;
+	    width: 145px;
+	}
 }

@@ -3897,7 +3897,12 @@ audio {
 .x-bevelbutton .x-button-inner .x-button-icon.x-icon-mask.star, .x-bevelbutton
 .x-button-inner .x-button-icon.x-icon-mask.star,
 .x-insetbutton .x-button-wrapper .x-button-inner .x-button-icon.x-icon-mask.star, .x-insetbutton .x-button-wrapper
-.x-button-inner .x-button-icon.x-icon-mask.star {
+.x-button-inner .x-button-icon.x-icon-mask.star,
+.x-button .x-button-icon.star-off.x-icon-mask,
+.x-bevelbutton .x-button-inner .x-button-icon.star-off.x-icon-mask, .x-bevelbutton
+.x-button-inner .x-button-icon.star-off.x-icon-mask,
+.x-insetbutton .x-button-wrapper .x-button-inner .x-button-icon.star-off.x-icon-mask, .x-insetbutton .x-button-wrapper
+.x-button-inner .x-button-icon.star-off.x-icon-mask {
   -webkit-mask-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAFfUlEQVRoBd2aXahVRRTHz/Ujv+2mZRGZB7W6mtpFikC7+UWUZiqBD0JPFdRL1EMFPfjoU4baS0FUD/UWZBEVShA+BCpmWApRSkgllNpDmZWZt9//eOay72afvWfWOTPn3rvgz8yeWbPW+s/XmT379AwODtZSSQ+CryVgA/gVfIx/pelEhFMBVlvBOaBeFo6Cean8y09KsnMg932TqCOs9M2UhMfhMJVsxtHcAmcbmekLCsqjFKUkvAYG1xSwmEHZqoLyKEVJCDOCNxH9HUCbVl6mULAuXxjrOQlhgl8Bbi0h0Uen3FBS37GqVIQHiHh2SdR16jTlo0t0woycpuxiUDSdHcFeMv3uIWYanTDB3wIWVZBQHP10zuQKvbarUxDWT1HRz1E++Ds99fLtgp6jEmbExhPNcs+IbkZPiCpRCRP5TPCQJ4MJ6A3QSUqjSWzC2ozuC4j+fnSnB+gHq8YmvJKIJgVEpRPX9QH6waqxCa8PjEhHT981H2j6qno0wqzF63BhOUxsom3Zb7aJqGsUjTAONFJlpysXQz7VuXpavrBTzzEJaz1adlzNjHs6RTBvJyZhjZTF/kTaWZZCnlvhsyWgQkPZQpagzsX1bFlAXjGtDdAPUu1p3PPQhCCXkdwG/mta0PWLds060AuAnqtEOjpdbQR3VymX1P9F3UfgGJA9X9F92c/ADaQ2P8V0DJ4/kDbeYKaSvgI2AN0+OGJK1VAbSIhTOXEOybYll2kte77yD4rqrHyb85S9Cl4HtReAyI11/A7HpRq5PSD6oR0f3Rad+H7S1DvV7UgS+tc1cU3n3V/AWJ/SX8BxVuMinow2rNNjlPQVeH0GFg378kDBfLAPXARjZbTPwmUXmOG+bgz71EKFfqKeAUWfREZbJxyCxyOOqEuHER4qrNUWovwy0CFktBHV4eNZMNvxyaaFhKWAaBt/HJwEo4W0luSKLMF8viVhp4iBeeBd8CcYqcQ1qi+CKS7uVmklYdcQY0+C42Ckkf6EmO51cVal3oRlCFkCdKgfCWtbo7obDO3AVWQbHHyUsjo40E6uq9cvQbdG+wN892fj8s0HjXDWKA51/t4JUo72H/jTDtybjSUkbyYsJ0gdfAtSjfTn+JoWQjCv2+57a4M1QaQSvZvrMsIs7RJejGcdUlLJUhzpZsYsZsJcCen6ZwCE3IaYA2021OfUdU3fJltmwni7Fvh+KDMF16KR3ux0lWuSdgjPxeNdJq/tNdKNqJaSSUyEmVK6JNPomtqbIh3eSKNsEmvAarfJ5LEzjbbR59MtpqyEb8eZjpndkhtxvNri3Er4YZxpx+yW6Jdhi8V5MOHm+n0QZ9afo0u0fQO8A5S3iPaQ1cTSG9w4f/SqesZBH/gRWI6T+gyyxfkgvw2cMdrS+/lTzpZvGnyWxsnTwHLRd4R2a/OBqQyoztKBe/P2qp6DCBOUptKHhuA+pU1fq2Co0/F0L9CVaghxXTbWW9ktKg8lrFfCrwODeh/9wgu1bEDo6OT2Fvgb+JLWq+nQEsnaa5UPJbwKBxc8A9KXPG1O3u+u6E4F24GvD3XMDjCxFcF8uTdhjGpHfwn49L42lCeAdyDZwGi3HpwAPr6+Q29htn1ZPoSwfuz3ewShXVcBNz62lzkvq6O9DjZHgQ9p72kdQljvob9VBPAN9Q+UEQmpw5b+Sf8e0FotI/4a9ZN8bIcQXlnh9AD1y3ychuhgU0tpJyhb14epn+ljN+Sk9S9G1ct50d8SdgF9x9EO3lHB5hXwPEYfA8dbGD9LuWZBtfj0inSQWUDTKzu1dAB5Dkz2tdOOHn70LvwVyMag/FYwzse295Rukq5j+G1wEOib66PAy5FPMD46+NPmqTV7CpwGGvkJPm2l8z8GWDNDloqpGQAAAABJRU5ErkJggg==');
 }
 
@@ -6692,8 +6697,8 @@ input[type="search"]::-webkit-search-cancel-button {
 
 /* line 5, ../sass/_icons.scss */
 .social_google, .social_twitter, .social_facebook {
-  width: 1.3em;
-  height: 1.3em;
+  width: 1.3em !important;
+  height: 1.3em !important;
 }
 
 /* line 43, ../../touch/resources/themes/stylesheets/sencha-touch/default/_mixins.scss */
@@ -6786,60 +6791,85 @@ input[type="search"]::-webkit-search-cancel-button {
   -webkit-mask-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAED0lEQVRoBd2ab2hOURzHPf5l8i8lW/6EFyRM3ih/3igtb2SleEFp3vICxQsvZlhjWtaIhTUTs8XW0pRNFKGIJH9Lpkl5Q0Ko+Tef79qpZ49de5773D/n7Fef55x7z85zz+fe89xzzr1LdHd3D0mNRCIxgX2ToZPyrtRyl7eHejR+DvtPQTHys8Dr7zyq27vbS0SXfSLshmpYjfQoUufDSzhZrICNc9CI9AoYmVzoWj4dYTmNgTVQD2VI50GCvHORrrARyyOzHZqgEOfxpsCVNFNheanOUpB0JdILwc/3UD36yKahqlsErVCBdC5Y382zETaXZxoZ083X4jzcFNiYBiFsvJaRqYV6pOfCMFNgUxqksLzGwjq4CjuRtq6bBy2MZ09M5fMAaNKicdyaCEvYCBaSaeJK18ECszPONGxhuWnSsgkuIb0HtB1bRCFs5GaSKYaLSC+HWKaoUQpLXMdbBddhP9KzSSONqIWNnK7uLmhHegeMMwVhp3EJG68ZZEqhGemVZmeYadzCcssByepufgSmaGdYYYOwcdPKawuom4e2ErNJWOJqzzy4AIcRX0IaaNgmbORGkNkMGrurILC7ua3CRnwSma2gm9pGyPq5mu3CElcb58MJ0BQ1H3wvQV0QxrMnRvO5HtphG9LTe/Zm+OGSsFHLJaOVWAvSRaATkXa4KCw5delFUAE1SC8mTStcFZacnp/pZYG6uRYk+0A3uf+H3i2lQg2dsaegNxCu8Iu2PoQCyEl1MtsuX2G8+oSeoambN4PeieX3Ke3dGEzCxk8PGDZAv8K+xzPz7ZalP2jPDSiD+/BPDBbh35i9hho4ye/10z+mvTtcF9YNVXKXoQLRx71enonLwuq+96AOziL7k3TAcFH4D1adUAUNiL4nTTtcE/6KWROUgv7/RL/djMIVYYnprnsIWhHVJMNX2C6sm9JbaIRyRD/6skyqZLPwd9pZCxpmniS1OausjcLqvrdAK6GbyOp3G1jYJvwOMz3ZqEL0c2CWSV9ki7C6r65qCaJ3k9oXeNYGYd19z0ANsl2BG6Z8YZzCmhJWQjWiGU0eUhwy2oxDWFNAzX1L4DmyvsdU6mccUQu/oIWl0ISo5sKRR1TC6rI9r08Q1TIutohCuA67Y4g+iM0y6cBhCr/kOMXQhmwoY2qSR9rZMIQ1320AzZTeIKv5sDURpPA3rDR5KFeKZ8ZLtyjOSlDC6r7H4TSiX6JouN9jZCusq6onD3XQgayeRlgdfoU1ebgG+p3eRjSWMdXPmfUj/IoDHYRmRD0fh/ppTBR1MhHW5OEKHIVHyEY6JQzqZKQjrO7aAlqn3nGp+/Z3kryEzb/yd1BpL7TBB2StGlP7Expon5ewxlCtaM7DMzytHFMHkuuv/C9rJUJQW9MzAgAAAABJRU5ErkJggg==');
 }
 
-/* line 22, ../sass/_icons.scss */
+/* line 43, ../../touch/resources/themes/stylesheets/sencha-touch/default/_mixins.scss */
+.x-tab .x-button-icon.star,
+.x-button .x-button-icon.x-icon-mask.star,
+.x-bevelbutton .x-button-inner .x-button-icon.x-icon-mask.star, .x-bevelbutton
+.x-button-inner .x-button-icon.x-icon-mask.star,
+.x-insetbutton .x-button-wrapper .x-button-inner .x-button-icon.x-icon-mask.star, .x-insetbutton .x-button-wrapper
+.x-button-inner .x-button-icon.x-icon-mask.star,
+.x-button .x-button-icon.star-off.x-icon-mask,
+.x-bevelbutton .x-button-inner .x-button-icon.star-off.x-icon-mask, .x-bevelbutton
+.x-button-inner .x-button-icon.star-off.x-icon-mask,
+.x-insetbutton .x-button-wrapper .x-button-inner .x-button-icon.star-off.x-icon-mask, .x-insetbutton .x-button-wrapper
+.x-button-inner .x-button-icon.star-off.x-icon-mask {
+  -webkit-mask-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAFfUlEQVRoBd2aXahVRRTHz/Ujv+2mZRGZB7W6mtpFikC7+UWUZiqBD0JPFdRL1EMFPfjoU4baS0FUD/UWZBEVShA+BCpmWApRSkgllNpDmZWZt9//eOay72afvWfWOTPn3rvgz8yeWbPW+s/XmT379AwODtZSSQ+CryVgA/gVfIx/pelEhFMBVlvBOaBeFo6Cean8y09KsnMg932TqCOs9M2UhMfhMJVsxtHcAmcbmekLCsqjFKUkvAYG1xSwmEHZqoLyKEVJCDOCNxH9HUCbVl6mULAuXxjrOQlhgl8Bbi0h0Uen3FBS37GqVIQHiHh2SdR16jTlo0t0woycpuxiUDSdHcFeMv3uIWYanTDB3wIWVZBQHP10zuQKvbarUxDWT1HRz1E++Ds99fLtgp6jEmbExhPNcs+IbkZPiCpRCRP5TPCQJ4MJ6A3QSUqjSWzC2ozuC4j+fnSnB+gHq8YmvJKIJgVEpRPX9QH6waqxCa8PjEhHT981H2j6qno0wqzF63BhOUxsom3Zb7aJqGsUjTAONFJlpysXQz7VuXpavrBTzzEJaz1adlzNjHs6RTBvJyZhjZTF/kTaWZZCnlvhsyWgQkPZQpagzsX1bFlAXjGtDdAPUu1p3PPQhCCXkdwG/mta0PWLds060AuAnqtEOjpdbQR3VymX1P9F3UfgGJA9X9F92c/ADaQ2P8V0DJ4/kDbeYKaSvgI2AN0+OGJK1VAbSIhTOXEOybYll2kte77yD4rqrHyb85S9Cl4HtReAyI11/A7HpRq5PSD6oR0f3Rad+H7S1DvV7UgS+tc1cU3n3V/AWJ/SX8BxVuMinow2rNNjlPQVeH0GFg378kDBfLAPXARjZbTPwmUXmOG+bgz71EKFfqKeAUWfREZbJxyCxyOOqEuHER4qrNUWovwy0CFktBHV4eNZMNvxyaaFhKWAaBt/HJwEo4W0luSKLMF8viVhp4iBeeBd8CcYqcQ1qi+CKS7uVmklYdcQY0+C42Ckkf6EmO51cVal3oRlCFkCdKgfCWtbo7obDO3AVWQbHHyUsjo40E6uq9cvQbdG+wN892fj8s0HjXDWKA51/t4JUo72H/jTDtybjSUkbyYsJ0gdfAtSjfTn+JoWQjCv2+57a4M1QaQSvZvrMsIs7RJejGcdUlLJUhzpZsYsZsJcCen6ZwCE3IaYA2021OfUdU3fJltmwni7Fvh+KDMF16KR3ux0lWuSdgjPxeNdJq/tNdKNqJaSSUyEmVK6JNPomtqbIh3eSKNsEmvAarfJ5LEzjbbR59MtpqyEb8eZjpndkhtxvNri3Er4YZxpx+yW6Jdhi8V5MOHm+n0QZ9afo0u0fQO8A5S3iPaQ1cTSG9w4f/SqesZBH/gRWI6T+gyyxfkgvw2cMdrS+/lTzpZvGnyWxsnTwHLRd4R2a/OBqQyoztKBe/P2qp6DCBOUptKHhuA+pU1fq2Co0/F0L9CVaghxXTbWW9ktKg8lrFfCrwODeh/9wgu1bEDo6OT2Fvgb+JLWq+nQEsnaa5UPJbwKBxc8A9KXPG1O3u+u6E4F24GvD3XMDjCxFcF8uTdhjGpHfwn49L42lCeAdyDZwGi3HpwAPr6+Q29htn1ZPoSwfuz3ewShXVcBNz62lzkvq6O9DjZHgQ9p72kdQljvob9VBPAN9Q+UEQmpw5b+Sf8e0FotI/4a9ZN8bIcQXlnh9AD1y3ychuhgU0tpJyhb14epn+ljN+Sk9S9G1ct50d8SdgF9x9EO3lHB5hXwPEYfA8dbGD9LuWZBtfj0inSQWUDTKzu1dAB5Dkz2tdOOHn70LvwVyMag/FYwzse295Rukq5j+G1wEOib66PAy5FPMD46+NPmqTV7CpwGGvkJPm2l8z8GWDNDloqpGQAAAABJRU5ErkJggg==');
+}
+
+/* line 23, ../sass/_icons.scss */
 .cloud_black_upload2.x-icon-mask {
   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#b3d8f4), to(#40acf3)) !important;
 }
 
-/* line 25, ../sass/_icons.scss */
+/* line 26, ../sass/_icons.scss */
 .like.x-icon-mask {
   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#8cc63f), to(#8cc63f)) !important;
 }
 
-/* line 28, ../sass/_icons.scss */
+/* line 29, ../sass/_icons.scss */
 .play1.x-icon-mask {
   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(white), to(#c8c8c8)) !important;
   margin-right: -0.4em;
 }
 
-/* line 32, ../sass/_icons.scss */
+/* line 33, ../sass/_icons.scss */
 .pause.x-icon-mask {
   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(white), to(#c8c8c8)) !important;
 }
 
-/* line 35, ../sass/_icons.scss */
+/* line 36, ../sass/_icons.scss */
 .dislike.x-icon-mask {
   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f976a3), to(#c72f3d)) !important;
 }
 
-/* line 38, ../sass/_icons.scss */
+/* line 39, ../sass/_icons.scss */
 .left2.x-icon-mask {
   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#d9e021), to(#d9e021)) !important;
 }
 
-/* line 41, ../sass/_icons.scss */
+/* line 42, ../sass/_icons.scss */
 .chat.x-icon-mask {
   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(white), to(#c8c8c8)) !important;
 }
 
-/* line 44, ../sass/_icons.scss */
+/* line 45, ../sass/_icons.scss */
 .heart.x-icon-mask {
   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#f976a3), to(#c72f3d)) !important;
 }
 
-/* line 47, ../sass/_icons.scss */
+/* line 48, ../sass/_icons.scss */
 .music1.x-icon-mask {
   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fbb03b), to(#f7731e)) !important;
 }
 
-/* line 52, ../sass/_icons.scss */
+/* line 51, ../sass/_icons.scss */
+.star.x-icon-mask, .star-off.x-icon-mask {
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ede61c), to(#c7c232)) !important;
+}
+
+/* line 54, ../sass/_icons.scss */
+.star-off.x-icon-mask {
+  background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#999999), to(#777777)) !important;
+}
+
+/* line 60, ../sass/_icons.scss */
 .x-button-buy {
   background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fbb03b), to(#f7731e)) !important;
   height: 3em;
   font-size: 1em;
 }
 
-/* line 57, ../sass/_icons.scss */
+/* line 65, ../sass/_icons.scss */
 .btn-bevel-buy {
   padding: 5px;
   margin: 10px 10px 10px 20px;
@@ -37937,13 +37967,24 @@ li.run {
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.5);
 }
-/* line 36, ../sass/view/_player.scss */
+/* line 37, ../sass/view/_player.scss */
 .sr-player .purchase-ct {
   text-align: center;
   width: 200px;
   color: #fff;
   text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.5);
   font-size: .75em;
+}
+/* line 46, ../sass/view/_player.scss */
+.sr-player .rating-ct .x-button, .sr-player .rating-ct .x-bevelbutton .x-button-inner, .x-bevelbutton .sr-player .rating-ct .x-button-inner, .sr-player .rating-ct .x-insetbutton .x-button-wrapper .x-button-inner, .x-insetbutton .x-button-wrapper .sr-player .rating-ct .x-button-inner {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+/* line 51, ../sass/view/_player.scss */
+.sr-player .rating-text .x-innerhtml {
+  line-height: 43px;
+  color: #FFF;
+  width: 145px;
 }
 
 /* line 2, ../sass/view/_playlist.scss */
@@ -37993,6 +38034,11 @@ body {
 /* line 16, ../sass/view/_viewport.scss */
 audio {
   display: none;
+}
+
+/* line 21, ../sass/view/_viewport.scss */
+.x-button-small, .x-button.x-button-action-small, .x-bevelbutton .x-button-action-small.x-button-inner, .x-insetbutton .x-button-wrapper .x-button-action-small.x-button-inner, .x-button.x-button-confirm-small, .x-bevelbutton .x-button-confirm-small.x-button-inner, .x-insetbutton .x-button-wrapper .x-button-confirm-small.x-button-inner, .x-button.x-button-decline-small, .x-bevelbutton .x-button-decline-small.x-button-inner, .x-insetbutton .x-button-wrapper .x-button-decline-small.x-button-inner, .x-toolbar .x-button-small, .x-toolbar .x-button.x-button-action-small, .x-toolbar .x-bevelbutton .x-button-action-small.x-button-inner, .x-bevelbutton .x-toolbar .x-button-action-small.x-button-inner, .x-toolbar .x-insetbutton .x-button-wrapper .x-button-action-small.x-button-inner, .x-insetbutton .x-button-wrapper .x-toolbar .x-button-action-small.x-button-inner, .x-toolbar .x-button.x-button-confirm-small, .x-toolbar .x-bevelbutton .x-button-confirm-small.x-button-inner, .x-bevelbutton .x-toolbar .x-button-confirm-small.x-button-inner, .x-toolbar .x-insetbutton .x-button-wrapper .x-button-confirm-small.x-button-inner, .x-insetbutton .x-button-wrapper .x-toolbar .x-button-confirm-small.x-button-inner, .x-toolbar .x-button.x-button-decline-small, .x-toolbar .x-bevelbutton .x-button-decline-small.x-button-inner, .x-bevelbutton .x-toolbar .x-button-decline-small.x-button-inner, .x-toolbar .x-insetbutton .x-button-wrapper .x-button-decline-small.x-button-inner, .x-insetbutton .x-button-wrapper .x-toolbar .x-button-decline-small.x-button-inner {
+  padding: .2em 0;
 }
 
 /* line 3, ../../lib/Ext.ux.BevelButton.scss */

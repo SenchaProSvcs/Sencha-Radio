@@ -66,7 +66,7 @@ Ext.application({
             me.fireEvent('animationend');
         };
 
-        audio = Ext.getDom('startup-audio');
+        audio = new Audio('resources/media/intro.mp3');
         audio.play();
         
         AN.Controller.setConfig({
