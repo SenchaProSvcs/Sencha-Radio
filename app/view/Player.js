@@ -3,11 +3,7 @@ Ext.define('SenchaRadio.view.Player', {
     xtype: 'player',
     config: {
         cls: 'sr-player',
-        layout: {
-            type: 'vbox',
-            align: 'stretch',
-            pack: 'end'
-        },
+        layout: 'fit',
         items: [{
             xtype: 'dataview',
             emptyText: 'No Tracks',

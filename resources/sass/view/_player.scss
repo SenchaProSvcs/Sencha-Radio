@@ -1,7 +1,4 @@
 .sr-player {
-    .x-dataview {
-        height: 316px;
-    }
     .track-row {
         height: 119px;
 	    padding: 20px;
@@ -21,8 +18,7 @@
 		margin: 10px 10px 0 10px;
 		background-color: rgba(0, 0, 0, .5);
 		border: 1px solid rgba(0, 0, 0, .4);
-		border-bottom: none;
-		@include border-radius(8px 8px 0 0);
+		@include border-radius(8px);
     	color: #CCC;
 	}
     .coming-up, .now-playing {

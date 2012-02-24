@@ -37927,19 +37927,15 @@ li.run {
 }
 
 /* line 2, ../sass/view/_player.scss */
-.sr-player .x-dataview {
-  height: 316px;
-}
-/* line 5, ../sass/view/_player.scss */
 .sr-player .track-row {
   height: 119px;
   padding: 20px;
 }
-/* line 8, ../sass/view/_player.scss */
+/* line 5, ../sass/view/_player.scss */
 .sr-player .track-row h1, .sr-player .track-row h2, .sr-player .track-row h3 {
   font-size: .7em;
 }
-/* line 11, ../sass/view/_player.scss */
+/* line 8, ../sass/view/_player.scss */
 .sr-player .track-row img {
   width: 75px;
   height: 75px;
@@ -37948,17 +37944,16 @@ li.run {
   margin-right: 20px;
   float: left;
 }
-/* line 20, ../sass/view/_player.scss */
+/* line 17, ../sass/view/_player.scss */
 .sr-player .x-dataview-item:last-of-type .track-row {
   margin: 10px 10px 0 10px;
   background-color: rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(0, 0, 0, 0.4);
-  border-bottom: none;
-  -webkit-border-radius: 8px 8px 0 0;
-  border-radius: 8px 8px 0 0;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
   color: #CCC;
 }
-/* line 28, ../sass/view/_player.scss */
+/* line 24, ../sass/view/_player.scss */
 .sr-player .coming-up, .sr-player .now-playing {
   color: #fff;
   background-color: rgba(0, 0, 0, 0.5);
@@ -37967,7 +37962,7 @@ li.run {
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.5);
 }
-/* line 37, ../sass/view/_player.scss */
+/* line 33, ../sass/view/_player.scss */
 .sr-player .purchase-ct {
   text-align: center;
   width: 200px;
@@ -37975,12 +37970,12 @@ li.run {
   text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.5);
   font-size: .75em;
 }
-/* line 46, ../sass/view/_player.scss */
+/* line 42, ../sass/view/_player.scss */
 .sr-player .rating-ct .x-button, .sr-player .rating-ct .x-bevelbutton .x-button-inner, .x-bevelbutton .sr-player .rating-ct .x-button-inner, .sr-player .rating-ct .x-insetbutton .x-button-wrapper .x-button-inner, .x-insetbutton .x-button-wrapper .sr-player .rating-ct .x-button-inner {
   padding-left: 0px;
   padding-right: 0px;
 }
-/* line 51, ../sass/view/_player.scss */
+/* line 47, ../sass/view/_player.scss */
 .sr-player .rating-text .x-innerhtml {
   line-height: 43px;
   color: #FFF;
