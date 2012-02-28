@@ -1,20 +1,27 @@
 @mixin ux-insetbutton {
     $size-medium: 5em;
     $size-small: 3.5em;
+    
+    $padding-medium: $size-medium * 0.11;
+    $size-medium-inner: $size-medium - ($padding-medium * 2);
+    
+    $padding-small: $size-small * 0.11;
+    $size-small-inner: $size-small - ($padding-small * 2);
+    
     .x-insetbutton {
         .x-button-wrapper {
-            border-radius: 100%;
             background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgba(0,0,0, 0.5)), to(rgba(102,102,102, 0.3)));
             width: $size-medium;
             height: $size-medium;
-            padding: $size-medium * 0.11;
+            padding: $padding-medium;
+            @include border-radius($size-medium);
             .x-button-inner {
                 @extend .x-button;
-                width: 100%;
-                height: 100%;
-                border-radius: 100%;
+                width: $size-medium-inner;
+                height: $size-medium-inner;
                 margin: 0 !important;
                 border: 2px solid rgba(102, 102, 102, 1.0) !important;
+                @include border-radius($size-medium-inner);
                 @include box-pack(center);
                 * {
                     -webkit-box-flex: 0;
@@ -31,7 +38,12 @@
 	.x-button-small.x-insetbutton .x-button-wrapper {
         width: $size-small;
         height: $size-small;
-        padding: $size-small * 0.11;
+        padding: $padding-small;
+        .x-button-inner {
+            width: $size-small-inner;
+            height: $size-small-inner;
+            @include border-radius($size-small-inner);
+        }
     }
     
 	.x-toolbar .x-insetbutton {

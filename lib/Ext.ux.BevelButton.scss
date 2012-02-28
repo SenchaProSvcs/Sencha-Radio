@@ -1,17 +1,19 @@
 @mixin ux-bevelbutton {
     $size: 5em;
+    $padding: $size * 0.11;
+    $size-inner: $size - ($padding * 2);
     .x-bevelbutton {
         width: $size;
         height: $size;
         padding: $size * 0.11;
-        border-radius: 100%;
+        @include border-radius($size);
         @include background-image(linear-gradient(color-stops(rgba(125,125,125, 1.0), rgba(0,0,0, 0.3))));
         .x-button-inner {
             @extend .x-button;
-            width: 100%;
-            height: 100%;
-            border-radius: 100%;
+            width: $size-inner;
+            height: $size-inner;
             margin: 0 !important;
+            @include border-radius($size-inner);
             @include box-pack(center);
             * {
                 -webkit-box-flex: 0;
@@ -21,8 +23,8 @@
               height: 1.3em;
             }
         }
-	}
-	.x-toolbar .x-bevelbutton {
-	    margin: 0 .2em;
-	}
+    }
+    .x-toolbar .x-bevelbutton {
+        margin: 0 .2em;
+    }
 }
