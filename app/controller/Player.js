@@ -43,8 +43,8 @@ Ext.define('SenchaRadio.controller.Player', {
             'button[action=goToStore]': {
                 tap: 'onGoToStoreButtonPress'
             },
-            'button[action=shareOnGooglePlus]': {
-                tap: 'onShareOnGooglePlusButtonPress'
+            'button[action=shareViaMail]': {
+                tap: 'onShareViaMailButtonPress'
             },
             'button[action=shareOnTwitter]': {
                 tap: 'onShareOnTwitterButtonPress'
@@ -114,7 +114,7 @@ Ext.define('SenchaRadio.controller.Player', {
         this.nextTrack(true);
     },
     
-    onLikeButtonPress: function(button) {
+    onLikeButtonPress: function() {
         this.getPlayer().slideToolbar(1, 'left');
     },
     
@@ -125,15 +125,15 @@ Ext.define('SenchaRadio.controller.Player', {
         button.setIconCls(audio.isPlaying() ? 'pause' : 'play1');
     },
 
-    onBtnBack0Tap: function(button) {
+    onBtnBack0Tap: function() {
         this.getPlayer().slideToolbar(0, 'right');
     },
     
-    onBtnBack1Tap: function(button) {
+    onBtnBack1Tap: function() {
         this.getPlayer().slideToolbar(1, 'right');
     },
 
-    onShareButtonPress: function(button) {
+    onShareButtonPress: function() {
         
         //<debug>
         Ext.Logger.log('Share');
@@ -142,7 +142,7 @@ Ext.define('SenchaRadio.controller.Player', {
         this.getPlayer().slideToolbar(2, 'left');
     },
 
-    onFavoriteButtonPress: function(button) {
+    onFavoriteButtonPress: function() {
         
         //<debug>
         Ext.Logger.log('Favorite');
@@ -152,22 +152,42 @@ Ext.define('SenchaRadio.controller.Player', {
         this.setRating(5);
     },
 
-    onBuyButtonPress: function(button) {
+    onBuyButtonPress: function() {
         var trackData = this.getCurrentTrack();
         
         this.getPlayer().slideToolbar(4, 'left');
         Ext.getCmp('buyPlaceholder').setHtml('Do You want "'+ trackData.get('title')+'" by ' + trackData.get('artist'));
     },
 
-    onGoToStoreButtonPress: function(button) {
+    onGoToStoreButtonPress: function() {
         Ext.Msg.alert("TODO: Go to Store");
     },
-
+/*
     onShareOnGooglePlusButtonPress: function(button) {
-        Ext.Msg.alert("TODO: Share on Plus");
+        var track = this.getCurrentTrack(),
+            text = Ext.String.format(
+                "I'm listening to {0} - {1} via #SenchaRadio",
+                track.get('artist'),
+                track.get('title')
+            );
+
+        window.open("https://m.google.com/app/plus/x/?v=compose&content=" + encodeURIComponent(text));
+    },
+*/
+
+    onShareViaMailButtonPress: function() {
+        var track = this.getCurrentTrack(),
+            subject = "Cool Sencha radio App", // please put some meaningful text for subject line
+            body = Ext.String.format(
+                "I'm listening to {0} - {1} via #SenchaRadio",
+                track.get('artist'),
+                track.get('title')
+            );
+
+        window.open("mailto:?subject=" + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body));
     },
 
-    onShareOnTwitterButtonPress: function(button) {
+    onShareOnTwitterButtonPress: function() {
         var track = this.getCurrentTrack(),
             text = Ext.String.format(
                 "I'm listening to {0} - {1} via #SenchaRadio",
@@ -178,7 +198,7 @@ Ext.define('SenchaRadio.controller.Player', {
         window.open("https://twitter.com/intent/tweet?text=" + encodeURIComponent(text));
     },
 
-    onShareOnFacebookButtonPress: function(button) {
+    onShareOnFacebookButtonPress: function() {
         var track = this.getCurrentTrack(),
             text = Ext.String.format(
                 "I'm listening to {0} - {1} via #SenchaRadio",
@@ -186,7 +206,7 @@ Ext.define('SenchaRadio.controller.Player', {
                 track.get('title')
             );
 
-        window.open('http://www.facebook.com/sharer/sharer.php?t=' + encodeURIComponent(text));
+        window.open('https://www.facebook.com/sharer.php?t=' + encodeURIComponent(text));
     },
     
     onStarButtonPress: function(btn) {

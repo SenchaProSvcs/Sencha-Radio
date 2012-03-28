@@ -147,9 +147,9 @@ Ext.define('SenchaRadio.view.Player', {
                     {
                         xtype: 'insetbutton',
                         scale: 'small',
-                        action: 'shareOnGooglePlus',
+                        action: 'shareViaMail',
                         iconCls: 'social_google',
-                        text: 'Google+'
+                        text: 'Mail to'
                     },
                     {
                         xtype: 'insetbutton',
