@@ -46,12 +46,12 @@ Ext.application({
     launch: function() {
         var onAnimationEnd, audio,
             me = this;
-        
+
         //adjust viewport
         Ext.Viewport.setLayout({
             type: 'fit'
         });
-        
+
         //init animation
         onAnimationEnd = function() {
             
