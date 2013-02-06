@@ -24,19 +24,18 @@ Ext.define('Ext.dom.CompositeElement', {
 
     extend: 'Ext.dom.CompositeElementLite',
 
-    // private
+    // @private
     getElement: function(el) {
         // In this case just return it, since we already have a reference to it
         return el;
     },
 
-    // private
+    // @private
     transformElement: function(el) {
         return Ext.get(el);
     }
 
 }, function() {
-
     Ext.dom.Element.select = function(selector, unique, root) {
         var elements;
 

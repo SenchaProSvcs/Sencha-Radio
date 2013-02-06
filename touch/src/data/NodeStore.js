@@ -9,15 +9,15 @@ Ext.define('Ext.data.NodeStore', {
     config: {
         /**
          * @cfg {Ext.data.Model} node The Record you want to bind this Store to. Note that
-         * this record will be decorated with the Ext.data.NodeInterface if this is not the
+         * this record will be decorated with the {@link Ext.data.NodeInterface} if this is not the
          * case yet.
          * @accessor
          */
         node: null,
 
         /**
-         * @cfg {Boolean} recursive Set this to true if you want this NodeStore to represent
-         * all the descendents of the node in its flat data collection. This is useful for
+         * @cfg {Boolean} recursive Set this to `true` if you want this NodeStore to represent
+         * all the descendants of the node in its flat data collection. This is useful for
          * rendering a tree structure to a DataView and is being used internally by
          * the TreeView. Any records that are moved, removed, inserted or appended to the
          * node at any depth below the node this store is bound to will be automatically
@@ -27,7 +27,7 @@ Ext.define('Ext.data.NodeStore', {
         recursive: false,
 
         /**
-         * @cfg {Boolean} rootVisible False to not include the root node in this Stores collection.
+         * @cfg {Boolean} rootVisible `false` to not include the root node in this Stores collection.
          * @accessor
          */
         rootVisible: false,
@@ -37,7 +37,7 @@ Ext.define('Ext.data.NodeStore', {
 
         /**
          * @cfg {Boolean} folderSort
-         * Set to true to automatically prepend a leaf sorter. Defaults to `undefined`.
+         * Set to `true` to automatically prepend a leaf sorter.
          */
         folderSort: false
     },
@@ -49,6 +49,9 @@ Ext.define('Ext.data.NodeStore', {
             }
             if (modifiedFields.indexOf('expanded') !== -1) {
                 return this.filter();
+            }
+            if (modifiedFields.indexOf('sorted') !== -1) {
+                return this.sort();
             }
         }
         this.callParent(arguments);
@@ -91,14 +94,10 @@ Ext.define('Ext.data.NodeStore', {
     },
 
     handleTreeInsertionIndex: function(items, item, collection, originalFn) {
-        if (item.parentNode) {
-            item.parentNode.sort(collection.getSortFn(), true, true);
-        }
         return originalFn.call(collection, items, item, this.treeSortFn);
     },
 
-    handleTreeSort: function(data, collection) {
-        this.getNode().sort(collection.getSortFn(), true, true);
+    handleTreeSort: function(data) {
         Ext.Array.sort(data, this.treeSortFn);
         return data;
     },
@@ -111,6 +110,7 @@ Ext.define('Ext.data.NodeStore', {
      * on this one single sort function.
      * @param node1
      * @param node2
+     * @return {Number}
      * @private
      */
     treeSortFn: function(node1, node2) {
@@ -167,12 +167,11 @@ Ext.define('Ext.data.NodeStore', {
     },
 
     updateNode: function(node, oldNode) {
-        if (oldNode) {
+        if (oldNode && !oldNode.isDestroyed) {
             oldNode.un({
                 append  : 'onNodeAppend',
                 insert  : 'onNodeInsert',
                 remove  : 'onNodeRemove',
-                sort    : 'onNodeSort',
                 load    : 'onNodeLoad',
                 scope: this
             });
@@ -185,7 +184,6 @@ Ext.define('Ext.data.NodeStore', {
                 append  : 'onNodeAppend',
                 insert  : 'onNodeInsert',
                 remove  : 'onNodeRemove',
-                sort    : 'onNodeSort',
                 load    : 'onNodeLoad'
             });
 
@@ -215,7 +213,8 @@ Ext.define('Ext.data.NodeStore', {
     /**
      * Private method used to deeply retrieve the children of a record without recursion.
      * @private
-     * @param parent
+     * @param root
+     * @return {Array}
      */
     retrieveChildNodes: function(root) {
         var node = this.getNode(),
@@ -255,8 +254,17 @@ Ext.define('Ext.data.NodeStore', {
         return added;
     },
 
+    /**
+     * @param {Object} node
+     * @return {Boolean}
+     */
     isVisible: function(node) {
         var parent = node.parentNode;
+
+        if (!this.getRecursive() && parent !== this.getNode()) {
+            return false;
+        }
+
         while (parent) {
             if (!parent.isExpanded()) {
                 return false;

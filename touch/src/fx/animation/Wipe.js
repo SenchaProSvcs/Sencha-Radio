@@ -6,7 +6,10 @@ Ext.define('Ext.fx.animation.Wipe', {
     alternateClassName: 'Ext.fx.animation.WipeIn',
 
     config: {
-        // @inherit
+        /**
+         * Valid values are 'ease', 'linear', ease-in', 'ease-out', 'ease-in-out',
+         * or a cubic-bezier curve as defined by CSS.
+         */
         easing: 'ease-out',
 
         /**

@@ -1,31 +1,37 @@
 /**
+ * @aside guide forms
+ *
  * The Number field creates an HTML5 number input and is usually created inside a form. Because it creates an HTML
  * number input field, most browsers will show a specialized virtual keyboard for entering numbers. The Number field
  * only accepts numerical input and also provides additional spinner UI that increases or decreases the current value
  * by a configured {@link #stepValue step value}. Here's how we might use one in a form:
  *
+ *     @example
  *     Ext.create('Ext.form.Panel', {
- *         tbar: {
- *             text: 'Register'
- *         },
- *
+ *         fullscreen: true,
  *         items: [
  *             {
- *                 xtype: 'numberfield',
- *                 label: 'Age',
- *                 minValue: 18,
- *                 maxValue: 150,
- *                 name: 'age'
+ *                 xtype: 'fieldset',
+ *                 title: 'How old are you?',
+ *                 items: [
+ *                     {
+ *                         xtype: 'numberfield',
+ *                         label: 'Age',
+ *                         minValue: 18,
+ *                         maxValue: 150,
+ *                         name: 'age'
+ *                     }
+ *                 ]
  *             }
  *         ]
- *     }).show();
+ *     });
  *
  * Or on its own, outside of a form:
  *
  *     Ext.create('Ext.field.Number', {
  *         label: 'Age',
  *         value: '26'
- *     }).show();
+ *     });
  *
  * ## minValue, maxValue and stepValue
  *
@@ -34,12 +40,25 @@
  * is {@link #stepValue}, which enables you to set how much the value changes every time the up and down spinners
  * are tapped on. For example, to create a salary field that ticks up and down by $1,000 each tap we can do this:
  *
- *     Ext.create('Ext.field.Number', {
- *         label: 'Salary',
- *         value: 30000,
- *         minValue: 25000,
- *         maxValue: 50000,
- *         stepValue: 1000
+ *     @example
+ *     Ext.create('Ext.form.Panel', {
+ *         fullscreen: true,
+ *         items: [
+ *             {
+ *                 xtype: 'fieldset',
+ *                 title: 'Are you rich yet?',
+ *                 items: [
+ *                     {
+ *                         xtype: 'numberfield',
+ *                         label: 'Salary',
+ *                         value: 30000,
+ *                         minValue: 25000,
+ *                         maxValue: 50000,
+ *                         stepValue: 1000
+ *                     }
+ *                 ]
+ *             }
+ *         ]
  *     });
  *
  * This creates a field that starts with a value of $30,000, steps up and down in $1,000 increments and will not go
@@ -56,12 +75,18 @@ Ext.define('Ext.field.Number', {
     alternateClassName: 'Ext.form.Number',
 
     config: {
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         component: {
             type: 'number'
         },
 
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         ui: 'number'
     },
 
@@ -86,6 +111,16 @@ Ext.define('Ext.field.Number', {
         stepValue: null
     },
 
+    doInitValue : function() {
+        var value = this.getInitialConfig().value;
+
+        if (value) {
+            value = this.applyValue(value);
+        }
+
+        this.originalValue = value;
+    },
+
     applyValue: function(value) {
         var minValue = this.getMinValue(),
             maxValue = this.getMaxValue();
@@ -98,15 +133,18 @@ Ext.define('Ext.field.Number', {
             value = Math.min(value, maxValue);
         }
 
-        return parseFloat(value);
+        value = parseFloat(value);
+        return (isNaN(value)) ? '' : value;
     },
 
     getValue: function() {
-        var value = this.callParent();
-        return parseFloat(value || 0);
+        var value = parseFloat(this.callParent(), 10);
+        return (isNaN(value)) ? null : value;
     },
 
     doClearIconTap: function(me, e) {
-        me.setValue(0);
+        me.getComponent().setValue('');
+        me.getValue();
+        me.hideClearIcon();
     }
 });

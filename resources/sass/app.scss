@@ -1,39 +1,35 @@
-//global vars
-$base-color: #666;
-$base-gradient: 'matte';
-$form-bg-color: rgba(1,1,1,0);
-$page-bg-color: rgba(1,1,1,0);
-$list-bg-color: rgba(1,1,1,0);
- 
-//touch 2
+// Setup
+@import 'recipes';
+@import 'misc/variables';
+
+// Touch
+@import 'sencha-touch/default/variables';
+@import 'sencha-touch/base';
+@import 'sencha-touch/base/all';
+@import 'sencha-touch/default';
 @import 'sencha-touch/default/all';
-@include sencha-panel;
-@include sencha-buttons;
-@include sencha-sheet;
-@include sencha-picker;
-@include sencha-tabs;
-@include sencha-toolbar;
-@include sencha-toolbar-forms;
-@include sencha-indexbar;
-@include sencha-list;
-@include sencha-list-paging;
-@include sencha-list-pullrefresh;
-@include sencha-layout;
-@include sencha-carousel;
-@include sencha-form;
-@include sencha-msgbox;
-@include sencha-loading-spinner;
 
-//views
-@import "icons";
-@import "view/animation";
-@import "view/login";
-@import "view/player";
-@import "view/playlist";
-@import "view/viewport";
+@import 'sencha-touch/default/button';
+@import 'sencha-touch/default/toolbar';
+// @import 'sencha-touch/default/carousel';
+@import 'sencha-touch/default/panel';
+@import 'sencha-touch/default/sheet';
+@import 'sencha-touch/default/msgbox';
+// @import 'sencha-touch/default/picker';
+// @import 'sencha-touch/default/tab';
+// @import 'sencha-touch/default/form';
+// @import 'sencha-touch/default/form/slider';
+// @import 'sencha-touch/default/form/toolbar';
+@import 'sencha-touch/default/list';
+// @import 'sencha-touch/default/list/paging';
+// @import 'sencha-touch/default/list/pullrefresh';
+// @import 'sencha-touch/default/list/indexbar';
 
-//ux
-@import "../../lib/Ext.ux.BevelButton";
-@import "../../lib/Ext.ux.InsetButton";
-@include ux-bevelbutton;
-@include ux-insetbutton;
+// Radio
+@import 'misc/icons';
+@import 'widgets/button';
+@import 'widgets/list';
+@import 'widgets/toolbar';
+@import 'view/chartlist';
+@import 'view/info';
+@import 'view/player';

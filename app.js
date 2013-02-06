@@ -1,93 +1,72 @@
-Ext.Loader.setConfig({ 
-    enabled: true,
-    paths: {
-        'Ext.ux.BevelButton': 'lib/Ext.ux.BevelButton.js',
-        'Ext.ux.InsetButton': 'lib/Ext.ux.InsetButton.js',
-        'Ext.data.proxy.YMusic': 'lib/YMusicProxy.js'
-    }
+//<debug>
+Ext.Loader.setPath({
+    'Ext': 'touch/src',
+    'Radio': 'app'
 });
-
-Ext.require([
-    'Ext.Anim',
-    'Ext.Audio',
-    'Ext.data.proxy.YMusic',
-    'Ext.field.Password',
-    'Ext.MessageBox',
-    'Ext.ux.BevelButton',
-    'Ext.ux.InsetButton'
-]);
+//</debug>
 
 Ext.application({
-    name: 'SenchaRadio',
-    phoneIcon: 'resources/img/touch-icon-iphone.png',
-    glossOnIcon: false,
-    models: [
-        'Playlist', 
-        'Track'
+    name: 'Radio',
+
+    requires: [
+        'Ext.MessageBox'
     ],
+    
+    models: [
+        'Chart',
+        'Song'
+    ],
+    
     stores: [
-        'Playlist', 
+        'Charts',
+        'Playlist'
+    ],
+    
+    views: [
+        'ChartList',
+        'Info',
         'Player'
     ],
+    
     controllers: [
-        'Login', 
-        'Player',
-        'Playlist'
+        'Main'
     ],
-    views:[
-        'LoginPanel', 
-        'Main', 
-        'Player',
-        'Playlist'
-    ],
-    setNavigationBarTitle:function(title){
-        Ext.ComponentQuery.query('mainview')[0].getNavigationBar().titleComponent.setTitle(title);
+
+    icon: {
+        '57': 'resources/icons/Icon.png',
+        '72': 'resources/icons/Icon~ipad.png',
+        '114': 'resources/icons/Icon@2x.png',
+        '144': 'resources/icons/Icon~ipad@2x.png'
     },
+
+    isIconPrecomposed: true,
+
+    startupImage: {
+        '320x460': 'resources/startup/320x460.jpg',
+        '640x920': 'resources/startup/640x920.png',
+        '768x1004': 'resources/startup/768x1004.png',
+        '748x1024': 'resources/startup/748x1024.png',
+        '1536x2008': 'resources/startup/1536x2008.png',
+        '1496x2048': 'resources/startup/1496x2048.png'
+    },
+
     launch: function() {
-        var onAnimationEnd, audio,
-            me = this;
+        // Destroy the #appLoadingIndicator element
+        Ext.fly('appLoadingIndicator').destroy();
 
-        //adjust viewport
-        Ext.Viewport.setLayout({
-            type: 'fit'
-        });
+        // Initialize the main view
+        Ext.Viewport.add(Ext.create('Radio.view.ChartList'));
+    },
 
-        //init animation
-        onAnimationEnd = function() {
-            
-            if (!audio) {
-                return;
+    onUpdated: function() {
+        Ext.Msg.confirm(
+            "Application Update",
+            "This application has just successfully been updated to the latest version. Reload now?",
+            function(buttonId) {
+                if (buttonId === 'yes') {
+                    window.location.reload();
+                }
             }
-            
-            Ext.getBody().un('tap', onAnimationEnd);
-            audio.pause();
-            audio = null;
-            
-            me.fireEvent('animationend');
-        };
-
-        audio = new Audio('resources/media/intro.mp3');
-        audio.play();
-        
-        AN.Controller.setConfig({
-            parentId: 'AN-sObj-parentOl',
-            ormma: false,
-            scenes: [{
-                id: 0, 
-                animationCount: 134, 
-                duration: 10, 
-                dimensions: {
-                    height: 480, 
-                    width: 320, 
-                    expanded: true, 
-                    fit: true
-                },
-                endAction: onAnimationEnd
-            }],
-            events: []
-        });
-        
-        //tap event to stop
-        Ext.getBody().on('tap', onAnimationEnd);
+        );
     }
 });

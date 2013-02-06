@@ -1,5 +1,5 @@
 /**
- * @ignore
+ * @private
  * Utility class used by Ext.slider.Slider - should never need to be used directly.
  */
 Ext.define('Ext.slider.Thumb', {
@@ -7,10 +7,16 @@ Ext.define('Ext.slider.Thumb', {
     xtype : 'thumb',
 
     config: {
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         baseCls: Ext.baseCSSPrefix + 'thumb',
 
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         draggable: {
             direction: 'horizontal'
         }
@@ -28,7 +34,7 @@ Ext.define('Ext.slider.Thumb', {
             scope: this
         });
 
-        this.on('painted', 'onPainted');
+        this.element.on('resize', 'onElementResize', this);
     },
 
     onDragStart: function() {
@@ -55,8 +61,8 @@ Ext.define('Ext.slider.Thumb', {
         this.relayEvent(arguments);
     },
 
-    onPainted: function() {
-        this.elementWidth = this.element.dom.offsetWidth;
+    onElementResize: function(element, info) {
+        this.elementWidth = info.width;
     },
 
     getElementWidth: function() {

@@ -1,0 +1,17 @@
+.x-list {
+  background: #1a1a1a url(../images/hexabump.png);
+  @include media-highres() {
+    background-image: url(../images/hexabump@2X.png);
+    background-size: 19px 33px;
+  }
+}
+
+.x-list-normal .x-list-item {
+  .x-dock-horizontal {
+    border-top-color: #363636;
+  }
+
+  &.x-list-footer-wrap .x-dock-horizontal {
+    border-bottom-color: #363636;
+  }
+}

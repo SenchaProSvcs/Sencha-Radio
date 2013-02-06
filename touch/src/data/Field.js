@@ -1,6 +1,6 @@
 /**
- * @extends Object
  * @author Ed Spencer
+ * @aside guide models
  *
  * Fields are used to define what a Model is. They aren't instantiated directly - instead, when we create a class that
  * extends {@link Ext.data.Model}, it will automatically create a Field instance for each field configured in a {@link
@@ -8,25 +8,29 @@
  *
  *     Ext.define('User', {
  *         extend: 'Ext.data.Model',
- *         fields: [
- *             'name', 'email',
- *             {name: 'age', type: 'int'},
- *             {name: 'gender', type: 'string', defaultValue: 'Unknown'}
- *         ]
+ *         config: {
+ *             fields: [
+ *                 'name', 'email',
+ *                 {name: 'age', type: 'int'},
+ *                 {name: 'gender', type: 'string', defaultValue: 'Unknown'}
+ *             ]
+ *         }
  *     });
  *
- * Four fields will have been created for the User Model - name, email, age and gender. Note that we specified a couple
+ * Four fields will have been created for the User Model - name, email, age, and gender. Note that we specified a couple
  * of different formats here; if we only pass in the string name of the field (as with name and email), the field is set
  * up with the 'auto' type. It's as if we'd done this instead:
  *
  *     Ext.define('User', {
  *         extend: 'Ext.data.Model',
- *         fields: [
- *             {name: 'name', type: 'auto'},
- *             {name: 'email', type: 'auto'},
- *             {name: 'age', type: 'int'},
- *             {name: 'gender', type: 'string', defaultValue: 'Unknown'}
- *         ]
+ *         config: {
+ *             fields: [
+ *                 {name: 'name', type: 'auto'},
+ *                 {name: 'email', type: 'auto'},
+ *                 {name: 'age', type: 'int'},
+ *                 {name: 'gender', type: 'string', defaultValue: 'Unknown'}
+ *             ]
+ *         }
  *     });
  *
  * # Types and conversion
@@ -40,22 +44,24 @@
  *
  *     Ext.define('User', {
  *         extend: 'Ext.data.Model',
- *         fields: [
- *             'name', 'email',
- *             {name: 'age', type: 'int'},
- *             {name: 'gender', type: 'string', defaultValue: 'Unknown'},
+ *         config: {
+ *             fields: [
+ *                 'name', 'email',
+ *                 {name: 'age', type: 'int'},
+ *                 {name: 'gender', type: 'string', defaultValue: 'Unknown'},
  *
- *             {
- *                 name: 'firstName',
- *                 convert: function(value, record) {
- *                     var fullName  = record.get('name'),
- *                         splits    = fullName.split(" "),
- *                         firstName = splits[0];
+ *                 {
+ *                     name: 'firstName',
+ *                     convert: function(value, record) {
+ *                         var fullName  = record.get('name'),
+ *                             splits    = fullName.split(" "),
+ *                             firstName = splits[0];
  *
- *                     return firstName;
+ *                         return firstName;
+ *                     }
  *                 }
- *             }
- *         ]
+ *             ]
+ *         }
  *     });
  *
  * Now when we create a new User, the firstName is populated automatically based on the name:
@@ -92,7 +98,7 @@ Ext.define('Ext.data.Field', {
     alias: 'data.field',
 
     isField: true,
-    
+
     config: {
         /**
          * @cfg {String} name
@@ -199,7 +205,7 @@ Ext.define('Ext.data.Field', {
          * Used when converting received data into a Date when the {@link #type} is specified as `"date"`.
          *
          * A format string for the {@link Ext.Date#parse Ext.Date.parse} function, or "timestamp" if the value provided by
-         * the Reader is a UNIX timestamp, or "time" if the value provided by the Reader is a javascript millisecond
+         * the Reader is a UNIX timestamp, or "time" if the value provided by the Reader is a JavaScript millisecond
          * timestamp. See {@link Ext.Date}.
          */
         dateFormat: null,
@@ -208,16 +214,16 @@ Ext.define('Ext.data.Field', {
          * @cfg {Boolean} allowNull
          *
          * Use when converting received data into a boolean, string or number type (either int or float). If the value cannot be
-         * parsed, null will be used if allowNull is true, otherwise the value will be 0. Defaults to true.
+         * parsed, `null` will be used if `allowNull` is `true`, otherwise the value will be 0.
          */
         allowNull: true,
 
         /**
-         * @cfg {Object} defaultValue
+         * @cfg {Object} [defaultValue='']
          *
          * The default value used **when a Model is being created by a {@link Ext.data.reader.Reader Reader}**
          * when the item referenced by the `{@link Ext.data.Field#mapping mapping}` does not exist in the data object
-         * (i.e. undefined). Defaults to "".
+         * (i.e. `undefined`).
          */
         defaultValue: undefined,
 
@@ -232,7 +238,7 @@ Ext.define('Ext.data.Field', {
          *
          * - {@link Ext.data.reader.Json}
          *
-         *   The mapping is a string containing the javascript expression to reference the data from an element of the data2
+         *   The mapping is a string containing the JavaScript expression to reference the data from an element of the data2
          *   item's {@link Ext.data.reader.Json#rootProperty rootProperty} Array. Defaults to the field name.
          *
          * - {@link Ext.data.reader.Xml}
@@ -278,7 +284,7 @@ Ext.define('Ext.data.Field', {
         /**
          * @cfg {String} sortDir
          *
-         * Initial direction to sort (`"ASC"` or `"DESC"`). Defaults to `"ASC"`.
+         * Initial direction to sort (`"ASC"` or `"DESC"`).
          */
         sortDir : "ASC",
 
@@ -286,37 +292,31 @@ Ext.define('Ext.data.Field', {
          * @cfg {Boolean} allowBlank
          * @private
          *
-         * Used for validating a {@link Ext.data.Model model}. Defaults to true. An empty value here will cause
-         * {@link Ext.data.Model}.{@link Ext.data.Model#isValid isValid} to evaluate to false.
+         * Used for validating a {@link Ext.data.Model model}. An empty value here will cause
+         * {@link Ext.data.Model}.{@link Ext.data.Model#isValid isValid} to evaluate to `false`.
          */
         allowBlank : true,
 
         /**
          * @cfg {Boolean} persist
          *
-         * False to exclude this field from the {@link Ext.data.Model#modified} fields in a model. This will also exclude
-         * the field from being written using a {@link Ext.data.writer.Writer}. This option is useful when model fields are
-         * used to keep state on the client but do not need to be persisted to the server. Defaults to true.
+         * `false` to exclude this field from being synchronized with the server or localStorage.
+         * This option is useful when model fields are used to keep state on the client but do
+         * not need to be persisted to the server.
          */
         persist: true,
 
         // Used in LocalStorage stuff
         encode: null,
-        decode: null
+        decode: null,
+
+        bubbleEvents: 'action'
     },
 
     constructor : function(config) {
         // This adds support for just passing a string used as the field name
         if (Ext.isString(config)) {
             config = {name: config};
-        }
-
-        if (config.useNull !== undefined) {
-            config.allowNull = config.useNull;
-            delete config.useNull;
-            // <debug>
-            Ext.Logger.warn('useNull has been deprecated on a Field definition. Please use allowNull instead.');
-            // </debug>
         }
 
         this.initConfig(config);
@@ -376,4 +376,15 @@ Ext.define('Ext.data.Field', {
     hasCustomConvert: function() {
         return this._hasCustomConvert;
     }
+
+    // <deprecated product=touch since=2.0>
+}, function() {
+    /**
+     * @member Ext.data.Field
+     * @cfg {Boolean} useNull
+     * @inheritdoc Ext.data.Field#allowNull
+     * @deprecated 2.0.0 Please use {@link #allowNull} instead.
+     */
+    Ext.deprecateProperty(this, 'useNull', 'allowNull');
+    // </deprecated>
 });

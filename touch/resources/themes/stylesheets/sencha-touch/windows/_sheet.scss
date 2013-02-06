@@ -1,0 +1,44 @@
+/**
+ * @class Ext.Sheet
+ */
+
+/**
+ * @var {color} $sheet-bg-color
+ * Background-color for action sheets and message boxes.
+ */
+$sheet-bg-color: $dialog-color !default;
+
+/**
+ * @var {measurement} $sheet-button-spacing
+ * Vertical spacing between sheet buttons.
+ */
+$sheet-button-spacing: .5em !default;
+
+/**
+ * @var {measurement} $sheet-padding
+ * Overall padding in a sheet.
+ */
+$sheet-padding: 0em !default;
+
+/**
+ * Includes default sheet styles (also required for message box).
+ */
+.x-sheet, .x-sheet-action {
+  padding: $sheet-padding;
+  background-color: $sheet-bg-color;
+}
+
+.x-sheet-inner,
+.x-sheet-action-inner {
+  > .x-button {
+    margin-bottom: $sheet-button-spacing;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.x-sheet-action {
+  padding: 1.2em;
+}

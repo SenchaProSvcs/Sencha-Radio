@@ -1,3 +1,6 @@
+/**
+ * @private
+ */
 Ext.define('Ext.scroll.indicator.CssTransform', {
     extend: 'Ext.scroll.indicator.Abstract',
 
@@ -43,13 +46,8 @@ Ext.define('Ext.scroll.indicator.CssTransform', {
 
         this.startElementLength = startElementLength;
         this.endElementLength = endElementLength;
-        this.minLength = startElementLength + endElementLength;
 
         this.callParent();
-    },
-
-    applyLength: function(length) {
-        return Math.round(Math.max(this.minLength, length));
     },
 
     updateLength: function(length) {
@@ -76,11 +74,11 @@ Ext.define('Ext.scroll.indicator.CssTransform', {
             length = this.getLength(),
             newLength, offset, extra;
 
-        if (value < 0) {
+        if (value <= 0) {
             offset = 0;
             this.updateLength(this.applyLength(length + value * barLength));
         }
-        else if (value > 1) {
+        else if (value >= 1) {
             extra = Math.round((value - 1) * barLength);
             newLength = this.applyLength(length - extra);
             extra = length - newLength;

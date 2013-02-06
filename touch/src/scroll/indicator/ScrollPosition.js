@@ -1,3 +1,6 @@
+/**
+ * @private
+ */
 Ext.define('Ext.scroll.indicator.ScrollPosition', {
     extend: 'Ext.scroll.indicator.Abstract',
 
@@ -28,15 +31,14 @@ Ext.define('Ext.scroll.indicator.ScrollPosition', {
         }
     },
 
-    setLength: function(length) {
-        var axis = this.getAxis(),
-            scrollOffset = this.barLength,
+    updateLength: function() {
+        var scrollOffset = this.barLength,
             barDom = this.barElement.dom,
             element = this.element;
 
         this.callParent(arguments);
 
-        if (axis === 'x') {
+        if (this.getAxis() === 'x') {
             barDom.scrollLeft = scrollOffset;
             element.setLeft(scrollOffset);
         }
@@ -47,13 +49,14 @@ Ext.define('Ext.scroll.indicator.ScrollPosition', {
     },
 
     setOffset: function(offset) {
-        var axis = this.getAxis(),
-            scrollOffset = this.barLength,
+        var barLength = this.barLength,
+            minLength = this.getMinLength(),
             barDom = this.barElement.dom;
 
-        offset = scrollOffset - offset;
+        offset = Math.min(barLength - minLength, Math.max(offset, minLength - this.getLength()));
+        offset = barLength - offset;
 
-        if (axis === 'x') {
+        if (this.getAxis() === 'x') {
             barDom.scrollLeft = offset;
         }
         else {

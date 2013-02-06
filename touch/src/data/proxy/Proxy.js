@@ -1,5 +1,6 @@
 /**
  * @author Ed Spencer
+ * @aside guide proxies
  *
  * Proxies are used by {@link Ext.data.Store Stores} to handle the loading and saving of {@link Ext.data.Model Model}
  * data. Usually developers will not need to create or interact with proxies directly.
@@ -38,33 +39,32 @@ Ext.define('Ext.data.proxy.Proxy', {
 
     requires: [
         'Ext.data.reader.Json',
-        'Ext.data.writer.Json'
-    ],
-
-    uses: [
+        'Ext.data.writer.Json',
         'Ext.data.Batch',
-        'Ext.data.Operation',
-        'Ext.data.Model'
+        'Ext.data.Operation'
     ],
 
     config: {
         /**
          * @cfg {String} batchOrder
          * Comma-separated ordering 'create', 'update' and 'destroy' actions when batching. Override this to set a different
-         * order for the batched CRUD actions to be executed in. Defaults to 'create,update,destroy'.
+         * order for the batched CRUD actions to be executed in.
+         * @accessor
          */
         batchOrder: 'create,update,destroy',
 
         /**
          * @cfg {Boolean} batchActions
-         * True to batch actions of a particular type when synchronizing the store. Defaults to true.
+         * True to batch actions of a particular type when synchronizing the store.
+         * @accessor
          */
         batchActions: true,
 
         /**
-         * @cfg {String/Ext.data.Model} model
+         * @cfg {String/Ext.data.Model} model (required)
          * The name of the Model to tie to this Proxy. Can be either the string name of the Model, or a reference to the
-         * Model constructor. Required.
+         * Model constructor.
+         * @accessor
          */
         model: null,
 
@@ -72,6 +72,7 @@ Ext.define('Ext.data.proxy.Proxy', {
          * @cfg {Object/String/Ext.data.reader.Reader} reader
          * The Ext.data.reader.Reader to use to decode the server's response or data read from client. This can either be a
          * Reader instance, a config object or just a valid Reader type name (e.g. 'json', 'xml').
+         * @accessor
          */
         reader: {
             type: 'json'
@@ -81,6 +82,7 @@ Ext.define('Ext.data.proxy.Proxy', {
          * @cfg {Object/String/Ext.data.writer.Writer} writer
          * The Ext.data.writer.Writer to use to encode any request sent to the server or saved to client. This can either be
          * a Writer instance, a config object or just a valid Writer type name (e.g. 'json', 'xml').
+         * @accessor
          */
         writer: {
             type: 'json'
@@ -119,15 +121,36 @@ Ext.define('Ext.data.proxy.Proxy', {
     },
 
     updateReader: function(reader) {
-        var model = this.getModel();
-        if (!model) {
-            model = reader.getModel();
-            if (model) {
-                this.setModel(model);
+        if (reader) {
+            var model = this.getModel();
+            if (!model) {
+                model = reader.getModel();
+                if (model) {
+                    this.setModel(model);
+                }
+            } else {
+                reader.setModel(model);
             }
-        } else {
-            reader.setModel(model);
+
+            if (reader.onMetaChange) {
+                 reader.onMetaChange = Ext.Function.createSequence(reader.onMetaChange, this.onMetaChange, this);
+            }
         }
+    },
+
+    onMetaChange: function(data) {
+        var model = this.getReader().getModel();
+        if (!this.getModel() && model) {
+            this.setModel(model);
+        }
+
+        /**
+         * @event metachange
+         * Fires whenever the server has sent back new metadata to reconfigure the Reader.
+         * @param {Ext.data.Proxy} this
+         * @param {Object} data The metadata sent back from the server
+         */
+        this.fireEvent('metachange', this, data);
     },
 
     applyWriter: function(writer, currentWriter) {
@@ -231,7 +254,7 @@ Ext.define('Ext.data.proxy.Proxy', {
     batch: function(options, /* deprecated */listeners) {
         var me = this,
             useBatch = me.getBatchActions(),
-            model = this.getModel(),
+            model = me.getModel(),
             batch,
             records;
 
@@ -240,9 +263,7 @@ Ext.define('Ext.data.proxy.Proxy', {
             // so convert to the single options argument syntax
             options = {
                 operations: options,
-                batch: {
-                    listeners: listeners
-                }
+                listeners: listeners
             };
 
             // <debug warn>
@@ -250,24 +271,18 @@ Ext.define('Ext.data.proxy.Proxy', {
             // </debug>
         }
 
-        if (options.batch) {
-             if (options.batch.isBatch) {
-                 options.batch.setProxy(me);
-             } else {
-                 options.batch.proxy = me;
-             }
+        if (options.batch && options.batch.isBatch) {
+            batch = options.batch;
         } else {
-             options.batch = {
-                 proxy: me,
-                 listeners: options.listeners || {}
-             };
+            batch = new Ext.data.Batch(options.batch || {});
         }
 
-        if (!batch) {
-            batch = new Ext.data.Batch(options.batch);
-        }
+        batch.setProxy(me);
 
         batch.on('complete', Ext.bind(me.onBatchComplete, me, [options], 0));
+        if (options.listeners) {
+            batch.on(options.listeners);
+        }
 
         Ext.each(me.getBatchOrder().split(','), function(action) {
              records = options.operations[action];

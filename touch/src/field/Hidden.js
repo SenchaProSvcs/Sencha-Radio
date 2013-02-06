@@ -1,24 +1,30 @@
 /**
+ * @aside guide forms
+ *
  * Hidden fields allow you to easily inject additional data into a {@link Ext.form.Panel form} without displaying
  * additional fields on the screen. This is often useful for sending dynamic or previously collected data back to the
  * server in the same request as the normal form submission. For example, here is how we might set up a form to send
  * back a hidden userId field:
  *
+ *     @example
  *     var form = Ext.create('Ext.form.Panel', {
- *         tbar: {
- *             text: 'Set your preferences'
- *         },
- *
+ *         fullscreen: true,
  *         items: [
  *             {
- *                 xtype: 'hiddenfield',
- *                 name: 'userId',
- *                 value: 123
- *             },
- *             {
- *                 xtype: 'checkboxfield',
- *                 label: 'Enable notifications',
- *                 name: 'notifications'
+ *                 xtype: 'fieldset',
+ *                 title: 'Enter your name',
+ *                 items: [
+ *                     {
+ *                         xtype: 'hiddenfield',
+ *                         name: 'userId',
+ *                         value: 123
+ *                     },
+ *                     {
+ *                         xtype: 'checkboxfield',
+ *                         label: 'Enable notifications',
+ *                         name: 'notifications'
+ *                     }
+ *                 ]
  *             }
  *         ]
  *     });
@@ -34,18 +40,24 @@
  *     userId.setValue(1234);
  */
 Ext.define('Ext.field.Hidden', {
-    extend: 'Ext.field.Field',
+    extend: 'Ext.field.Text',
     alternateClassName: 'Ext.form.Hidden',
     xtype: 'hiddenfield',
 
     config: {
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         component: {
             xtype: 'input',
             type : 'hidden'
         },
 
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         ui: 'hidden',
 
         /**
@@ -60,5 +72,4 @@ Ext.define('Ext.field.Hidden', {
          */
         tabIndex: -1
     }
-
 });

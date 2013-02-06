@@ -2,7 +2,9 @@
  * The Form panel presents a set of form fields and provides convenient ways to load and save data. Usually a form
  * panel just contains the set of fields you want to display, ordered inside the items configuration like this:
  *
+ *     @example
  *     var form = Ext.create('Ext.form.Panel', {
+ *         fullscreen: true,
  *         items: [
  *             {
  *                 xtype: 'textfield',
@@ -27,7 +29,7 @@
  * finally a {@link Ext.field.Password password field}. In each case we provided a {@link Ext.field.Field#name name}
  * config on the field so that we can identify it later on when we load and save data on the form.
  *
- * <h2>Loading data</h2>
+ * ##Loading data
  *
  * Using the form we created above, we can load data into it in a few different ways, the easiest is to use
  * {@link #setValues}:
@@ -42,7 +44,10 @@
  * to load a particular instance into our form:
  *
  *     Ext.define('MyApp.model.User', {
- *         fields: ['name', 'email', 'password']
+ *         extend: 'Ext.data.Model',
+ *         config: {
+ *             fields: ['name', 'email', 'password']
+ *         }
  *     });
  *
  *     var ed = Ext.create('MyApp.model.User', {
@@ -53,9 +58,9 @@
  *
  *     form.setRecord(ed);
  *
- * <h2>Retrieving form data</h2>
+ * ##Retrieving form data
  *
- * Getting data out of the form panel is simple and is usually achieve vai the {@link #getValues} method:
+ * Getting data out of the form panel is simple and is usually achieve via the {@link #getValues} method:
  *
  *     var values = form.getValues();
  *
@@ -78,16 +83,32 @@
  *                 }
  *             }
  *         },
- *         items: //as before
+ *         items: [
+ *             {
+ *                 xtype: 'textfield',
+ *                 name: 'name',
+ *                 label: 'Name'
+ *             },
+ *             {
+ *                 xtype: 'emailfield',
+ *                 name: 'email',
+ *                 label: 'Email'
+ *             },
+ *             {
+ *                 xtype: 'passwordfield',
+ *                 name: 'password',
+ *                 label: 'Password'
+ *             }
+ *         ]
  *     });
  *
- * The above used a new capability of Touch 2.0, which enables you to specify listeners on child components of any
+ * The above used a new capability of Sencha Touch 2.0, which enables you to specify listeners on child components of any
  * container. In this case, we attached a listener to the {@link Ext.field.Text#change change} event of each form
  * field that is a direct child of the form panel. Our listener gets the name of the field that fired the change event,
  * and updates our {@link Ext.data.Model Model} instance with the new value. For example, changing the email field
  * in the form will update the Model's email field.
  *
- * <h2>Submitting forms</h2>
+ * ##Submitting forms
  *
  * There are a few ways to submit form data. In our example above we have a Model instance that we have updated, giving
  * us the option to use the Model's {@link Ext.data.Model#save save} method to persist the changes back to our server,
@@ -102,11 +123,15 @@
  *         }
  *     });
  *
- * In this case we provided the url to submit the form to inside the submit call - alternatively you can just set the
+ * In this case we provided the `url` to submit the form to inside the submit call - alternatively you can just set the
  * {@link #url} configuration when you create the form. We can specify other parameters (see {@link #method} for a
  * full list), including callback functions for success and failure, which are called depending on whether or not the
  * form submission was successful. These functions are usually used to take some action in your app after your data
  * has been saved to the server side.
+ *
+ * @aside guide forms
+ * @aside example forms
+ * @aside example forms-toolbars
  */
 Ext.define('Ext.form.Panel', {
     alternateClassName: 'Ext.form.FormPanel',
@@ -117,10 +142,10 @@ Ext.define('Ext.form.Panel', {
     /**
      * @event submit
      * @preventable doSubmit
-     * Fires upon successful (Ajax-based) form submission
-     * @param {Ext.form.Panel} this This FormPanel
-     * @param {Object} result The result object as returned by the server
-     * @param {Ext.EventObject} e The event object
+     * Fires upon successful (Ajax-based) form submission.
+     * @param {Ext.form.Panel} this This FormPanel.
+     * @param {Object} result The result object as returned by the server.
+     * @param {Ext.EventObject} e The event object.
      */
 
     /**
@@ -128,58 +153,61 @@ Ext.define('Ext.form.Panel', {
      * @preventable doBeforeSubmit
      * Fires immediately preceding any Form submit action.
      * Implementations may adjust submitted form values or options prior to execution.
-     * A return value of <tt>false</tt> from this listener will abort the submission
-     * attempt (regardless of standardSubmit configuration)
-     * @param {Ext.form.Panel} this This FormPanel
-     * @param {Object} values A hash collection of the qualified form values about to be submitted
-     * @param {Object} options Submission options hash (only available when standardSubmit is false)
+     * A return value of `false` from this listener will abort the submission
+     * attempt (regardless of `standardSubmit` configuration).
+     * @param {Ext.form.Panel} this This FormPanel.
+     * @param {Object} values A hash collection of the qualified form values about to be submitted.
+     * @param {Object} options Submission options hash (only available when `standardSubmit` is `false`).
      */
 
     /**
      * @event exception
-     * Fires when either the Ajax HTTP request reports a failure OR the server returns a success:false
+     * Fires when either the Ajax HTTP request reports a failure OR the server returns a `success:false`
      * response in the result payload.
-     * @param {Ext.form.Panel} this This FormPanel
-     * @param {Object} result Either a failed Ext.data.Connection request object or a failed (logical) server
+     * @param {Ext.form.Panel} this This FormPanel.
+     * @param {Object} result Either a failed Ext.data.Connection request object or a failed (logical) server.
      * response payload.
      */
 
     config: {
-        // @inherit
+        /**
+         * @cfg {String} baseCls
+         * @inheritdoc
+         */
         baseCls: Ext.baseCSSPrefix + 'form',
 
         /**
          * @cfg {Boolean} standardSubmit
-         * Wether or not we want to perform a standard form submit.
+         * Whether or not we want to perform a standard form submit.
          * @accessor
          */
         standardSubmit: false,
 
         /**
          * @cfg {String} url
-         * The default Url for submit actions
+         * The default url for submit actions.
          * @accessor
          */
         url: null,
 
         /**
          * @cfg {Object} baseParams
-         * Optional hash of params to be sent (when standardSubmit configuration is false) on every submit.
+         * Optional hash of params to be sent (when `standardSubmit` configuration is `false`) on every submit.
          * @accessor
          */
         baseParams : null,
 
         /**
          * @cfg {Object} submitOnAction
-         * When this is set to true, the form will automatically submit itself whenever the 'action'
+         * When this is set to `true`, the form will automatically submit itself whenever the `action`
          * event fires on a field in this form. The action event usually fires whenever you press
          * go or enter inside a textfield.
          * @accessor
          */
-        submitOnAction : true,
+        submitOnAction: false,
 
         /**
-         * @cfg {Ext.data.Model} record The model instance of this form. Can by dynamically set at any time
+         * @cfg {Ext.data.Model} record The model instance of this form. Can by dynamically set at any time.
          * @accessor
          */
         record: null,
@@ -190,9 +218,14 @@ Ext.define('Ext.form.Panel', {
          */
         method: 'post',
 
-        // @inherit
+        /**
+         * @cfg {Object} scrollable
+         * @inheritdoc
+         */
         scrollable: {
-            scrollMethod: 'scrollposition'
+            translatable: {
+                translationMethod: 'scrollposition'
+            }
         }
     },
 
@@ -207,11 +240,6 @@ Ext.define('Ext.form.Panel', {
     initialize: function() {
         var me = this;
         me.callParent();
-
-        me.on({
-            action: 'onFieldAction',
-            scope : me
-        });
 
         me.element.on({
             submit: 'onSubmit',
@@ -234,9 +262,9 @@ Ext.define('Ext.form.Panel', {
     },
 
     /**
-     * Loads matching fields from a model instance into this form
-     * @param {Ext.data.Model} instance The model instance
-     * @return {Ext.form.Panel} This form
+     * Loads matching fields from a model instance into this form.
+     * @param {Ext.data.Model} instance The model instance.
+     * @return {Ext.form.Panel} This form.
      */
     setRecord: function(record) {
         var me = this;
@@ -255,15 +283,22 @@ Ext.define('Ext.form.Panel', {
         var me = this;
         if (e && !me.getStandardSubmit()) {
             e.stopEvent();
+        } else {
+            this.submit();
         }
-
-        me.fireAction('submit', [me, me.getValues(true), e], 'doSubmit');
-
     },
 
-    doSubmit: function(me, values, e) {
-        if (e) {
-            e.stopEvent();
+    updateSubmitOnAction: function(newSubmitOnAction) {
+        if (newSubmitOnAction) {
+            this.on({
+                action: 'onFieldAction',
+                scope: this
+            });
+        } else {
+            this.un({
+                action: 'onFieldAction',
+                scope: this
+            });
         }
     },
 
@@ -276,11 +311,11 @@ Ext.define('Ext.form.Panel', {
     },
 
     /**
-     * Performs a Ajax-based submission of form values (if standardSubmit is false) or otherwise
+     * Performs a Ajax-based submission of form values (if `standardSubmit` is `false`) or otherwise
      * executes a standard HTML Form submit action.
      *
      * @param {Object} options
-     * The configuration when submiting this form.
+     * The configuration when submitting this form.
      *
      * @param {String} options.url
      * The url for the action (defaults to the form's {@link #url}).
@@ -293,29 +328,29 @@ Ext.define('Ext.form.Panel', {
      * Parameters are encoded as standard HTTP parameters using {@link Ext#urlEncode}.
      *
      * @param {Object} headers
-     * Request headers to set for the action
+     * Request headers to set for the action.
      *
-     * @param {Boolean} autoAbort
-     * `true` to abort any pending Ajax request prior to submission (defaults to false)
-     * **Note:** Has no effect when {@link #standardSubmit} is enabled.
+     * @param {Boolean} [autoAbort=false]
+     * `true` to abort any pending Ajax request prior to submission.
+     * __Note:__ Has no effect when `{@link #standardSubmit}` is enabled.
      *
-     * @param {Boolean} options.submitDisabled
-     * `true` to submit all fields regardless of disabled state (defaults to false).
-     * Note: Has no effect when {@link #standardSubmit} is enabled.
+     * @param {Boolean} [options.submitDisabled=false]
+     * `true` to submit all fields regardless of disabled state.
+     * __Note:__ Has no effect when `{@link #standardSubmit}` is enabled.
      *
-     * @param {String/Object} waitMsg
+     * @param {String/Object} [waitMsg]
      * If specified, the value which is passed to the loading {@link #masked mask}. See {@link #masked} for
      * more information.
      *
      * @param {Function} options.success
      * The callback that will be invoked after a successful response. A response is successful if
-     * a response is received from the server and is a JSON object where the success property is set
-     * to true, {"success": true}
+     * a response is received from the server and is a JSON object where the `success` property is set
+     * to `true`, `{"success": true}`.
      *
      * The function is passed the following parameters:
      *
      * @param {Ext.form.Panel} options.success.form
-     * The form that requested the action
+     * The form that requested the action.
      *
      * @param {Ext.form.Panel} options.success.result
      * The result object returned by the server as a result of the submit request.
@@ -332,9 +367,9 @@ Ext.define('Ext.form.Panel', {
      * The failed response or result object returned by the server which performed the operation.
      *
      * @param {Object} options.scope
-     * The scope in which to call the callback functions (The this reference for the callback functions).=
+     * The scope in which to call the callback functions (The `this` reference for the callback functions).
      *
-     * @return {Ext.data.Connection} The request object
+     * @return {Ext.data.Connection} The request object.
      */
     submit: function(options) {
         var me = this,
@@ -364,6 +399,19 @@ Ext.define('Ext.form.Panel', {
         if (me.getStandardSubmit()) {
             if (options.url && Ext.isEmpty(form.action)) {
                 form.action = options.url;
+            }
+
+            // Spinner fields must have their components enabled *before* submitting or else the value
+            // will not be posted.
+            var fields = this.query('spinnerfield'),
+                ln = fields.length,
+                i, field;
+
+            for (i = 0; i < ln; i++) {
+                field = fields[i];
+                if (!field.getDisabled()) {
+                    field.getComponent().setDisabled(false);
+                }
             }
 
             form.method = (options.method || form.method).toLowerCase();
@@ -443,12 +491,12 @@ Ext.define('Ext.form.Panel', {
      *         ]
      *     });
      *
-     * @param {Object} values field name => value mapping object
-     * @return {Ext.form.Panel} This form
+     * @param {Object} values field name => value mapping object.
+     * @return {Ext.form.Panel} This form.
      */
     setValues: function(values) {
         var fields = this.getFields(),
-            name, field, value;
+            name, field, value, ln, i, f;
 
         values = values || {};
 
@@ -456,21 +504,40 @@ Ext.define('Ext.form.Panel', {
             if (values.hasOwnProperty(name)) {
                 field = fields[name];
                 value = values[name];
+
                 if (field) {
+                    // If there are multiple fields with the same name. Checkboxes, radio fields and maybe event just normal fields..
                     if (Ext.isArray(field)) {
-                        field.forEach(function(f) {
+                        ln = field.length;
+
+                        // Loop through each of the fields
+                        for (i = 0; i < ln; i++) {
+                            f = field[i];
+
                             if (f.isRadio) {
+                                // If it is a radio field just use setGroupValue which will handle all of the radio fields
                                 f.setGroupValue(value);
-                            } else if (Ext.isArray(values[name])) {
-                                f.setChecked((value.indexOf(f.getValue()) != -1));
+                                break;
+                            } else if (f.isCheckbox) {
+                                if (Ext.isArray(value)) {
+                                   f.setChecked((value.indexOf(f._value) != -1));
+                               } else {
+                                   f.setChecked((value == f._value));
+                               }
                             } else {
-                                f.setChecked((value == f.getValue()));
+                                // If it is a bunch of fields with the same name, check if the value is also an array, so we can map it
+                                // to each field
+                                if (Ext.isArray(value)) {
+                                    f.setValue(value[i]);
+                                }
                             }
-                        });
+                        }
                     } else {
-                        if (field.setChecked) {
+                        if (field.isRadio || field.isCheckbox) {
+                            // If the field is a radio or a checkbox
                             field.setChecked(value);
                         } else {
+                            // If just a normal field
                             field.setValue(value);
                         }
                     }
@@ -483,67 +550,86 @@ Ext.define('Ext.form.Panel', {
 
     /**
      * Returns an object containing the value of each field in the form, keyed to the field's name.
-     * For groups of checkbox fields with the same name, it will be arrays of values. For examples:
-
-     <pre><code>
-     {
-         name: "Jacky Nguyen", // From a TextField
-         favorites: [
-             'pizza',
-             'noodle',
-             'cake'
-         ]
-     }
-     </code></pre>
-
-     * @param {Boolean} enabled <tt>true</tt> to return only enabled fields
-     * @return {Object} Object mapping field name to its value
+     * For groups of checkbox fields with the same name, it will be arrays of values. For example:
+     *
+     *     {
+     *         name: "Jacky Nguyen", // From a TextField
+     *         favorites: [
+     *             'pizza',
+     *             'noodle',
+     *             'cake'
+     *         ]
+     *     }
+     *
+     * @param {Boolean} enabled `true` to return only enabled fields.
+     * @param {Boolean} all `true` to return all fields even if they don't have a
+     * {@link Ext.field.Field#name name} configured.
+     * @return {Object} Object mapping field name to its value.
      */
-    getValues: function(enabled) {
+    getValues: function(enabled, all) {
         var fields = this.getFields(),
             values = {},
-            field, name, ln, i;
+            isArray = Ext.isArray,
+            field, value, addValue, bucket, name, ln, i;
 
-        for (name in fields) {
-            if (fields.hasOwnProperty(name)) {
-                if (Ext.isArray(fields[name])) {
-                    values[name] = [];
+        // Function which you give a field and a name, and it will add it into the values
+        // object accordingly
+        addValue = function(field, name) {
+            if (!all && (!name || name === 'null')) {
+                return;
+            }
 
-                    ln = fields[name].length;
-
-                    for (i = 0; i < ln; i++) {
-                        field = fields[name][i];
-
-                        if (!field.getChecked) {
-                            values[name] = field.getValue();
-
-                            //<debug>
-                            throw new Error("Ext.form.Panel: [getValues] You have multiple fields with the same 'name' configuration of '" + name + "' in your form panel (#" + this.id + ").");
-                            //</debug>
-
-                            break;
-                        }
-
-                        if (!(enabled && field.getDisabled())) {
-                            if (field.isRadio) {
-                                values[name] = field.getGroupValue();
-                            } else {
-                                values[name].push(field.getValue());
-                            }
-                        }
+            if (field.isCheckbox) {
+                value = field.getSubmitValue();
+            } else {
+                value = field.getValue();
+            }
 
 
+            if (!(enabled && field.getDisabled())) {
+                // RadioField is a special case where the value returned is the fields valUE
+                // ONLY if it is checked
+                if (field.isRadio) {
+                    if (field.isChecked()) {
+                        values[name] = value;
                     }
                 } else {
-                    field = fields[name];
-
-                    if (!(enabled && field.getDisabled())) {
-                        if (field.isCheckbox) {
-                            values[name] = (field.getChecked()) ? field.getValue() : null;
-                        } else {
-                            values[name] = field.getValue();
+                    // Check if the value already exists
+                    bucket = values[name];
+                    if (bucket) {
+                        // if it does and it isn't an array, we need to make it into an array
+                        // so we can push more
+                        if (!isArray(bucket)) {
+                            bucket = values[name] = [bucket];
                         }
+
+                        // Check if it is an array
+                        if (isArray(value)) {
+                            // Concat it into the other values
+                            bucket = values[name] = bucket.concat(value);
+                        } else {
+                            // If it isn't an array, just pushed more values
+                            bucket.push(value);
+                        }
+                    } else {
+                        values[name] = value;
                     }
+                }
+            }
+        };
+
+        // Loop through each of the fields, and add the values for those fields.
+        for (name in fields) {
+            if (fields.hasOwnProperty(name)) {
+                field = fields[name];
+
+                if (isArray(field)) {
+                    ln = field.length;
+                    for (i = 0; i < ln; i++) {
+                        addValue(field[i], name);
+                    }
+                } else {
+                    addValue(field, name);
                 }
             }
         }
@@ -552,8 +638,8 @@ Ext.define('Ext.form.Panel', {
     },
 
     /**
-     * Resets all fields in the form back to their original values
-     * @return {Ext.form.Panel} This form
+     * Resets all fields in the form back to their original values.
+     * @return {Ext.form.Panel} This form.
      */
     reset: function() {
         this.getFieldsAsArray().forEach(function(field) {
@@ -564,24 +650,12 @@ Ext.define('Ext.form.Panel', {
     },
 
     /**
-     * A convenient method to enable all fields in this forms
-     * @return {Ext.form.Panel} This form
+     * A convenient method to disable all fields in this form.
+     * @return {Ext.form.Panel} This form.
      */
-    enable: function() {
+    doSetDisabled: function(newDisabled) {
         this.getFieldsAsArray().forEach(function(field) {
-            field.enable();
-        });
-
-        return this;
-    },
-
-    /**
-     * A convenient method to disable all fields in this forms
-     * @return {Ext.form.Panel} This form
-     */
-    disable: function() {
-        this.getFieldsAsArray().forEach(function(field) {
-            field.disable();
+            field.setDisabled(newDisabled);
         });
 
         return this;
@@ -609,9 +683,9 @@ Ext.define('Ext.form.Panel', {
 
     /**
      * @private
-     * Returns all {@link Ext.field.Field field} instances inside this form
+     * Returns all {@link Ext.field.Field field} instances inside this form.
      * @param byName return only fields that match the given name, otherwise return all fields.
-     * @return {Object/Array} All field instances, mapped by field name; or an array if byName is passed
+     * @return {Object/Array} All field instances, mapped by field name; or an array if `byName` is passed.
      */
     getFields: function(byName) {
         var fields = {},
@@ -646,8 +720,8 @@ Ext.define('Ext.form.Panel', {
     },
 
     /**
-     * Returns an array of fields in this formpanel
-     * @return {Ext.field.Field[]} An array of fields in this form panel
+     * Returns an array of fields in this formpanel.
+     * @return {Ext.field.Field[]} An array of fields in this form panel.
      * @private
      */
     getFieldsArray: function() {
@@ -671,7 +745,6 @@ Ext.define('Ext.form.Panel', {
     getFieldsFromItem: Ext.emptyFn,
 
     /**
-     * @deprecated 2.0.0 showMask is now deprecated. Please use {@link #setMasked} instead.
      * Shows a generic/custom mask over a designated Element.
      * @param {String/Object} cfg Either a string message or a configuration object supporting
      * the following options:
@@ -681,7 +754,9 @@ Ext.define('Ext.form.Panel', {
      *         cls : 'form-mask'
      *     }
      *
+     * @param {Object} target
      * @return {Ext.form.Panel} This form
+     * @deprecated 2.0.0 Please use {@link #setMasked} instead.
      */
     showMask: function(cfg, target) {
         //<debug>
@@ -703,9 +778,9 @@ Ext.define('Ext.form.Panel', {
     },
 
     /**
-     * @deprecated 2.0.0 hideMask is now deprecated. Please use {@link #unmask} or {@link #setMasked} instead.
-     * Hides a previously shown wait mask (See {@link #showMask})
+     * Hides a previously shown wait mask (See {@link #showMask}).
      * @return {Ext.form.Panel} this
+     * @deprecated 2.0.0 Please use {@link #unmask} or {@link #setMasked} instead.
      */
     hideMask: function() {
         this.setMasked(false);
@@ -734,13 +809,12 @@ Ext.define('Ext.form.Panel', {
 
     /**
      * @private
-     * @return {Boolean/Ext.field.Field} The next field if one exists, or false
+     * @return {Boolean/Ext.field.Field} The next field if one exists, or `false`.
      * @private
      */
     getNextField: function() {
         var fields = this.getFieldsArray(),
             focusedField = this.getFocusedField(),
-            ln = fields.length,
             index;
 
         if (focusedField) {
@@ -757,7 +831,7 @@ Ext.define('Ext.form.Panel', {
 
     /**
      * Tries to focus the next field in the form, if there is currently a focused field.
-     * @return {Boolean/Ext.field.Field} The next field that was focused, or false
+     * @return {Boolean/Ext.field.Field} The next field that was focused, or `false`.
      * @private
      */
     focusNextField: function() {
@@ -772,12 +846,11 @@ Ext.define('Ext.form.Panel', {
 
     /**
      * @private
-     * @return {Boolean/Ext.field.Field} The next field if one exists, or false
+     * @return {Boolean/Ext.field.Field} The next field if one exists, or `false`.
      */
     getPreviousField: function() {
         var fields = this.getFieldsArray(),
             focusedField = this.getFocusedField(),
-            ln = fields.length,
             index;
 
         if (focusedField) {
@@ -794,7 +867,7 @@ Ext.define('Ext.form.Panel', {
 
     /**
      * Tries to focus the previous field in the form, if there is currently a focused field.
-     * @return {Boolean/Ext.field.Field} The previous field that was focused, or false
+     * @return {Boolean/Ext.field.Field} The previous field that was focused, or `false`.
      * @private
      */
     focusPreviousField: function() {
@@ -807,10 +880,28 @@ Ext.define('Ext.form.Panel', {
         return false;
     }
 }, function() {
+
     //<deprecated product=touch since=2.0>
-    Ext.deprecateClassMethod(this, 'loadRecord', 'setRecord');
-    Ext.deprecateClassMethod(this, 'loadModel', 'setRecord');
-    Ext.deprecateClassMethod(this, 'load', 'setRecord');
+    Ext.deprecateClassMethod(this, {
+        /**
+         * @method
+         * @inheritdoc Ext.form.Panel#setRecord
+         * @deprecated 2.0.0 Please use #setRecord instead.
+         */
+        loadRecord: 'setRecord',
+        /**
+         * @method
+         * @inheritdoc Ext.form.Panel#setRecord
+         * @deprecated 2.0.0 Please use #setRecord instead.
+         */
+        loadModel: 'setRecord',
+        /**
+         * @method
+         * @inheritdoc Ext.form.Panel#setRecord
+         * @deprecated 2.0.0 Please use #setRecord instead.
+         */
+        load: 'setRecord'
+    });
 
     this.override({
         constructor: function(config) {
@@ -819,13 +910,13 @@ Ext.define('Ext.form.Panel', {
              * The defined waitMsg template.  Used for precise control over the masking agent used
              * to mask the FormPanel (or other Element) during form Ajax/submission actions. For more options, see
              * {@link #showMask} method.
-             * @deprecated 2.0.0 waitTpl is now deprecated. Please use a custom {@link Ext.LoadMask} class and the {@link #masked} configuration
+             * @removed 2.0.0 Please use a custom {@link Ext.LoadMask} class and the {@link #masked} configuration
              * when {@link #method submitting} your form.
              */
 
             /**
              * @cfg {Ext.dom.Element} waitMsgTarget The target of any mask shown on this form.
-             * @deprecated 2.0.0 There is no need to set a mask target anymore. Please see the {@link #masked} configuration instead.
+             * @removed 2.0.0 There is no need to set a mask target anymore. Please see the {@link #masked} configuration instead.
              */
             if (config && config.hasOwnProperty('waitMsgTarget')) {
                 delete config.waitMsgTarget;

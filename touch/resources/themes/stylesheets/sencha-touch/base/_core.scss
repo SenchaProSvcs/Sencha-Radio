@@ -1,0 +1,190 @@
+html, body {
+    font-family: "Helvetica Neue", HelveticaNeue, "Helvetica-Neue", Helvetica, "BBAlpha Sans", sans-serif;
+    font-weight: normal;
+    -webkit-text-size-adjust: none;
+    font-size: 104%;
+    margin: 0;
+    cursor: default;
+}
+
+body.x-desktop {
+    overflow: hidden;
+}
+
+@media screen and (orientation: portrait) {
+  @-ms-viewport {
+      width: 320px;
+      user-zoom: fixed;
+      max-zoom: 1;
+      min-zoom: 1;
+  }
+}
+
+@media screen and (orientation: landscape) {
+  @-ms-viewport {
+      width: 480px;
+      user-zoom: fixed;
+      max-zoom: 1;
+      min-zoom: 1;
+  }
+}
+
+@media screen and (orientation: portrait) and (min-height: 1366px) {
+  @-ms-viewport {
+      width: device-width;
+      user-zoom: fixed;
+      max-zoom: 1;
+      min-zoom: 1;
+  }
+}
+
+@media screen and (orientation: landscape) and (min-width: 1366px) {
+  @-ms-viewport {
+      width: device-width;
+      user-zoom: fixed;
+      max-zoom: 1;
+      min-zoom: 1;
+  }
+}
+
+
+*, *:after, *:before {
+    @include box-sizing(border-box);
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -ms-touch-action: none;
+}
+
+input, textarea {
+    -webkit-user-select: text;
+    -ms-user-select: auto;
+}
+
+.x-hidden-visibility {
+    visibility: hidden !important;
+}
+
+.x-hidden-display {
+    display: none !important;
+}
+
+.x-hidden-offsets {
+    position: absolute !important;
+    left: -10000em;
+    top: -10000em;
+    visibility: hidden;
+}
+
+.x-html {
+    -webkit-user-select: auto;
+    -webkit-touch-callout: inherit;
+    -ms-user-select: auto;
+
+    @include blueprint-typography;
+
+    line-height: 1.5;
+    color: #333;
+    font-size: .8em;
+    padding: 1.2em;
+
+    ul li {
+        list-style-type: circle;
+    }
+    ol li {
+        list-style-type: decimal;
+    }
+}
+
+@-webkit-keyframes x-loading-spinner-rotate {
+    0%{     -webkit-transform: rotate(0deg);   }
+    8.32%{  -webkit-transform: rotate(0deg);   }
+
+    8.33%{  -webkit-transform: rotate(30deg);  }
+    16.65%{ -webkit-transform: rotate(30deg);  }
+
+    16.66%{ -webkit-transform: rotate(60deg);  }
+    24.99%{ -webkit-transform: rotate(60deg);  }
+
+    25%{    -webkit-transform: rotate(90deg);  }
+    33.32%{ -webkit-transform: rotate(90deg);  }
+
+    33.33%{ -webkit-transform: rotate(120deg); }
+    41.65%{ -webkit-transform: rotate(120deg); }
+
+    41.66%{ -webkit-transform: rotate(150deg); }
+    49.99%{ -webkit-transform: rotate(150deg); }
+
+    50%{    -webkit-transform: rotate(180deg); }
+    58.32%{ -webkit-transform: rotate(180deg); }
+
+    58.33%{ -webkit-transform: rotate(210deg); }
+    66.65%{ -webkit-transform: rotate(210deg); }
+
+    66.66%{ -webkit-transform: rotate(240deg); }
+    74.99%{ -webkit-transform: rotate(240deg); }
+
+    75%{    -webkit-transform: rotate(270deg); }
+    83.32%{ -webkit-transform: rotate(270deg); }
+
+    83.33%{ -webkit-transform: rotate(300deg); }
+    91.65%{ -webkit-transform: rotate(300deg); }
+
+    91.66%{ -webkit-transform: rotate(330deg); }
+    100%{   -webkit-transform: rotate(330deg); }
+}
+
+@keyframes x-loading-spinner-rotate {
+    0%{     -ms-transform: rotate(0deg);   }
+    8.32%{  -ms-transform: rotate(0deg);   }
+
+    8.33%{  -ms-transform: rotate(30deg);  }
+    16.65%{ -ms-transform: rotate(30deg);  }
+
+    16.66%{ -ms-transform: rotate(60deg);  }
+    24.99%{ -ms-transform: rotate(60deg);  }
+
+    25%{    -ms-transform: rotate(90deg);  }
+    33.32%{ -ms-transform: rotate(90deg);  }
+
+    33.33%{ -ms-transform: rotate(120deg); }
+    41.65%{ -ms-transform: rotate(120deg); }
+
+    41.66%{ -ms-transform: rotate(150deg); }
+    49.99%{ -ms-transform: rotate(150deg); }
+
+    50%{    -ms-transform: rotate(180deg); }
+    58.32%{ -ms-transform: rotate(180deg); }
+
+    58.33%{ -ms-transform: rotate(210deg); }
+    66.65%{ -ms-transform: rotate(210deg); }
+
+    66.66%{ -ms-transform: rotate(240deg); }
+    74.99%{ -ms-transform: rotate(240deg); }
+
+    75%{    -ms-transform: rotate(270deg); }
+    83.32%{ -ms-transform: rotate(270deg); }
+
+    83.33%{ -ms-transform: rotate(300deg); }
+    91.65%{ -ms-transform: rotate(300deg); }
+
+    91.66%{ -ms-transform: rotate(330deg); }
+    100%{   -ms-transform: rotate(330deg); }
+}
+
+// Not sure if this css is actually used by the framework
+
+//.x-draggable {
+//  z-index: 1;
+//}
+//
+//.x-dragging {
+//  opacity: 0.7;
+//}
+//
+//.x-sortable .x-dragging {
+//  opacity: 1;
+//  z-index: 5;
+//}

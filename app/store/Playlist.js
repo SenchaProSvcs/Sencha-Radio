@@ -1,9 +1,21 @@
-Ext.define('SenchaRadio.store.Playlist',{
+Ext.define('Radio.store.Playlist',{
     extend: 'Ext.data.Store',
-    config:{
-        model: 'SenchaRadio.model.Playlist',
-        data: [
-            { id: 'popular', name: 'Yahoo! Top Songs' }
-        ]
+    requires: [
+        'Ext.data.proxy.JsonP'
+    ],
+    
+    config: {
+        model: 'Radio.model.Song',
+        proxy: {
+            type: 'jsonp',
+            callbackKey: 'jsoncallbackfunction'
+        }
+    },
+    
+    loadByChart: function(chart, options, scope) {
+        var me = this;
+        me.removeAll();
+        me.getProxy().setUrl(chart.get('api'));
+        return me.load(options, scope);
     }
 });

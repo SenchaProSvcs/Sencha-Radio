@@ -1,6 +1,5 @@
 /**
  * @author Ed Spencer
- * @ignore
  * @private
  *
  * Manages the stack of {@link Ext.app.Action} instances that have been decoded, pushes new urls into the browser's
@@ -20,17 +19,17 @@ Ext.define('Ext.app.History', {
 
     config: {
         /**
-         * @cfg {Array} actions The stack of {@link Ext.app.Action action} instances that have occured so far
+         * @cfg {Array} actions The stack of {@link Ext.app.Action action} instances that have occurred so far
          */
         actions: [],
 
         /**
-         * @cfg {Boolean} updateUrl True to automatically update the browser's url when {@link #add} is called
+         * @cfg {Boolean} updateUrl `true` to automatically update the browser's url when {@link #add} is called.
          */
         updateUrl: true,
 
         /**
-         * @cfg {String} token The current token as read from the browser's location object
+         * @cfg {String} token The current token as read from the browser's location object.
          */
         token: ''
     },
@@ -40,17 +39,20 @@ Ext.define('Ext.app.History', {
             window.addEventListener('hashchange', Ext.bind(this.detectStateChange, this));
         }
         else {
-            setInterval(Ext.bind(this.detectStateChange, this), 50);
+            setInterval(Ext.bind(this.detectStateChange, this), 100);
         }
 
         this.initConfig(config);
+        if (config && Ext.isEmpty(config.token)) { 
+            this.setToken(window.location.hash.substr(1)); 
+        }
     },
 
     /**
      * Adds an {@link Ext.app.Action Action} to the stack, optionally updating the browser's url and firing the
      * {@link #change} event.
-     * @param {Ext.app.Action} action The Action to add to the stack
-     * @param {Boolean} silent Cancels the firing of the {@link #change} event if true
+     * @param {Ext.app.Action} action The Action to add to the stack.
+     * @param {Boolean} silent Cancels the firing of the {@link #change} event if `true`.
      */
     add: function(action, silent) {
         this.getActions().push(Ext.factory(action, Ext.app.Action));
@@ -71,10 +73,20 @@ Ext.define('Ext.app.History', {
     },
 
     /**
-     * @private
+     * Navigate to the previous active action. This changes the page url.
      */
     back: function() {
-        this.getActions().pop().run();
+        var actions = this.getActions(),
+            previousAction = actions[actions.length - 2];
+
+        if (previousAction) {
+            actions.pop();
+
+            previousAction.getController().getApplication().redirectTo(previousAction.getUrl());
+        }
+        else {
+            actions[actions.length - 1].getController().getApplication().redirectTo('');
+        }
     },
 
     /**

@@ -1,10 +1,14 @@
+//@tag dom,core
+//@define Ext.Element-all
+//@define Ext.Element
+
 /**
  * Encapsulates a DOM element, adding simple DOM manipulation facilities, normalizing for browser differences.
  *
  * All instances of this class inherit the methods of Ext.Fx making visual effects easily available to all DOM elements.
  *
  * Note that the events documented in this class are not Ext events, they encapsulate browser events. To access the
- * underlying browser event, see Ext.EventObject.browserEvent. Some older browsers may not support the full range of
+ * underlying browser event, see {@link Ext.EventObject#browserEvent}. Some older browsers may not support the full range of
  * events. Which events are supported is beyond the control of Sencha Touch.
  *
  * ## Usage
@@ -17,12 +21,16 @@
  *
  * ## Composite (Collections of) Elements
  *
- * For working with collections of Elements, see Ext.CompositeElement
+ * For working with collections of Elements, see {@link Ext.CompositeElement}.
  *
  * @mixins Ext.mixin.Observable
  */
 Ext.define('Ext.dom.Element', {
     alternateClassName: 'Ext.Element',
+
+    mixins: [
+        'Ext.mixin.Identifiable'
+    ],
 
     requires: [
         'Ext.dom.Query',
@@ -69,12 +77,15 @@ Ext.define('Ext.dom.Element', {
             if (!tag) {
                 tag = 'div';
             }
-
-            element = document.createElement(tag);
+            if (attributes.namespace) {
+                element = document.createElementNS(attributes.namespace, tag);
+            } else {
+                element = document.createElement(tag);
+            }
             elementStyle = element.style;
 
             for (name in attributes) {
-                if (name != 'tag' && attributes.hasOwnProperty(name)) {
+                if (name != 'tag') {
                     value = attributes[name];
 
                     switch (name) {
@@ -141,14 +152,14 @@ Ext.define('Ext.dom.Element', {
         /**
          * Retrieves Ext.dom.Element objects. {@link Ext#get} is alias for {@link Ext.dom.Element#get}.
          *
-         * **This method does not retrieve {@link Ext.Component Component}s.** This method retrieves Ext.dom.Element
-         * objects which encapsulate DOM elements. To retrieve a Component by its ID, use {@link Ext.ComponentManager#get}.
+         * **This method does not retrieve {@link Ext.Element Element}s.** This method retrieves Ext.dom.Element
+         * objects which encapsulate DOM elements. To retrieve a Element by its ID, use {@link Ext.ElementManager#get}.
          *
          * Uses simple caching to consistently return the same object. Automatically fixes if an object was recreated with
          * the same id via AJAX or DOM.
          *
-         * @param {String/HTMLElement/Ext.Element} el The id of the node, a DOM Node or an existing Element.
-         * @return {Ext.dom.Element} The Element object (or null if no matching element was found)
+         * @param {String/HTMLElement/Ext.Element} el The `id` of the node, a DOM Node or an existing Element.
+         * @return {Ext.dom.Element} The Element object (or `null` if no matching element was found).
          * @static
          * @inheritable
          */
@@ -241,6 +252,29 @@ Ext.define('Ext.dom.Element', {
 
     isElement: true,
 
+
+    /**
+     * @event painted
+     * Fires whenever this Element actually becomes visible (painted) on the screen. This is useful when you need to
+     * perform 'read' operations on the DOM element, i.e: calculating natural sizes and positioning.
+     *
+     * __Note:__ This event is not available to be used with event delegation. Instead `painted` only fires if you explicitly
+     * add at least one listener to it, for performance reasons.
+     *
+     * @param {Ext.Element} this The component instance.
+     */
+
+    /**
+     * @event resize
+     * Important note: For the best performance on mobile devices, use this only when you absolutely need to monitor
+     * a Element's size.
+     *
+     * __Note:__ This event is not available to be used with event delegation. Instead `resize` only fires if you explicitly
+     * add at least one listener to it, for performance reasons.
+     *
+     * @param {Ext.Element} this The component instance.
+     */
+
     constructor: function(dom) {
         if (typeof dom == 'string') {
             dom = document.getElementById(dom);
@@ -250,9 +284,20 @@ Ext.define('Ext.dom.Element', {
             throw new Error("Invalid domNode reference or an id of an existing domNode: " + dom);
         }
 
+        /**
+         * The DOM element
+         * @property dom
+         * @type HTMLElement
+         */
         this.dom = dom;
 
         this.getUniqueId();
+    },
+
+    attach: function (dom) {
+        this.dom = dom;
+        this.id = dom.id;
+        return this;
     },
 
     getUniqueId: function() {
@@ -284,6 +329,12 @@ Ext.define('Ext.dom.Element', {
         }
 
         this.dom.id = id;
+
+        /**
+         * The DOM element ID
+         * @property id
+         * @type String
+         */
         this.id = id;
 
         cache[id] = this;
@@ -291,10 +342,18 @@ Ext.define('Ext.dom.Element', {
         return this;
     },
 
+    /**
+     * Sets the `innerHTML` of this element.
+     * @param {String} html The new HTML.
+     */
     setHtml: function(html) {
         this.dom.innerHTML = html;
     },
 
+    /**
+     * Returns the `innerHTML` of an element.
+     * @return {String}
+     */
     getHtml: function() {
         return this.dom.innerHTML;
     },
@@ -313,13 +372,14 @@ Ext.define('Ext.dom.Element', {
     },
 
     isPainted: function() {
-        return Boolean(this.dom.offsetParent);
+        var dom = this.dom;
+        return Boolean(dom && dom.offsetParent);
     },
 
     /**
-     * Sets the passed attributes as attributes of this element (a style attribute can be a string, object or function)
-     * @param {Object} attributes The object with the attributes
-     * @param {Boolean} [useSet=true] false to override the default setAttribute to use expandos.
+     * Sets the passed attributes as attributes of this element (a style attribute can be a string, object or function).
+     * @param {Object} attributes The object with the attributes.
+     * @param {Boolean} [useSet=true] `false` to override the default `setAttribute` to use expandos.
      * @return {Ext.dom.Element} this
      */
     set: function(attributes, useSet) {
@@ -353,17 +413,17 @@ Ext.define('Ext.dom.Element', {
     },
 
     /**
-     * Returns true if this element matches the passed simple selector (e.g. div.some-class or span:first-child)
-     * @param {String} selector The simple selector to test
-     * @return {Boolean} True if this element matches the selector, else false
+     * Returns `true` if this element matches the passed simple selector (e.g. 'div.some-class' or 'span:first-child').
+     * @param {String} selector The simple selector to test.
+     * @return {Boolean} `true` if this element matches the selector, else `false`.
      */
     is: function(selector) {
         return Ext.DomQuery.is(this.dom, selector);
     },
 
     /**
-     * Returns the value of the "value" attribute
-     * @param {Boolean} asNumber true to parse the value as a number
+     * Returns the value of the `value` attribute.
+     * @param {Boolean} asNumber `true` to parse the value as a number.
      * @return {String/Number}
      */
     getValue: function(asNumber) {
@@ -374,9 +434,9 @@ Ext.define('Ext.dom.Element', {
 
     /**
      * Returns the value of an attribute from the element's underlying DOM node.
-     * @param {String} name The attribute name
-     * @param {String} [namespace] The namespace in which to look for the attribute
-     * @return {String} The attribute value
+     * @param {String} name The attribute name.
+     * @param {String} [namespace] The namespace in which to look for the attribute.
+     * @return {String} The attribute value.
      */
     getAttribute: function(name, namespace) {
         var dom = this.dom;
@@ -385,8 +445,27 @@ Ext.define('Ext.dom.Element', {
                || dom.getAttribute(name) || dom[name];
     },
 
+    setSizeState: function(state) {
+        var classes = ['x-sized', 'x-unsized', 'x-stretched'],
+            states = [true, false, null],
+            index = states.indexOf(state),
+            addedClass;
+
+        if (index !== -1) {
+            addedClass = classes[index];
+            classes.splice(index, 1);
+            this.addCls(addedClass);
+        }
+
+        this.removeCls(classes);
+
+        return this;
+    },
+
+    /**
+     * Removes this element's DOM reference. Note that event and cache removal is handled at {@link Ext#removeNode}
+     */
     destroy: function() {
-        this.destroy = Ext.emptyFn;
         this.isDestroyed = true;
 
         var cache = Ext.Element.cache,
@@ -421,18 +500,19 @@ Ext.define('Ext.dom.Element', {
          *
          * Use this to make one-time references to DOM elements which are not going to be accessed again either by
          * application code, or by Ext's classes. If accessing an element which will be processed regularly, then {@link
-         * Ext#get Ext.get} will be more appropriate to take advantage of the caching provided by the Ext.dom.Element
+         * Ext#get Ext.get} will be more appropriate to take advantage of the caching provided by the {@link Ext.dom.Element}
          * class.
          *
-         * @param {String/HTMLElement} element The dom node or id
+         * @param {String/HTMLElement} element The DOM node or `id`.
          * @param {String} [named] Allows for creation of named reusable flyweights to prevent conflicts (e.g.
-         * internally Ext uses "_global")
-         * @return {Ext.dom.Element} The shared Element object (or null if no matching element was found)
+         * internally Ext uses "_global").
+         * @return {Ext.dom.Element} The shared Element object (or `null` if no matching element was found).
          * @static
          */
         fly: function(element, named) {
             var fly = null,
-                flyweights = Element._flyweights;
+                flyweights = Element._flyweights,
+                cachedElement;
 
             named = named || '_global';
 
@@ -442,6 +522,10 @@ Ext.define('Ext.dom.Element', {
                 fly = flyweights[named] || (flyweights[named] = new Element.Fly());
                 fly.dom = element;
                 fly.isSynchronized = false;
+                cachedElement = Ext.cache[element.id];
+                if (cachedElement && cachedElement.isElement) {
+                    cachedElement.isSynchronized = false;
+                }
             }
 
             return fly;
@@ -471,9 +555,114 @@ Ext.define('Ext.dom.Element', {
     }, null, 'Ext.mixin.Observable');
 
     //<deprecated product=touch since=2.0>
-    Ext.deprecateClassMethod(this, 'remove', 'destroy');
-    Ext.deprecateClassMethod(this, 'setHTML', 'setHtml');
-    Ext.deprecateClassMethod(this, 'update', 'setHtml');
-    Ext.deprecateClassMethod(this, 'getHTML', 'getHtml');
+    Ext.deprecateClassMethod(this, {
+        /**
+         * @member Ext.dom.Element
+         * @method remove
+         * @inheritdoc Ext.dom.Element#destroy
+         * @deprecated 2.0.0 Please use {@link #destroy} instead.
+         */
+        remove: 'destroy',
+        /**
+         * @member Ext.dom.Element
+         * @method setHTML
+         * @inheritdoc Ext.dom.Element#setHtml
+         * @deprecated 2.0.0 Please use {@link #setHtml} instead.
+         */
+        setHTML: 'setHtml',
+        /**
+         * @member Ext.dom.Element
+         * @method update
+         * @inheritdoc Ext.dom.Element#setHtml
+         * @deprecated 2.0.0 Please use {@link #setHtml} instead.
+         */
+        update: 'setHtml',
+        /**
+         * @member Ext.dom.Element
+         * @method getHTML
+         * @inheritdoc Ext.dom.Element#getHtml
+         * @deprecated 2.0.0 Please use {@link #getHtml} instead.
+         */
+        getHTML: 'getHtml',
+        /**
+         * @member Ext.dom.Element
+         * @method purgeAllListeners
+         * @inheritdoc Ext.dom.Element#clearListeners
+         * @deprecated 2.0.0 Please use {@link #clearListeners} instead.
+         */
+        purgeAllListeners: 'clearListeners',
+        /**
+         * @member Ext.dom.Element
+         * @method removeAllListeners
+         * @inheritdoc Ext.dom.Element#clearListeners
+         * @deprecated 2.0.0 Please use {@link #clearListeners} instead.
+         */
+        removeAllListeners: 'clearListeners'
+    });
+
+    /**
+     * @member Ext.dom.Element
+     * @method cssTranslate
+     * Translates an element using CSS 3 in 2D.
+     * @removed 2.0.0
+     */
+    Ext.deprecateMethod(Ext.dom.Element, 'cssTranslate', null, "Ext.dom.Element.cssTranslate() has been removed");
+
+    /**
+     * @member Ext.dom.Element
+     * @method getOuterHeight
+     * Retrieves the height of the element account for the top and bottom margins.
+     * @removed 2.0.0
+     */
+    Ext.deprecateMethod(Ext.dom.Element, 'getOuterHeight', null, "Ext.dom.Element.getOuterHeight() has been removed");
+
+    /**
+     * @member Ext.dom.Element
+     * @method getOuterWidth
+     * Retrieves the width of the element accounting for the left and right margins.
+     * @removed 2.0.0
+     */
+    Ext.deprecateMethod(Ext.dom.Element, 'getOuterWidth', null, "Ext.dom.Element.getOuterWidth() has been removed");
+
+    /**
+     * @member Ext.dom.Element
+     * @method getScrollParent
+     * Gets the Scroller instance of the first parent that has one.
+     * @removed 2.0.0
+     */
+    Ext.deprecateMethod(Ext.dom.Element, 'getScrollParent', null, "Ext.dom.Element.getScrollParent() has been removed");
+
+    /**
+     * @member Ext.dom.Element
+     * @method isDescendent
+     * Determines if this element is a descendant of the passed in Element.
+     * @removed 2.0.0
+     */
+    Ext.deprecateMethod(Ext.dom.Element, 'isDescendent', null, "Ext.dom.Element.isDescendent() has been removed");
+
+    /**
+     * @member Ext.dom.Element
+     * @method mask
+     * Puts a mask over this element to disable user interaction.
+     * @removed 2.0.0
+     */
+    Ext.deprecateMethod(Ext.dom.Element, 'mask', null, "Ext.dom.Element.mask() has been removed");
+
+    /**
+     * @member Ext.dom.Element
+     * @method setTopLeft
+     * Sets the element's top and left positions directly using CSS style.
+     * @removed 2.0.0
+     */
+    Ext.deprecateMethod(Ext.dom.Element, 'setTopLeft', null, "Ext.dom.Element.setTopLeft() has been removed");
+
+    /**
+     * @member Ext.dom.Element
+     * @method unmask
+     * Removes a previously applied mask.
+     * @removed 2.0.0
+     */
+    Ext.deprecateMethod(Ext.dom.Element, 'unmask', null, "Ext.dom.Element.unmask() has been removed");
     //</deprecated>
+
 });

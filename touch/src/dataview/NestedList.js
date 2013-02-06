@@ -58,10 +58,12 @@
  *
  *      Ext.define('ListItem', {
  *          extend: 'Ext.data.Model',
- *          fields: [{
- *              name: 'text',
- *              type: 'string'
- *          }]
+ *          config: {
+ *              fields: [{
+ *                  name: 'text',
+ *                  type: 'string'
+ *              }]
+ *          }
  *      });
  *
  *      var store = Ext.create('Ext.data.TreeStore', {
@@ -77,14 +79,17 @@
  *          store: store
  *      });
  *
+ * @aside guide nested_list
+ * @aside example nested-list
+ * @aside example navigation-view
  */
 Ext.define('Ext.dataview.NestedList', {
     alternateClassName: 'Ext.NestedList',
     extend: 'Ext.Container',
-    xtype : 'nestedlist',
+    xtype: 'nestedlist',
     requires: [
-        'Ext.List',
-        'Ext.Toolbar',
+        'Ext.dataview.List',
+        'Ext.TitleBar',
         'Ext.Button',
         'Ext.XTemplate',
         'Ext.data.StoreManager',
@@ -93,30 +98,35 @@ Ext.define('Ext.dataview.NestedList', {
     ],
 
     config: {
-        // @inherit
-        cls: Ext.baseCSSPrefix + 'nested-list',
+        /**
+         * @cfg
+         * @inheritdoc
+         */
+        baseCls: Ext.baseCSSPrefix + 'nested-list',
 
         /**
          * @cfg {String/Object/Boolean} cardSwitchAnimation
-         * @deprecated 2.0.0 please use {@link Ext.layout.Card#animation}
+         * Animation to be used during transitions of cards.
+         * @removed 2.0.0 please use {@link Ext.layout.Card#animation}
          */
 
         /**
          * @cfg {String} backText
-         * The label to display for the back button. Defaults to "Back".
+         * The label to display for the back button.
          * @accessor
          */
         backText: 'Back',
 
         /**
          * @cfg {Boolean} useTitleAsBackText
+         * `true` to use title as a label for back button.
          * @accessor
          */
         useTitleAsBackText: true,
 
         /**
          * @cfg {Boolean} updateTitleText
-         * Update the title with the currently selected category. Defaults to true.
+         * Update the title with the currently selected category.
          * @accessor
          */
         updateTitleText: true,
@@ -124,8 +134,8 @@ Ext.define('Ext.dataview.NestedList', {
         /**
          * @cfg {String} displayField
          * Display field to use when setting item text and title.
-         * This configuration is ignored when overriding getItemTextTpl or
-         * getTitleTextTpl for the item text or title. (Defaults to 'text')
+         * This configuration is ignored when overriding {@link #getItemTextTpl} or
+         * {@link #getTitleTextTpl} for the item text or title.
          * @accessor
          */
         displayField: 'text',
@@ -146,22 +156,21 @@ Ext.define('Ext.dataview.NestedList', {
 
         /**
          * @cfg {Boolean/Function} onItemDisclosure
-         * Maps to the Ext.List onItemDisclosure configuration for individual lists. (Defaults to false)
+         * Maps to the {@link Ext.List#onItemDisclosure} configuration for individual lists.
          * @accessor
          */
         onItemDisclosure: false,
 
         /**
          * @cfg {Boolean} allowDeselect
-         * Set to true to alow the user to deselect leaf items via interaction.
-         * Defaults to false.
+         * Set to `true` to allow the user to deselect leaf items via interaction.
          * @accessor
          */
         allowDeselect: false,
 
         /**
          * @deprecated 2.0.0 Please set the {@link #toolbar} configuration to `false` instead
-         * @cfg {Boolean} useToolbar True to show the header toolbar.
+         * @cfg {Boolean} useToolbar `true` to show the header toolbar.
          * @accessor
          */
         useToolbar: null,
@@ -199,12 +208,12 @@ Ext.define('Ext.dataview.NestedList', {
         },
 
         /**
-         * @cfg {Ext.data.TreeStore} store The tree store to be used for this nested list.
+         * @cfg {Ext.data.TreeStore/String} store The tree store to be used for this nested list.
          */
         store: null,
 
         /**
-         * @cfg {Ext.Container} detailContainer The container of the detailCard.
+         * @cfg {Ext.Container} detailContainer The container of the `detailCard`.
          * @accessor
          */
         detailContainer: undefined,
@@ -216,7 +225,7 @@ Ext.define('Ext.dataview.NestedList', {
         detailCard: null,
 
         /**
-         * @cfg {Object} backButton The configuration for the back button used in the nested list
+         * @cfg {Object} backButton The configuration for the back button used in the nested list.
          */
         backButton: {
             ui: 'back',
@@ -225,127 +234,150 @@ Ext.define('Ext.dataview.NestedList', {
 
         /**
          * @cfg {Object} listConfig An optional config object which is merged with the default
-         * configuration used to create each nested list
+         * configuration used to create each nested list.
          */
         listConfig: null,
+
+        /**
+         * @cfg {Boolean} variableHeights
+         * Whether or not the lists contain items with variable heights. If you want to force the
+         * items in the list to have a fixed height, set the {@link #itemHeight} configuration.
+         * If you also set variableHeights to false, the scrolling performance of the list will be
+         * improved.
+         */
+        variableHeights: false,
+
+        /**
+         * @cfg {Number} itemHeight
+         * This allows you to set the default item height and is used to roughly calculate the amount
+         * of items needed to fill the list. By default items are around 50px high. If you set this
+         * configuration in combination with setting the {@link #variableHeights} to false you
+         * can improve the scrolling speed
+         */
+        itemHeight: 47,
 
         // @private
         lastNode: null,
 
         // @private
-        lastActiveList: null
+        lastActiveList: null,
+
+        ui: null
     },
 
     /**
      * @event itemtap
-     * Fires when a node is tapped on
+     * Fires when a node is tapped on.
      * @param {Ext.dataview.NestedList} this
-     * @param {Ext.dataview.List} list The Ext.dataview.List that is currently active
-     * @param {Number} index The index of the item tapped
-     * @param {Ext.dom.Element} target The element tapped
-     * @param {Ext.data.Record} record The record tapped
-     * @param {Ext.event.Event} e The event object
+     * @param {Ext.dataview.List} list The Ext.dataview.List that is currently active.
+     * @param {Number} index The index of the item tapped.
+     * @param {Ext.dom.Element} target The element tapped.
+     * @param {Ext.data.Record} record The record tapped.
+     * @param {Ext.event.Event} e The event object.
      */
 
     /**
      * @event itemdoubletap
-     * Fires when a node is double tapped on
+     * Fires when a node is double tapped on.
      * @param {Ext.dataview.NestedList} this
-     * @param {Ext.dataview.List} list The Ext.dataview.List that is currently active
-     * @param {Number} index The index of the item that was tapped
-     * @param {Object} item The item tapped
-     * @param {Ext.event.Event} e The event object
+     * @param {Ext.dataview.List} list The Ext.dataview.List that is currently active.
+     * @param {Number} index The index of the item that was tapped.
+     * @param {Ext.dom.Element} target The element tapped.
+     * @param {Ext.data.Record} record The record tapped.
+     * @param {Ext.event.Event} e The event object.
      */
 
     /**
      * @event containertap
      * Fires when a tap occurs and it is not on a template node.
      * @param {Ext.dataview.NestedList} this
-     * @param {Ext.dataview.List} list The Ext.dataview.List that is currently active
-     * @param {Ext.event.Event} e The raw event object
+     * @param {Ext.dataview.List} list The Ext.dataview.List that is currently active.
+     * @param {Ext.event.Event} e The raw event object.
      */
 
     /**
      * @event selectionchange
      * Fires when the selected nodes change.
      * @param {Ext.dataview.NestedList} this
-     * @param {Ext.dataview.List} list The Ext.datavaie.List that is currently active
-     * @param {Array} selections Array of the selected nodes
+     * @param {Ext.dataview.List} list The Ext.dataview.List that is currently active.
+     * @param {Array} selections Array of the selected nodes.
      */
 
     /**
-     * @event beforeselect
+     * @event beforeselectionchange
      * Fires before a selection is made.
      * @param {Ext.dataview.NestedList} this
-     * @param {Ext.dataview.List} list The Ext.dataview.List that is currently active
-     * @param {HTMLElement} node The node to be selected
-     * @param {Array} selections Array of currently selected nodes
+     * @param {Ext.dataview.List} list The Ext.dataview.List that is currently active.
+     * @param {HTMLElement} node The node to be selected.
+     * @param {Array} selections Array of currently selected nodes.
+     * @deprecated 2.0.0 Please listen to the {@link #selectionchange} event with an order of `before` instead.
      */
 
     /**
      * @event listchange
-     * Fires when the user taps a list item
+     * Fires when the user taps a list item.
      * @param {Ext.dataview.NestedList} this
-     * @param {Object} listitem The new active list
+     * @param {Object} listitem The new active list.
      */
 
     /**
      * @event leafitemtap
-     * Fires when the user taps a leaf list item
+     * Fires when the user taps a leaf list item.
      * @param {Ext.dataview.NestedList} this
-     * @param {Ext.List} list The subList the item is on
-     * @param {Number} index The index of the item tapped
-     * @param {Ext.dom.Element} target The element tapped
-     * @param {Ext.data.Record} record The record tapped
-     * @param {Ext.event.Event} e The event
+     * @param {Ext.List} list The subList the item is on.
+     * @param {Number} index The index of the item tapped.
+     * @param {Ext.dom.Element} target The element tapped.
+     * @param {Ext.data.Record} record The record tapped.
+     * @param {Ext.event.Event} e The event.
      */
 
     /**
      * @event back
      * @preventable doBack
-     * Fires when the user taps Back
+     * Fires when the user taps Back.
      * @param {Ext.dataview.NestedList} this
-     * @param {HTMLElement} node The node to be selected
-     * @param {Ext.dataview.List} lastActiveList The Ext.dataview.List that was last active
-     * @param {Boolean} detailCardActive Flag set if the detail card is currently active
+     * @param {HTMLElement} node The node to be selected.
+     * @param {Ext.dataview.List} lastActiveList The Ext.dataview.List that was last active.
+     * @param {Boolean} detailCardActive Flag set if the detail card is currently active.
      */
 
     /**
      * @event beforeload
      * Fires before a request is made for a new data object.
      * @param {Ext.dataview.NestedList} this
-     * @param {Ext.data.Store} store The store instance
+     * @param {Ext.data.Store} store The store instance.
      * @param {Ext.data.Operation} operation The Ext.data.Operation object that will be passed to the Proxy to
-     * load the Store
+     * load the Store.
      */
 
     /**
      * @event load
      * Fires whenever records have been loaded into the store.
      * @param {Ext.dataview.NestedList} this
-     * @param {Ext.data.Store} store The store instance
-     * @param {Ext.util.Grouper[]} records An array of records
-     * @param {Boolean} successful True if the operation was successful.
-     * @param {Ext.data.Operation} operation The associated operation
+     * @param {Ext.data.Store} store The store instance.
+     * @param {Ext.util.Grouper[]} records An array of records.
+     * @param {Boolean} successful `true` if the operation was successful.
+     * @param {Ext.data.Operation} operation The associated operation.
      */
-
-        //@private
-    initialize: function() {
-        var me = this;
-        me.callParent();
-
-        me.on({
-            delegate: '> list',
-            itemdoubletap: 'onItemDoubleTap',
-            itemtap: 'onItemTap',
-            beforeselect: 'onBeforeSelect',
-            containertap: 'onContainerTap',
-            selectionchange: 'onSelectionChange',
-            scope: me
-        });
+    constructor: function (config) {
+        if (Ext.isObject(config)) {
+            if (config.getTitleTextTpl) {
+                this.getTitleTextTpl = config.getTitleTextTpl;
+            }
+            if (config.getItemTextTpl) {
+                this.getItemTextTpl = config.getItemTextTpl;
+            }
+        }
+        this.callParent(arguments);
     },
 
-    applyDetailContainer: function(config) {
+    onItemInteraction: function () {
+        if (this.isGoingTo) {
+            return false;
+        }
+    },
+
+    applyDetailContainer: function (config) {
         if (!config) {
             config = this;
         }
@@ -353,15 +385,30 @@ Ext.define('Ext.dataview.NestedList', {
         return config;
     },
 
+    updateDetailContainer: function (newContainer, oldContainer) {
+        if (newContainer) {
+            newContainer.onBefore('activeitemchange', 'onBeforeDetailContainerChange', this);
+            newContainer.onAfter('activeitemchange', 'onDetailContainerChange', this);
+        }
+    },
+
+    onBeforeDetailContainerChange: function () {
+        this.isGoingTo = true;
+    },
+
+    onDetailContainerChange: function () {
+        this.isGoingTo = false;
+    },
+
     /**
-     * Called when an list item has been tapped
-     * @param {Ext.List} list The subList the item is on
-     * @param {Number} index The id of the item tapped
-     * @param {Ext.Element} target The list item tapped
-     * @param {Ext.data.Record} record The record whichw as tapped
-     * @param {Ext.event.Event} e The event
+     * Called when an list item has been tapped.
+     * @param {Ext.List} list The subList the item is on.
+     * @param {Number} index The id of the item tapped.
+     * @param {Ext.Element} target The list item tapped.
+     * @param {Ext.data.Record} record The record which as tapped.
+     * @param {Ext.event.Event} e The event.
      */
-    onItemTap: function(list, index, target, record, e) {
+    onItemTap: function (list, index, target, record, e) {
         var me = this,
             store = list.getStore(),
             node = store.getAt(index);
@@ -376,34 +423,54 @@ Ext.define('Ext.dataview.NestedList', {
         }
     },
 
-    onBeforeSelect: function() {
-        this.fireEvent('beforeselect', [this, Array.prototype.slice.call(arguments)]);
+    onBeforeSelect: function () {
+        this.fireEvent.apply(this, [].concat('beforeselect', this, Array.prototype.slice.call(arguments)));
     },
 
-    onContainerTap: function() {
-        this.fireEvent('containertap', [this, Array.prototype.slice.call(arguments)]);
+    onContainerTap: function () {
+        this.fireEvent.apply(this, [].concat('containertap', this, Array.prototype.slice.call(arguments)));
     },
 
-    onSelectionChange: function() {
-        this.fireEvent('selectionchange', [this, Array.prototype.slice.call(arguments)]);
+    onSelectionChange: function () {
+        this.fireEvent.apply(this, [].concat('selectionchange', this, Array.prototype.slice.call(arguments)));
     },
 
-    onItemDoubleTap: function() {
-        this.fireEvent('itemdoubletap', [this, Array.prototype.slice.call(arguments)]);
+    onItemDoubleTap: function () {
+        this.fireEvent.apply(this, [].concat('itemdoubletap', this, Array.prototype.slice.call(arguments)));
     },
 
-    onStoreBeforeLoad: function() {
-        this.fireEvent('beforeload', [this, Array.prototype.slice.call(arguments)]);
+    onStoreBeforeLoad: function () {
+        var loadingText = this.getLoadingText(),
+            scrollable = this.getScrollable();
+
+        if (loadingText) {
+            this.setMasked({
+                xtype: 'loadmask',
+                message: loadingText
+            });
+
+            //disable scrolling while it is masked
+            if (scrollable) {
+                scrollable.getScroller().setDisabled(true);
+            }
+        }
+
+        this.fireEvent.apply(this, [].concat('beforeload', this, Array.prototype.slice.call(arguments)));
     },
 
-    onStoreLoad: function() {
-        this.fireEvent('load', [this, Array.prototype.slice.call(arguments)]);
+    onStoreLoad: function (store, records, successful, operation) {
+        this.setMasked(false);
+        this.fireEvent.apply(this, [].concat('load', this, Array.prototype.slice.call(arguments)));
+
+        if (store.indexOf(this.getLastNode()) === -1) {
+            this.goToNode(store.getRoot());
+        }
     },
 
     /**
-     * Called when the backButton has been tapped
+     * Called when the backButton has been tapped.
      */
-    onBackTap: function() {
+    onBackTap: function () {
         var me = this,
             node = me.getLastNode(),
             detailCard = me.getDetailCard(),
@@ -413,7 +480,7 @@ Ext.define('Ext.dataview.NestedList', {
         this.fireAction('back', [this, node, lastActiveList, detailCardActive], 'doBack');
     },
 
-    doBack: function(me, node, lastActiveList, detailCardActive) {
+    doBack: function (me, node, lastActiveList, detailCardActive) {
         var layout = me.getLayout(),
             animation = (layout) ? layout.getAnimation() : null;
 
@@ -430,7 +497,7 @@ Ext.define('Ext.dataview.NestedList', {
         }
     },
 
-    updateData: function(data) {
+    updateData: function (data) {
         if (!this.getStore()) {
             this.setStore(new Ext.data.TreeStore({
                 root: data
@@ -438,12 +505,20 @@ Ext.define('Ext.dataview.NestedList', {
         }
     },
 
-    applyStore: function(store) {
+    applyStore: function (store) {
         if (store) {
-            store = Ext.data.StoreManager.lookup(store);
+            if (Ext.isString(store)) {
+                // store id
+                store = Ext.data.StoreManager.get(store);
+            } else {
+                // store instance or store config
+                if (!(store instanceof Ext.data.TreeStore)) {
+                    store = Ext.factory(store, Ext.data.TreeStore, null);
+                }
+            }
 
-            //<debug warn>
-            if (!store)  {
+            // <debug>
+            if (!store) {
                 Ext.Logger.warn("The specified Store cannot be found", this);
             }
             //</debug>
@@ -452,40 +527,48 @@ Ext.define('Ext.dataview.NestedList', {
         return store;
     },
 
-    updateStore: function(newStore, oldStore) {
-        var me = this;
+    storeListeners: {
+        rootchange: 'onStoreRootChange',
+        load: 'onStoreLoad',
+        beforeload: 'onStoreBeforeLoad'
+    },
+
+    updateStore: function (newStore, oldStore) {
+        var me = this,
+            listeners = this.storeListeners;
+
+        listeners.scope = me;
+
         if (oldStore && Ext.isObject(oldStore) && oldStore.isStore) {
             if (oldStore.autoDestroy) {
                 oldStore.destroy();
             }
-            oldStore.un({
-                rootchange: 'onStoreRootChange',
-                scope: this
-            });
+            oldStore.un(listeners);
         }
 
         if (newStore) {
             me.goToNode(newStore.getRoot());
-            newStore.on({
-                rootchange: 'onStoreRootChange',
-                scope: this
-            });
+            newStore.on(listeners);
         }
     },
 
-    onStoreRootChange: function(store, node) {
+    onStoreRootChange: function (store, node) {
         this.goToNode(node);
     },
 
-    applyBackButton: function(config) {
+    applyBackButton: function (config) {
         return Ext.factory(config, Ext.Button, this.getBackButton());
     },
 
-    applyDetailCard: function(config) {
-        return this.factoryItem(config);
+    applyDetailCard: function (config, oldDetailCard) {
+        if (config === null) {
+            return Ext.factory(config, Ext.Component, oldDetailCard);
+        } else {
+            return Ext.factory(config, Ext.Component);
+        }
     },
 
-    updateBackButton: function(newButton, oldButton) {
+    updateBackButton: function (newButton, oldButton) {
         if (newButton) {
             var me = this;
             newButton.on('tap', me.onBackTap, me);
@@ -497,11 +580,11 @@ Ext.define('Ext.dataview.NestedList', {
         }
     },
 
-    applyToolbar: function(config) {
+    applyToolbar: function (config) {
         return Ext.factory(config, Ext.TitleBar, this.getToolbar());
     },
 
-    updateToolbar: function(newToolbar, oldToolbar) {
+    updateToolbar: function (newToolbar, oldToolbar) {
         var me = this;
         if (newToolbar) {
             newToolbar.setTitle(me.getTitle());
@@ -514,13 +597,13 @@ Ext.define('Ext.dataview.NestedList', {
         }
     },
 
-    updateUseToolbar: function(newUseToolbar, oldUseToolbar) {
+    updateUseToolbar: function (newUseToolbar, oldUseToolbar) {
         if (!newUseToolbar) {
             this.setToolbar(false);
         }
     },
 
-    updateTitle: function(newTitle) {
+    updateTitle: function (newTitle) {
         var me = this,
             toolbar = me.getToolbar();
         if (toolbar) {
@@ -535,24 +618,26 @@ Ext.define('Ext.dataview.NestedList', {
      * nodes. The template will receive all data within the Record and will also
      * receive whether or not it is a leaf node.
      * @param {Ext.data.Record} node
+     * @return {String}
      */
-    getItemTextTpl: function(node) {
+    getItemTextTpl: function (node) {
         return '{' + this.getDisplayField() + '}';
     },
 
     /**
      * Override this method to provide custom template rendering of titles/back
-     * buttons when useTitleAsBackText is enabled.
+     * buttons when {@link #useTitleAsBackText} is enabled.
      * @param {Ext.data.Record} node
+     * @return {String}
      */
-    getTitleTextTpl: function(node) {
+    getTitleTextTpl: function (node) {
         return '{' + this.getDisplayField() + '}';
     },
 
     /**
      * @private
      */
-    renderTitleText: function(node, forBackButton) {
+    renderTitleText: function (node, forBackButton) {
         if (!node.titleTpl) {
             node.titleTpl = Ext.create('Ext.XTemplate', this.getTitleTextTpl(node));
         }
@@ -568,15 +653,14 @@ Ext.define('Ext.dataview.NestedList', {
     /**
      * Method to handle going to a specific node within this nested list. Node must be part of the
      * internal {@link #store}.
-     * @param {Ext.data.NodeInterface} node The specified node to navigate to
+     * @param {Ext.data.NodeInterface} node The specified node to navigate to.
      */
-    goToNode: function(node) {
+    goToNode: function (node) {
         if (!node) {
             return;
         }
 
         var me = this,
-
             activeItem = me.getActiveItem(),
             detailCard = me.getDetailCard(),
             detailCardActive = detailCard && me.getActiveItem() == detailCard,
@@ -601,21 +685,26 @@ Ext.define('Ext.dataview.NestedList', {
             if (animation) {
                 animation.setReverse(true);
             }
-            me.setActiveItem(me.getLastActiveList());
+            list = me.getLastActiveList();
+            list.getStore().setNode(node);
+            node.expand();
+            me.setActiveItem(list);
         }
         else {
+            if (animation) {
+                animation.setReverse(reverse);
+            }
+
             if (firstList && secondList) {
                 //firstList and secondList have both been created
                 activeItem = me.getActiveItem();
 
                 me.setLastActiveList(activeItem);
                 list = (activeItem == firstList) ? secondList : firstList;
+
                 list.getStore().setNode(node);
                 node.expand();
 
-                if (animation) {
-                    animation.setReverse(reverse);
-                }
                 me.setActiveItem(list);
                 list.deselectAll();
             }
@@ -639,11 +728,12 @@ Ext.define('Ext.dataview.NestedList', {
         me.syncToolbar();
     },
 
+
     /**
      * The leaf you want to navigate to. You should pass a node instance.
-     * @param {Ext.data.NodeInterface} node The specified node to navigate to
+     * @param {Ext.data.NodeInterface} node The specified node to navigate to.
      */
-    goToLeaf: function(node) {
+    goToLeaf: function (node) {
         if (!node.isLeaf()) {
             throw new Error('goToLeaf: passed a node which is not a leaf.');
         }
@@ -678,7 +768,7 @@ Ext.define('Ext.dataview.NestedList', {
      * Method which updates the {@link #backButton} and {@link #toolbar} with the latest information from
      * the current node.
      */
-    syncToolbar: function(forceDetail) {
+    syncToolbar: function (forceDetail) {
         var me = this,
             detailCard = me.getDetailCard(),
             node = me.getLastNode(),
@@ -699,16 +789,16 @@ Ext.define('Ext.dataview.NestedList', {
         }
     },
 
-    updateBackText: function(newText) {
+    updateBackText: function (newText) {
         this.getBackButton().setText(newText);
     },
 
     /**
      * @private
-     * Returns true if the passed node should have a reverse animation from the previous current node
+     * Returns `true` if the passed node should have a reverse animation from the previous current node.
      * @param {Ext.data.NodeInterface} node
      */
-    goToNodeReverseAnimation: function(node) {
+    goToNodeReverseAnimation: function (node) {
         var me = this,
             lastNode = me.getLastNode();
         if (!lastNode) {
@@ -721,9 +811,9 @@ Ext.define('Ext.dataview.NestedList', {
     /**
      * @private
      * Returns the list config for a specified node.
-     * @param {HTMLElement} node The node for the list config
+     * @param {HTMLElement} node The node for the list config.
      */
-    getList: function(node) {
+    getList: function (node) {
         var me = this,
             nodeStore = Ext.create('Ext.data.NodeStore', {
                 recursive: false,
@@ -736,12 +826,44 @@ Ext.define('Ext.dataview.NestedList', {
 
         return Ext.Object.merge({
             xtype: 'list',
-            pressedDelay: 0,
+            pressedDelay: 250,
             autoDestroy: true,
             store: nodeStore,
             onItemDisclosure: me.getOnItemDisclosure(),
-            allowDeselect : me.getAllowDeselect(),
+            allowDeselect: me.getAllowDeselect(),
+            variableHeights: me.getVariableHeights(),
+            itemHeight: me.getItemHeight(),
+            listeners: [
+                { event: 'itemdoubletap', fn: 'onItemDoubleTap', scope: me },
+                { event: 'itemtap', fn: 'onItemInteraction', scope: me, order: 'before'},
+                { event: 'itemtouchstart', fn: 'onItemInteraction', scope: me, order: 'before'},
+                { event: 'itemtap', fn: 'onItemTap', scope: me },
+                { event: 'beforeselectionchange', fn: 'onBeforeSelect', scope: me },
+                { event: 'containertap', fn: 'onContainerTap', scope: me },
+                { event: 'selectionchange', fn: 'onSelectionChange', order: 'before', scope: me }
+            ],
             itemTpl: '<span<tpl if="leaf == true"> class="x-list-item-leaf"</tpl>>' + me.getItemTextTpl(node) + '</span>'
         }, this.getListConfig());
     }
+
+}, function () {
+    //<deprecated product=touch since=2.0>
+
+    /**
+     * @member Ext.dataview.NestedList
+     * @method getSubList
+     * Returns the subList for a specified node.
+     * @removed 2.0.0
+     */
+    Ext.deprecateMethod(this, 'getSubList', null, "Ext.dataview.NestedList.getSubList() has been removed");
+
+    /**
+     * @member Ext.dataview.NestedList
+     * @cfg {Number} clearSelectionDelay
+     * Number of milliseconds to show the highlight when going back in a list.
+     * @removed 2.0.0
+     */
+    Ext.deprecateProperty(this, 'clearSelectionDelay', null, "Ext.dataview.NestedList.clearSelectionDelay has been removed");
+    //</deprecated>
 });
+

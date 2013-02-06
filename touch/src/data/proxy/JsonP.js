@@ -1,5 +1,6 @@
 /**
  * @author Ed Spencer
+ * @aside guide proxies
  *
  * The JsonP proxy is useful when you need to load data from a domain other than the one your application is running on. If
  * your application is running on http://domainA.com it cannot use {@link Ext.data.proxy.Ajax Ajax} to load its data
@@ -36,7 +37,9 @@
  *
  *     Ext.define('User', {
  *         extend: 'Ext.data.Model',
- *         fields: ['id', 'name', 'email']
+ *         config: {
+ *             fields: ['id', 'name', 'email']
+ *         }
  *     });
  *
  *     var store = Ext.create('Ext.data.Store', {
@@ -137,41 +140,46 @@ Ext.define('Ext.data.proxy.JsonP', {
         /**
          * @cfg {String} callbackKey
          * See {@link Ext.data.JsonP#callbackKey}.
+         * @accessor
          */
         callbackKey : 'callback',
 
         /**
          * @cfg {String} recordParam
-         * The param name to use when passing records to the server (e.g. 'records=someEncodedRecordString'). Defaults to
-         * 'records'
+         * The param name to use when passing records to the server (e.g. 'records=someEncodedRecordString').
+         * @accessor
          */
         recordParam: 'records',
 
         /**
          * @cfg {Boolean} autoAppendParams
-         * True to automatically append the request's params to the generated url. Defaults to true
+         * `true` to automatically append the request's params to the generated url.
+         * @accessor
          */
         autoAppendParams: true
     },
 
     /**
-     * @private
      * Performs the read request to the remote domain. JsonP proxy does not actually create an Ajax request,
-     * instead we write out a <script> tag based on the configuration of the internal Ext.data.Request object
-     * @param {Ext.data.Operation} operation The {@link Ext.data.Operation Operation} object to execute
-     * @param {Function} callback A callback function to execute when the Operation has been completed
-     * @param {Object} scope The scope to execute the callback in
+     * instead we write out a `<script>` tag based on the configuration of the internal Ext.data.Request object
+     * @param {Ext.data.Operation} operation The {@link Ext.data.Operation Operation} object to execute.
+     * @param {Function} callback A callback function to execute when the Operation has been completed.
+     * @param {Object} scope The scope to execute the callback in.
+     * @return {Object}
+     * @protected
      */
     doRequest: function(operation, callback, scope) {
+        // <debug>
+        var action = operation.getAction();
+        if (action !== 'read') {
+            Ext.Logger.error('JsonP proxies can only be used to read data.');
+        }
+        // </debug>
+
         //generate the unique IDs for this request
         var me      = this,
-            writer  = me.getWriter(),
             request = me.buildRequest(operation),
             params  = request.getParams();
-
-        if (operation.allowWrite()) {
-            request = writer.write(request);
-        }
 
         // apply JsonP proxy-specific attributes to the Request
         request.setConfig({
@@ -206,12 +214,12 @@ Ext.define('Ext.data.proxy.JsonP', {
      * the response. This callback will typically be the callback passed by a store, e.g. in proxy.read(operation, theCallback, scope)
      * theCallback refers to the callback argument received by this function.
      * See {@link #doRequest} for details.
-     * @param {Ext.data.Request} request The Request object
-     * @param {Ext.data.Operation} operation The Operation being executed
+     * @param {Ext.data.Request} request The Request object.
+     * @param {Ext.data.Operation} operation The Operation being executed.
      * @param {Function} callback The callback function to be called when the request completes. This is usually the callback
-     * passed to doRequest
-     * @param {Object} scope The scope in which to execute the callback function
-     * @return {Function} The callback function
+     * passed to doRequest.
+     * @param {Object} scope The scope in which to execute the callback function.
+     * @return {Function} The callback function.
      */
     createRequestCallback: function(request, operation, callback, scope) {
         var me = this;
@@ -222,7 +230,7 @@ Ext.define('Ext.data.proxy.JsonP', {
         };
     },
 
-    // inherit docs
+    // @inheritdoc
     setException: function(operation, response) {
         operation.setException(operation.getRequest().getJsonP().errorType);
     },
@@ -230,8 +238,8 @@ Ext.define('Ext.data.proxy.JsonP', {
 
     /**
      * Generates a url based on a given Ext.data.Request object. Adds the params and callback function name to the url
-     * @param {Ext.data.Request} request The request object
-     * @return {String} The url
+     * @param {Ext.data.Request} request The request object.
+     * @return {String} The url.
      */
     buildUrl: function(request) {
         var me      = this,
@@ -257,47 +265,24 @@ Ext.define('Ext.data.proxy.JsonP', {
             }
         }
 
-        //if there are any records present, append them to the url also
-        records = request.getRecords();
-
-        if (Ext.isArray(records) && records.length > 0) {
-            url = Ext.urlAppend(url, Ext.String.format("{0}={1}", me.recordParam, me.encodeRecords(records)));
-        }
-
         return url;
     },
 
-    //inherit docs
+    /**
+     * @inheritdoc
+     */
     destroy: function() {
         this.abort();
         this.callParent(arguments);
     },
 
     /**
-     * Aborts the current server request if one is currently running
+     * Aborts the current server request if one is currently running.
      */
     abort: function() {
         var lastRequest = this.lastRequest;
         if (lastRequest) {
             Ext.data.JsonP.abort(lastRequest.getJsonP());
         }
-    },
-
-    /**
-     * Encodes an array of records into a string suitable to be appended to the script src url. This is broken out into
-     * its own function so that it can be easily overridden.
-     * @param {Ext.data.Model[]} records The records array
-     * @return {String} The encoded records string
-     */
-    encodeRecords: function(records) {
-        var encoded = "",
-            i = 0,
-            len = records.length;
-
-        for (; i < len; i++) {
-            encoded += Ext.Object.toQueryString(records[i].getData());
-        }
-
-        return encoded;
     }
 });

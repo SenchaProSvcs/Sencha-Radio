@@ -1,10 +1,14 @@
+/**
+ * @private
+ */
 Ext.define('Ext.event.publisher.TouchGesture', {
 
     extend: 'Ext.event.publisher.Dom',
 
     requires: [
         'Ext.util.Point',
-        'Ext.event.Touch'
+        'Ext.event.Touch',
+        'Ext.AnimationQueue'
     ],
 
     handledEvents: ['touchstart', 'touchmove', 'touchend', 'touchcancel'],
@@ -12,19 +16,11 @@ Ext.define('Ext.event.publisher.TouchGesture', {
     moveEventName: 'touchmove',
 
     config: {
-        moveThrottle: 1,
-        buffering: {
-            enabled: false,
-            interval: 10
-        },
+        moveThrottle: 0,
         recognizers: {}
     },
 
-    currentTouchesCount: 0,
-
     constructor: function(config) {
-        this.processEvents = Ext.Function.bind(this.processEvents, this);
-
         this.eventProcessors = {
             touchstart: this.onTouchStart,
             touchmove: this.onTouchMove,
@@ -36,28 +32,15 @@ Ext.define('Ext.event.publisher.TouchGesture', {
 
         this.activeRecognizers = [];
 
-        this.currentRecognizers = [];
+        this.touchesMap = {};
 
-        this.currentTargets = {};
+        this.currentIdentifiers = [];
 
-        this.currentTouches = {};
-
-        this.buffer = [];
+        this.screenPositionRatio = (!Ext.os.is.Desktop && !Ext.os.is.iOS) ? window.innerWidth / window.screen.width : 1;
 
         this.initConfig(config);
 
-        return this.callParent();
-    },
-
-    applyBuffering: function(buffering) {
-        if (buffering.enabled === true) {
-            this.bufferTimer = setInterval(this.processEvents, buffering.interval);
-        }
-        else {
-            clearInterval(this.bufferTimer);
-        }
-
-        return buffering;
+        return this.callSuper();
     },
 
     applyRecognizers: function(recognizers) {
@@ -67,7 +50,9 @@ Ext.define('Ext.event.publisher.TouchGesture', {
             if (recognizers.hasOwnProperty(i)) {
                 recognizer = recognizers[i];
 
-                this.registerRecognizer(recognizer);
+                if (recognizer) {
+                    this.registerRecognizer(recognizer);
+                }
             }
         }
 
@@ -75,7 +60,7 @@ Ext.define('Ext.event.publisher.TouchGesture', {
     },
 
     handles: function(eventName) {
-        return this.callParent(arguments) || this.eventToRecognizerMap.hasOwnProperty(eventName);
+        return this.callSuper(arguments) || this.eventToRecognizerMap.hasOwnProperty(eventName);
     },
 
     doesEventBubble: function() {
@@ -83,96 +68,8 @@ Ext.define('Ext.event.publisher.TouchGesture', {
         return true;
     },
 
-    eventLogs: [],
-
     onEvent: function(e) {
-        var buffering = this.getBuffering();
-
-        e = new Ext.event.Touch(e);
-
-        if (buffering.enabled) {
-            this.buffer.push(e);
-        }
-        else {
-            this.processEvent(e);
-        }
-    },
-
-    processEvents: function() {
-        var buffer = this.buffer,
-            ln = buffer.length,
-            moveEvents = [],
-            events, event, i;
-
-        if (ln > 0) {
-            events = buffer.slice(0);
-            buffer.length = 0;
-
-            for (i = 0; i < ln; i++) {
-                event = events[i];
-                if (event.type === this.moveEventName) {
-                    moveEvents.push(event);
-                }
-                else {
-                    if (moveEvents.length > 0) {
-                        this.processEvent(this.mergeEvents(moveEvents));
-                        moveEvents.length = 0;
-                    }
-
-                    this.processEvent(event);
-                }
-            }
-
-            if (moveEvents.length > 0) {
-                this.processEvent(this.mergeEvents(moveEvents));
-                moveEvents.length = 0;
-            }
-        }
-    },
-
-    mergeEvents: function(events) {
-        var changedTouchesLists = [],
-            ln = events.length,
-            i, event, targetEvent;
-
-        targetEvent = events[ln - 1];
-
-        if (ln === 1) {
-            return targetEvent;
-        }
-
-        for (i = 0; i < ln; i++) {
-            event = events[i];
-            changedTouchesLists.push(event.changedTouches);
-        }
-
-        targetEvent.changedTouches = this.mergeTouchLists(changedTouchesLists);
-
-        return targetEvent;
-    },
-
-    mergeTouchLists: function(touchLists) {
-        var touches = {},
-            list = [],
-            i, ln, touchList, j, subLn, touch, identifier;
-
-        for (i = 0,ln = touchLists.length; i < ln; i++) {
-            touchList = touchLists[i];
-
-            for (j = 0,subLn = touchList.length; j < subLn; j++) {
-                touch = touchList[j];
-                identifier = touch.identifier;
-                touches[identifier] = touch;
-            }
-        }
-
-        for (identifier in touches) {
-            if (touches.hasOwnProperty(identifier)) {
-                list.push(touches[identifier]);
-            }
-        }
-
-        return list;
+        this.eventProcessors[e.type].call(this, e);
     },
 
     registerRecognizer: function(recognizer) {
@@ -216,8 +113,7 @@ Ext.define('Ext.event.publisher.TouchGesture', {
 
     publish: function(eventName, targets, event, info) {
         event.set(info);
-
-        return this.callParent([eventName, targets, event]);
+        return this.callSuper([eventName, targets, event]);
     },
 
     getCommonTargets: function(targetGroups) {
@@ -277,67 +173,87 @@ Ext.define('Ext.event.publisher.TouchGesture', {
         return this.activeRecognizers;
     },
 
-    processEvent: function(e) {
-        this.eventProcessors[e.type].call(this, e);
+    updateTouch: function(touch) {
+        var identifier = touch.identifier,
+            currentTouch = this.touchesMap[identifier],
+            ratio = this.screenPositionRatio,
+            screenX = touch.screenX * ratio,
+            screenY = touch.screenY * ratio,
+            target, targetWindow, framePageBox, x, y, offsets;
+
+        if (!currentTouch) {
+            target = this.getElementTarget(touch.target);
+            targetWindow = target.ownerDocument.defaultView;
+
+            this.touchesMap[identifier] = currentTouch = {
+                identifier: identifier,
+                target: target,
+                targets: this.getBubblingTargets(target),
+                offsets: { x: 0, y: 0 }
+            };
+
+            this.currentIdentifiers.push(identifier);
+
+            offsets = currentTouch.offsets;
+
+            if (targetWindow !== document.defaultView) {
+                framePageBox = targetWindow.frameElement.getBoundingClientRect();
+                offsets.x = framePageBox.left + touch.pageX - screenX;
+                offsets.y = framePageBox.top + touch.pageY - screenY;
+            }
+            else {
+                offsets.x = touch.pageX - screenX;
+                offsets.y = touch.pageY - screenY;
+            }
+        }
+
+        offsets = currentTouch.offsets;
+
+        x = offsets.x + screenX;
+        y = offsets.y + screenY;
+
+        if (x === currentTouch.pageX && y === currentTouch.pageY) {
+            return false;
+        }
+
+        currentTouch.pageX = x;
+        currentTouch.pageY = y;
+        currentTouch.timeStamp = touch.timeStamp;
+        currentTouch.point = new Ext.util.Point(x, y);
+
+        return currentTouch;
+    },
+
+    updateTouches: function(touches) {
+        var i, ln, touch,
+            changedTouches = [];
+
+        for (i = 0, ln = touches.length; i < ln; i++) {
+            touch = this.updateTouch(touches[i]);
+            if (touch) {
+                changedTouches.push(touch);
+            }
+        }
+
+        return changedTouches;
+    },
+
+    factoryEvent: function(e) {
+        return new Ext.event.Touch(e, null, this.touchesMap, this.currentIdentifiers);
     },
 
     onTouchStart: function(e) {
-        var currentTargets = this.currentTargets,
-            currentTouches = this.currentTouches,
-            currentTouchesCount = this.currentTouchesCount,
-            changedTouches = e.changedTouches,
-            touches = e.touches,
-            touchesLn = touches.length,
-            currentIdentifiers = {},
+        var changedTouches = e.changedTouches,
             ln = changedTouches.length,
-            i, touch, identifier, fakeEndEvent;
+            i, touch;
 
-        currentTouchesCount += ln;
+        this.updateTouches(changedTouches);
 
-        if (currentTouchesCount > touchesLn) {
-            for (i = 0; i < touchesLn; i++) {
-                touch = touches[i];
-                identifier = touch.identifier;
-                currentIdentifiers[identifier] = true;
-            }
-
-            for (identifier in currentTouches) {
-                if (currentTouches.hasOwnProperty(identifier)) {
-                    if (!currentIdentifiers[identifier]) {
-                        currentTouchesCount--;
-                        fakeEndEvent = e.clone();
-                        touch = currentTouches[identifier];
-                        touch.targets = this.getBubblingTargets(this.getElementTarget(touch.target));
-                        fakeEndEvent.changedTouches = [touch];
-                        this.onTouchEnd(fakeEndEvent);
-                    }
-                }
-            }
-
-            // Fix for a bug found in Motorola Droid X (Gingerbread) and similar
-            // where there are 2 touchstarts but just one touchend
-            if (currentTouchesCount > touchesLn) {
-                return;
-            }
-        }
+        e = this.factoryEvent(e);
+        changedTouches = e.changedTouches;
 
         for (i = 0; i < ln; i++) {
             touch = changedTouches[i];
-            identifier = touch.identifier;
-
-            if (!currentTouches.hasOwnProperty(identifier)) {
-                this.currentTouchesCount++;
-            }
-
-            currentTouches[identifier] = touch;
-            currentTargets[identifier] = this.getBubblingTargets(this.getElementTarget(touch.target));
-        }
-
-        e.setTargets(currentTargets);
-
-        for (i = 0; i < ln; i++) {
-            touch = changedTouches[i];
-
             this.publish('touchstart', touch.targets, e, {touch: touch});
         }
 
@@ -354,33 +270,38 @@ Ext.define('Ext.event.publisher.TouchGesture', {
             return;
         }
 
-        var currentTargets = this.currentTargets,
-            currentTouches = this.currentTouches,
-            moveThrottle = this.getMoveThrottle(),
-            changedTouches = e.changedTouches,
-            stillTouchesCount = 0,
-            i, ln, touch, point, oldPoint, identifier;
+        if (!this.animationQueued) {
+            this.animationQueued = true;
+            Ext.AnimationQueue.start('onAnimationFrame', this);
+        }
 
-        e.setTargets(currentTargets);
+        this.lastMoveEvent = e;
+    },
 
-        for (i = 0,ln = changedTouches.length; i < ln; i++) {
+    onAnimationFrame: function() {
+        var event = this.lastMoveEvent;
+
+        if (event) {
+            this.lastMoveEvent = null;
+            this.doTouchMove(event);
+        }
+    },
+
+    doTouchMove: function(e) {
+        var changedTouches, i, ln, touch;
+
+        changedTouches = this.updateTouches(e.changedTouches);
+
+        ln = changedTouches.length;
+
+        e = this.factoryEvent(e);
+
+        for (i = 0; i < ln; i++) {
             touch = changedTouches[i];
-            identifier = touch.identifier;
-            point = touch.point;
-
-            oldPoint = currentTouches[identifier].point;
-
-            if (moveThrottle && point.isCloseTo(oldPoint, moveThrottle)) {
-                stillTouchesCount++;
-                continue;
-            }
-
-            currentTouches[identifier] = touch;
-
             this.publish('touchmove', touch.targets, e, {touch: touch});
         }
 
-        if (stillTouchesCount < ln) {
+        if (ln > 0) {
             this.invokeRecognizers('onTouchMove', e);
         }
     },
@@ -390,60 +311,104 @@ Ext.define('Ext.event.publisher.TouchGesture', {
             return;
         }
 
-        var currentTargets = this.currentTargets,
-            currentTouches = this.currentTouches,
-            changedTouches = e.changedTouches,
-            ln = changedTouches.length,
-            isEnded, identifier, i, touch;
-
-        e.setTargets(currentTargets);
-
-        this.currentTouchesCount -= ln;
-
-        isEnded = (this.currentTouchesCount === 0);
-
-        if (isEnded) {
-            this.isStarted = false;
+        if (this.lastMoveEvent) {
+            this.onAnimationFrame();
         }
 
+        var touchesMap = this.touchesMap,
+            currentIdentifiers = this.currentIdentifiers,
+            changedTouches = e.changedTouches,
+            ln = changedTouches.length,
+            identifier, i, touch;
+
+        this.updateTouches(changedTouches);
+
+        changedTouches = e.changedTouches;
+
         for (i = 0; i < ln; i++) {
-            touch = changedTouches[i];
-            identifier = touch.identifier;
+            Ext.Array.remove(currentIdentifiers, changedTouches[i].identifier);
+        }
 
-            delete currentTouches[identifier];
-            delete currentTargets[identifier];
+        e = this.factoryEvent(e);
 
+        for (i = 0; i < ln; i++) {
+            identifier = changedTouches[i].identifier;
+            touch = touchesMap[identifier];
+            delete touchesMap[identifier];
             this.publish('touchend', touch.targets, e, {touch: touch});
         }
 
         this.invokeRecognizers('onTouchEnd', e);
 
-        if (isEnded) {
+        if (currentIdentifiers.length === 0) {
+            this.isStarted = false;
             this.invokeRecognizers('onEnd', e);
+            if (this.animationQueued) {
+                this.animationQueued = false;
+                Ext.AnimationQueue.stop('onAnimationFrame', this);
+            }
         }
     }
 
 }, function() {
-    if (!Ext.feature.has.Touch) {
+    if (Ext.feature.has.Pointer) {
         this.override({
-            moveEventName: 'mousemove',
+            pointerToTouchMap: {
+                MSPointerDown: 'touchstart',
+                MSPointerMove: 'touchmove',
+                MSPointerUp: 'touchend',
+                MSPointerCancel: 'touchcancel'
+            },
 
-            map: {
-                mouseToTouch: {
-                    mousedown: 'touchstart',
-                    mousemove: 'touchmove',
-                    mouseup: 'touchend'
-                },
-
-                touchToMouse: {
-                    touchstart: 'mousedown',
-                    touchmove: 'mousemove',
-                    touchend: 'mouseup'
-                }
+            touchToPointerMap: {
+                touchstart: 'MSPointerDown',
+                touchmove: 'MSPointerMove',
+                touchend: 'MSPointerUp',
+                touchcancel: 'MSPointerCancel'
             },
 
             attachListener: function(eventName) {
-                eventName = this.map.touchToMouse[eventName];
+                eventName = this.touchToPointerMap[eventName];
+
+                if (!eventName) {
+                    return;
+                }
+
+                return this.callOverridden([eventName]);
+            },
+
+            onEvent: function(e) {
+                if ('button' in e && e.button > 0) {
+                    return;
+                }
+
+                var type = this.pointerToTouchMap[e.type];
+
+                e.identifier = e.pointerId;
+                e.changedTouches = [e];
+
+                this.eventProcessors[type].call(this, e);
+            }
+        });
+    }
+    else if (!Ext.feature.has.Touch) {
+        this.override({
+            moveEventName: 'mousemove',
+
+            mouseToTouchMap: {
+                mousedown: 'touchstart',
+                mousemove: 'touchmove',
+                mouseup: 'touchend'
+            },
+
+            touchToMouseMap: {
+                touchstart: 'mousedown',
+                touchmove: 'mousemove',
+                touchend: 'mouseup'
+            },
+
+            attachListener: function(eventName) {
+                eventName = this.touchToMouseMap[eventName];
 
                 if (!eventName) {
                     return;
@@ -455,17 +420,18 @@ Ext.define('Ext.event.publisher.TouchGesture', {
             lastEventType: null,
 
             onEvent: function(e) {
-                if ('button' in e && e.button !== 0) {
+                if ('button' in e && e.button > 0) {
                     return;
                 }
 
                 var type = e.type,
+                    lastEventType = this.lastEventType,
                     touchList = [e];
 
                 // Temporary fix for a recent Chrome bugs where events don't seem to bubble up to document
                 // when the element is being animated
                 // with webkit-transition (2 mousedowns without any mouseup)
-                if (type === 'mousedown' && this.lastEventType && this.lastEventType !== 'mouseup') {
+                if (type === 'mousedown' && lastEventType && lastEventType !== 'mouseup') {
                     var fixedEvent = document.createEvent("MouseEvent");
                         fixedEvent.initMouseEvent('mouseup', e.bubbles, e.cancelable,
                             document.defaultView, e.detail, e.screenX, e.screenY, e.clientX,
@@ -484,11 +450,7 @@ Ext.define('Ext.event.publisher.TouchGesture', {
                 e.targetTouches = (type !== 'mouseup') ? touchList : [];
                 e.changedTouches = touchList;
 
-                return this.callOverridden([e]);
-            },
-
-            processEvent: function(e) {
-                this.eventProcessors[this.map.mouseToTouch[e.type]].call(this, e);
+                this.eventProcessors[this.mouseToTouchMap[e.type]].call(this, e);
             }
         });
     }

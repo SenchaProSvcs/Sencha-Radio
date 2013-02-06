@@ -1,6 +1,6 @@
 /**
  * @class Ext.Decorator
- * @extend Ext.Component
+ * @extends Ext.Component
  *
  * In a few words, a Decorator is a Component that wraps around another Component. A typical example of a Decorator is a
  * {@link Ext.field.Field Field}. A form field is nothing more than a decorator around another component, and gives the
@@ -122,12 +122,18 @@ Ext.define('Ext.Decorator', {
 
     // @private
     doUnsetComponent: function(component) {
-        this.innerElement.dom.removeChild(component.renderElement.dom);
+        if (component.renderElement.dom) {
+            component.setLayoutSizeFlags(0);
+            this.innerElement.dom.removeChild(component.renderElement.dom);
+        }
     },
 
     // @private
     doSetComponent: function(component) {
-        this.innerElement.dom.appendChild(component.renderElement.dom);
+        if (component.renderElement.dom) {
+            component.setLayoutSizeFlags(this.getSizeFlags());
+            this.innerElement.dom.appendChild(component.renderElement.dom);
+        }
     },
 
     // @private

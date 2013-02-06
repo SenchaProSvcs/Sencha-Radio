@@ -1,0 +1,325 @@
+/**
+ * @class Ext.dataview.List
+ */
+
+/**
+ * @var {color} $list-color
+ * Text color for list rows.
+ */
+$list-color: $foreground-color ! default;
+
+/**
+ * @var {color} $list-bg-color
+ * Background-color for list rows.
+ */
+$list-bg-color: transparent;
+
+/**
+ * @var {boolean} $list-zebrastripe
+ * Optionally zebra-stripe the list (alternating background colors).
+ */
+$list-zebrastripe: false ! default;
+
+/**
+ * @var {color} $list-active-color
+ * Background-color for selected list rows.
+ */
+$list-active-color: $base-color !default;
+
+/**
+ * @var {color} $list-header-bg-color
+ * Background-color for list header rows (in grouped lists).
+ */
+$list-header-bg-color: 'transparent' ! default;
+
+/**
+ * @var {measurement} $list-disclosure-size
+ * Default size (width/height) for disclosure icons.
+ */
+$list-disclosure-size: 1.7em;
+
+/**
+ * @var {measurement} $list-disclosure-round-size
+ * Default size (width/height) for disclosure icons in a list with a `round` ui.
+ */
+$list-disclosure-round-size: 1.5em;
+
+/**
+ * @var {measurement} $list-round-padding
+ * Default padding for lists with a `round` ui.
+ */
+$list-round-padding: 13px ! default;
+
+/**
+ * Includes default list styles.
+ */
+.x-list {
+  background-color: $list-bg-color;
+
+  .x-list-item {
+    color: $list-color;
+    font-size: $font-size-medium-large;
+    font-weight: 300;
+
+    .x-dock-horizontal {
+      border-top: 0;
+    }
+
+    &.x-item-pressed {
+      .x-dock-horizontal .x-dock-body {
+        background-color: transparent;
+
+        .x-list-item-body {
+          color: $list-active-color;
+        }
+      }
+    }
+
+    &.x-item-selected {
+      .x-dock-horizontal {
+        background: transparent;
+      }
+
+      .x-dock-horizontal .x-dock-body {
+        background-color: $list-active-color;
+
+        .x-list-item-body {
+          color: #fff;
+        }
+      }
+    }
+  }
+}
+
+// Disclosure
+.x-list-disclosure {
+  width: $list-disclosure-size;
+  height: $list-disclosure-size;
+  margin: 0.5em 0.5em 0 0;
+  border: 0;
+}
+
+.x-ie .x-list-disclosure:after {
+  content: '';
+  right: 1.2em;
+  top: .8em;
+  height: 1em;
+  width: 1em;
+  position: absolute;
+  @include icon('code3');
+//  @include icon('code3','transparent');
+}
+
+.x-item-selected .x-list-disclosure::after {
+  color: white;
+}
+
+.x-list-indexed .x-list-disclosure {
+  margin-right: 1.8em;
+}
+
+.x-list-header {
+  background-color: transparent !important;
+  border: 0 !important;
+  text-transform: lowercase;
+
+  > div {
+    min-width:  $global-list-height;
+    min-height:  $global-list-height;
+    background-color: $base-color;
+    color: #fff;
+    float: left;
+    width: auto;
+  }
+}
+
+
+.x-list .x-list-item .x-list-item-body {
+  padding: 0 10px;
+  line-height: 47px;
+}
+
+.x-list-normal {
+  .x-list-header-wrap .x-item-header,
+  .x-list-header {
+    background-color: $list-header-bg-color;
+    font-weight: normal;
+    font-size: 17pt;
+    padding: 0.1em 1.02em 0.2em 0.65em;
+  }
+
+  @if $list-zebrastripe {
+    .x-list-item {
+
+      &:nth-child(even) > .x-dock-vertical > .x-dock-body {
+        background-color: $list-bg-color;
+      }
+    }
+  }
+}
+
+.x-list-grouped {
+  margin-left: .8em;
+
+  .x-list-header-wrap .x-dock-horizontal {
+      padding-top: 75px !important;
+  }
+
+  .x-list-header {
+      padding-left: 0px !important;
+      margin: .2em 0;
+
+      .x-innerhtml {
+          padding: .5em 0 0 .2em;
+      }
+  }
+
+  .x-list-header-wrap,
+  .x-list-footer-wrap {
+    .x-list-item-inner:before {
+      top: 2.8em !important;
+    }
+  }
+
+  .x-item-pressed {
+    .x-list-item-inner {
+      margin: 0 !important;
+      position: static !important;
+    }
+  }
+}
+
+.x-list-round {
+  .x-list-header-swap {
+    padding-right: $list-round-padding;
+  }
+
+  .x-list-disclosure {
+    overflow: hidden;
+    width: $list-disclosure-round-size;
+    height: $list-disclosure-round-size;
+    margin: 0.5em 0.5em 0 0;
+  }
+
+  .x-list-header {
+    color: #777;
+    font-size: 1em;
+    font-weight: bold;
+    padding-left: 0.65em;
+    line-height: 1.7em;
+  }
+
+  .x-list-container {
+    padding: $list-round-padding $list-round-padding 0 $list-round-padding;
+
+    .x-list-header {
+      padding-left: 0em !important;
+      background-image: none;
+    }
+  }
+
+  &.x-list-ungrouped {
+    .x-list-item {
+      &:last-child {
+        margin-bottom: 13px;
+      }
+    }
+  }
+
+  &.x-list-grouped {
+    .x-list-footer-wrap {
+      > .x-dock-vertical {
+        padding-bottom: 13px;
+      }
+    }
+  }
+}
+
+//@mixin sencha-list-paging {
+//  .x-list-paging {
+//    padding: 1em 0;
+//    .x-loading-spinner {
+//      display: none;
+//      margin: auto;
+//    }
+
+//    .x-list-paging-msg {
+//      text-align: center;
+//      color: $phone-foreground-color;
+//      clear: both;
+//      @if $include-border-radius { @include border-radius(6px); }
+//    }
+
+//    &.x-loading {
+//      padding: 0.5em;
+
+//      .x-loading-spinner {
+//        display: block;
+//      }
+
+//      .x-list-paging-msg {
+//        display: none;
+//      }
+//    }
+//  }
+//}
+
+//@mixin sencha-list-pullrefresh {
+//  .x-list-pullrefresh {
+//    @include st-box;
+//    @include box-orient(horizontal);
+//    @include st-box-align(center);
+//    @include st-box-pack(center);
+//    -ms-flex-direction: row;
+//    position: absolute;
+//    top: -5em;
+//    left: 0;
+//    width: 100%;
+//    height: 4.5em;
+
+//    .x-loading-spinner {
+//      display: none;
+//    }
+//  }
+
+//  .x-list-pullrefresh-arrow {
+//    width: 2.5em;
+//    height: 4.5em;
+
+//    background: center center theme_image($theme-name, "pullarrow.png") no-repeat;
+//    background-size: 2em 3em;
+//    -webkit-transition-property: -webkit-transform;
+//    -webkit-transition-duration: 200ms;
+//    @include rotate(0deg);
+//  }
+
+//  .x-list-pullrefresh-release .x-list-pullrefresh-arrow {
+//    @include rotate(-180deg);
+//  }
+
+//  .x-list-pullrefresh-wrap {
+//    width: 20em;
+//    font-size: 0.7em;
+//  }
+
+//  .x-list-pullrefresh-message {
+//    font-weight: bold;
+//    font-size: 1.3em;
+//    margin-bottom: 0.1em;
+//    text-align: center;
+//  }
+
+//  .x-list-pullrefresh-updated {
+//    text-align: center;
+//  }
+
+//  .x-list-pullrefresh-loading {
+//    *.x-loading-spinner {
+//      display: block;
+//    }
+
+//    .x-list-pullrefresh-arrow {
+//      display: none;
+//    }
+//  }
+//}

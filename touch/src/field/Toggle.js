@@ -1,9 +1,11 @@
 /**
+ * @aside guide forms
+ *
  * Specialized {@link Ext.field.Slider} with a single thumb which only supports two {@link #value values}.
  *
  * ## Examples
  *
- *     @example preview
+ *     @example miniphone preview
  *     Ext.Viewport.add({
  *         xtype: 'togglefield',
  *         name: 'awesome',
@@ -13,7 +15,7 @@
  *
  * Having a default value of 'toggled':
  *
- *     @example preview
+ *     @example miniphone preview
  *     Ext.Viewport.add({
  *         xtype: 'togglefield',
  *         name: 'awesome',
@@ -24,8 +26,8 @@
  *
  * And using the {@link #value} {@link #toggle} method:
  *
- *     @example preview
- *     Ext.Viewport.add(
+ *     @example miniphone preview
+ *     Ext.Viewport.add([
  *         {
  *             xtype: 'togglefield',
  *             name: 'awesome',
@@ -47,7 +49,7 @@
  *                 }
  *             ]
  *         }
- *     );
+ *     ]);
  */
 Ext.define('Ext.field.Toggle', {
     extend: 'Ext.field.Slider',
@@ -56,9 +58,52 @@ Ext.define('Ext.field.Toggle', {
     requires: ['Ext.slider.Toggle'],
 
     config: {
-        // @inherit
-        cls: 'x-toggle-field'
+        /**
+         * @cfg
+         * @inheritdoc
+         */
+        cls: 'x-toggle-field',
+
+        /* @cfg {String} labelAlign The position to render the label relative to the field input.
+         * Available options are: 'top', 'left', 'bottom' and 'right'
+         * @accessor
+         */
+        labelAlign: 'left'
     },
+
+    /**
+     * @event change
+     * Fires when an option selection has changed.
+     *
+     *     Ext.Viewport.add({
+     *         xtype: 'togglefield',
+     *         label: 'Event Example',
+     *         listeners: {
+     *             change: function(field, newValue) {
+     *                 console.log('Value of this toggle has changed:', (newValue) ? 'ON' : 'OFF');
+     *             }
+     *         }
+     *     });
+     *
+     * @param {Ext.field.Toggle} me
+     * @param {Number} newValue the new value of this thumb
+     * @param {Number} oldValue the old value of this thumb
+     */
+
+    /**
+    * @event dragstart
+    * @hide
+    */
+
+    /**
+    * @event drag
+    * @hide
+    */
+
+    /**
+    * @event dragend
+    * @hide
+    */
 
     proxyConfig: {
         /**
@@ -74,33 +119,68 @@ Ext.define('Ext.field.Toggle', {
         maxValueCls: 'x-toggle-on'
     },
 
+    /**
+     * @property {String} label for toggle 'on' state.
+     */
+    toggleOnLabel: 'On',
+
+    /**
+     * @property {String} label for toggle 'off' state.
+     */
+    toggleOffLabel: 'Off',
+
     // @private
     applyComponent: function(config) {
+        // @TODO: This also needs to be looked at
+
+//        if(!this.getLabel() && Ext.getThemeName() == 'WP') {
+//            this.setLabel(this.toggleOffLabel);
+//            this.on({
+//                scope: this,
+//                change: 'onChange'
+//            });
+//        }
+
         return Ext.factory(config, Ext.slider.Toggle);
     },
 
     /**
      * Sets the value of the toggle.
      * @param {Number} value **1** for toggled, **0** for untoggled.
+     * @return {Object} this
      */
     setValue: function(newValue) {
         if (newValue === true) {
             newValue = 1;
         }
 
-        this.getComponent().setValue(newValue);
+        var oldValue = this.getValue();
+        if (oldValue != newValue) {
+            this.getComponent().setValue(newValue);
+
+            this.fireEvent('change', this, newValue, oldValue);
+        }
 
         return this;
     },
 
+    getValue: function() {
+        return (this.getComponent().getValue() == 1) ? 1 : 0;
+    },
+
     /**
      * Toggles the value of this toggle field.
-     * @return this
+     * @return {Object} this
      */
     toggle: function() {
+        // We call setValue directly so the change event can be fired
         var value = this.getValue();
         this.setValue((value == 1) ? 0 : 1);
 
         return this;
+    },
+
+    onChange: function(){
+        this.setLabel((this.getValue() == 1) ? this.toggleOnLabel : this.toggleOffLabel);
     }
 });

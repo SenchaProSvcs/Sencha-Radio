@@ -54,6 +54,15 @@ Ext.define('Ext.dataview.component.Container', {
      */
 
     /**
+     * @event itemsingletap
+     * Fires whenever an item is doubletapped
+     * @param {Ext.dataview.component.Container} this
+     * @param {Ext.dataview.component.DataItem} item The item singletapped
+     * @param {Number} index The index of the item singletapped
+     * @param {Ext.EventObject} e The event object
+     */
+
+    /**
      * @event itemdoubletap
      * Fires whenever an item is doubletapped
      * @param {Ext.dataview.component.Container} this
@@ -82,7 +91,9 @@ Ext.define('Ext.dataview.component.Container', {
             touchstart: 'onItemTouchStart',
             touchend: 'onItemTouchEnd',
             tap: 'onItemTap',
+            taphold: 'onItemTapHold',
             touchmove: 'onItemTouchMove',
+            singletap: 'onItemSingleTap',
             doubletap: 'onItemDoubleTap',
             swipe: 'onItemSwipe',
             delegate: '> .' + Ext.baseCSSPrefix + 'data-item',
@@ -142,6 +153,13 @@ Ext.define('Ext.dataview.component.Container', {
             target = e.getTarget(),
             item = Ext.getCmp(target.id);
         me.fireEvent('itemtaphold', me, item, me.indexOf(item), e);
+    },
+
+    onItemSingleTap: function(e) {
+        var me = this,
+            target = e.getTarget(),
+            item = Ext.getCmp(target.id);
+        me.fireEvent('itemsingletap', me, item, me.indexOf(item), e);
     },
 
     onItemDoubleTap: function(e) {
@@ -217,12 +235,12 @@ Ext.define('Ext.dataview.component.Container', {
             if (cacheLn) {
                 cacheLn--;
                 item = itemCache.pop();
-                item.setRecord(record);
+                this.updateListItem(record, item);
             }
             else {
                 item = me.getDataItemConfig(xtype, record, itemConfig);
             }
-            this.insert(record._tmpIndex, item);
+            item = this.insert(record._tmpIndex, item);
             delete record._tmpIndex;
         }
         return items;
@@ -233,20 +251,25 @@ Ext.define('Ext.dataview.component.Container', {
     },
 
     updateListItem: function(record, item) {
-        if (item.setRecord) {
-            item.setRecord(record);
+        if (item.updateRecord) {
+            if (item.getRecord() === record) {
+                item.updateRecord(record);
+            } else {
+                item.setRecord(record);
+            }
         }
     },
 
     getDataItemConfig: function(xtype, record, itemConfig) {
-        var dataview = this.dataview;
-        return {
-            xtype: xtype,
-            record: record,
-            dataview: dataview,
-            itemCls: dataview.getItemCls(),
-            defaults: itemConfig
-        };
+        var dataview = this.dataview,
+            dataItemConfig = {
+                xtype: xtype,
+                record: record,
+                itemCls: dataview.getItemCls(),
+                defaults: itemConfig,
+                dataview: dataview
+            };
+        return Ext.merge(dataItemConfig, itemConfig);
     },
 
     doRemoveItemCls: function(cls) {
@@ -267,6 +290,11 @@ Ext.define('Ext.dataview.component.Container', {
         for (; i < ln; i++) {
             items[i].addCls(cls);
         }
+    },
+
+    updateAtNewIndex: function(oldIndex, newIndex, record) {
+        this.moveItemsToCache(oldIndex, oldIndex);
+        this.moveItemsFromCache([record]);
     },
 
     destroy: function() {

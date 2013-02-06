@@ -1,0 +1,30 @@
+.info-view {
+  background-image: url(../images/escheresque_ste.png);
+  @include media-highres() {
+    background-image: url(../images/escheresque_ste@2X.png);
+    background-size: 46px 29px;
+  }
+  > .x-body {
+    background: transparent url(../images/sencha-radio.png) no-repeat 5px center;
+    background-size: contain;
+  }
+  
+  .x-button {
+    position: absolute;
+    top: 1em;
+    right: 1em;
+  }
+  
+  .x-innerhtml {
+    font-weight: bold;
+    padding: 4em 1em 1em 5em;
+    p {
+      margin-bottom: 1em;
+      color: #c7c7c7;
+    }
+    .highlight {
+      color: #44a65b;
+    }
+  }
+  
+}

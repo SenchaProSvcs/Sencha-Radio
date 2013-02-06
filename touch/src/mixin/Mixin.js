@@ -1,3 +1,7 @@
+//@require Ext.Class
+//@require Ext.ClassManager
+//@require Ext.Loader
+
 /**
  * Base class for all mixins.
  * @private
@@ -17,7 +21,7 @@ Ext.define('Ext.mixin.Mixin', {
 
             data.mixinId = mixinConfig.id;
 
-            beforeHooks = mixinConfig.beforeHooks,
+            beforeHooks = mixinConfig.beforeHooks;
             afterHooks = mixinConfig.hooks || mixinConfig.afterHooks;
 
             if (beforeHooks || afterHooks) {
@@ -27,9 +31,9 @@ Ext.define('Ext.mixin.Mixin', {
                     if (beforeHooks) {
                         Ext.Object.each(beforeHooks, function(from, to) {
                             targetClass.override(to, function() {
-                                mixin[from].apply(this, arguments);
-
-                                return this.callOverridden(arguments);
+                                if (mixin[from].apply(this, arguments) !== false) {
+                                    return this.callOverridden(arguments);
+                                }
                             });
                         });
                     }

@@ -1,4 +1,6 @@
 /**
+ * @aside guide forms
+ *
  * Wraps an HTML5 number field. Example usage:
  *
  *     @example miniphone
@@ -9,7 +11,7 @@
  *         increment: 2,
  *         cycle: true
  *     });
- *     Ext.Viewport.add(spinner);
+ *     Ext.Viewport.add({ xtype: 'container', items: [spinner] });
  *
  */
 Ext.define('Ext.field.Spinner', {
@@ -20,26 +22,49 @@ Ext.define('Ext.field.Spinner', {
 
     /**
      * @event spin
-     * Fires when the value is changed via either spinner buttons
+     * Fires when the value is changed via either spinner buttons.
      * @param {Ext.field.Spinner} this
      * @param {Number} value
-     * @param {String} direction 'up' or 'down'
+     * @param {String} direction 'up' or 'down'.
      */
+
     /**
      * @event spindown
-     * Fires when the value is changed via the spinner down button
-     * @param {Ext.field.Spinner} this
-     * @param {Number} value
-     */
-    /**
-     * @event spinup
-     * Fires when the value is changed via the spinner up button
+     * Fires when the value is changed via the spinner down button.
      * @param {Ext.field.Spinner} this
      * @param {Number} value
      */
 
+    /**
+     * @event spinup
+     * Fires when the value is changed via the spinner up button.
+     * @param {Ext.field.Spinner} this
+     * @param {Number} value
+     */
+
+    /**
+     * @event change
+     * Fires just before the field blurs if the field value has changed.
+     * @param {Ext.field.Text} this This field.
+     * @param {Number} newValue The new value.
+     * @param {Number} oldValue The original value.
+     */
+
+    /**
+     * @event updatedata
+     * @hide
+     */
+
+    /**
+     * @event action
+     * @hide
+     */
+
     config: {
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         cls: Ext.baseCSSPrefix + 'spinner',
 
         /**
@@ -55,10 +80,10 @@ Ext.define('Ext.field.Spinner', {
         maxValue: Number.MAX_VALUE,
 
         /**
-         * @cfg {Number} increment Value that is added or subtracted from the current value when a spinner is used.
+         * @cfg {Number} stepValue Value that is added or subtracted from the current value when a spinner is used.
          * @accessor
          */
-        increment: 0.1,
+        stepValue: 0.1,
 
         /**
          * @cfg {Boolean} accelerateOnTapHold True if autorepeating should start slowly and accelerate.
@@ -67,7 +92,7 @@ Ext.define('Ext.field.Spinner', {
         accelerateOnTapHold: true,
 
         /**
-         * @cfg {Boolean} cycle When set to true, it will loop the values of a minimum or maximum is reached.
+         * @cfg {Boolean} cycle When set to `true`, it will loop the values of a minimum or maximum is reached.
          * If the maximum value is reached, the value will be set to the minimum.
          * @accessor
          */
@@ -81,8 +106,8 @@ Ext.define('Ext.field.Spinner', {
         clearIcon: false,
 
         /**
-         * @cfg {Number} defaultValue The default value for this field when no value has been set. It is also used when
-         *                            the value is set to `NaN`.
+         * @cfg {Number} defaultValue The default value for this field when no value has been set.
+         * It is also used when the value is set to `NaN`.
          */
         defaultValue: 0,
 
@@ -92,19 +117,35 @@ Ext.define('Ext.field.Spinner', {
          */
         tabIndex: -1,
 
-        // @inherit
+        /**
+         * @cfg {Boolean} groupButtons
+         * `true` if you want to group the buttons to the right of the fields. `false` if you want the buttons
+         * to be at either side of the field.
+         */
+        groupButtons: true,
+
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         component: {
             disabled: true
         }
     },
 
     constructor: function() {
-        this.callParent(arguments);
+        var me = this;
 
-        if (!this.getValue()) {
-            this.setValue(this.getDefaultValue());
+        me.callParent(arguments);
+
+        if (!me.getValue()) {
+            me.suspendEvents();
+            me.setValue(me.getDefaultValue());
+            me.resumeEvents();
         }
     },
+
+    syncEmptyCls: Ext.emptyFn,
 
     /**
      * Updates the {@link #component} configuration
@@ -121,21 +162,36 @@ Ext.define('Ext.field.Spinner', {
                 html: '-'
             });
 
-            innerElement.insertFirst(this.spinDownButton);
-
             this.spinUpButton = Ext.Element.create({
                 cls : cls + '-button ' + cls + '-button-up',
                 html: '+'
             });
-
-            innerElement.appendChild(this.spinUpButton);
 
             this.downRepeater = this.createRepeater(this.spinDownButton, this.onSpinDown);
             this.upRepeater = this.createRepeater(this.spinUpButton,     this.onSpinUp);
         }
     },
 
-    // @inherit
+    updateGroupButtons: function(newGroupButtons, oldGroupButtons) {
+        var me = this,
+            innerElement = me.innerElement,
+            cls = me.getBaseCls() + '-grouped-buttons';
+
+        me.getComponent();
+
+        if (newGroupButtons != oldGroupButtons) {
+            if (newGroupButtons) {
+                this.addCls(cls);
+                innerElement.appendChild(me.spinDownButton);
+                innerElement.appendChild(me.spinUpButton);
+            } else {
+                this.removeCls(cls);
+                innerElement.insertFirst(me.spinDownButton);
+                innerElement.appendChild(me.spinUpButton);
+            }
+        }
+    },
+
     applyValue: function(value) {
         value = parseFloat(value);
         if (isNaN(value) || value === null) {
@@ -168,21 +224,21 @@ Ext.define('Ext.field.Spinner', {
 
     // @private
     onSpinDown: function() {
-        if (!this.getDisabled()) {
+        if (!this.getDisabled() && !this.getReadOnly()) {
             this.spin(true);
         }
     },
 
     // @private
     onSpinUp: function() {
-        if (!this.getDisabled()) {
+        if (!this.getDisabled() && !this.getReadOnly()) {
             this.spin(false);
         }
     },
 
     // @private
     onTouchStart: function(repeater) {
-        if (!this.getDisabled()) {
+        if (!this.getDisabled() && !this.getReadOnly()) {
             repeater.getEl().addCls(Ext.baseCSSPrefix + 'button-pressed');
         }
     },
@@ -196,17 +252,17 @@ Ext.define('Ext.field.Spinner', {
     spin: function(down) {
         var me = this,
             originalValue = me.getValue(),
-            increment = me.getIncrement(),
+            stepValue = me.getStepValue(),
             direction = down ? 'down' : 'up',
             minValue = me.getMinValue(),
             maxValue = me.getMaxValue(),
             value;
 
         if (down) {
-            value = originalValue - increment;
+            value = originalValue - stepValue;
         }
         else {
-            value = originalValue + increment;
+            value = originalValue + stepValue;
         }
 
         //if cycle is true, then we need to check fi the value hasn't changed and we cycle the value
@@ -245,6 +301,15 @@ Ext.define('Ext.field.Spinner', {
         this.setValue(this.getDefaultValue());
     },
 
+    setValue: function(value){
+        this.callSuper(arguments);
+
+        // @TODO: Isn't this already done by the framework by default?
+//        if(Ext.getThemeName() == 'WP'){
+//            this.getComponent().element.dom.setAttribute('value',value);
+//        }
+    },
+
     // @private
     destroy: function() {
         var me = this;
@@ -263,10 +328,23 @@ Ext.define('Ext.field.Spinner', {
                  */
                 if (config.hasOwnProperty('incrementValue')) {
                     //<debug warn>
-                    Ext.Logger.deprecate("'incrementValue' config is deprecated, please use 'increment' config instead", this);
+                    Ext.Logger.deprecate("'incrementValue' config is deprecated, please use 'stepValue' config instead", this);
                     //</debug>
-                    config.increment = config.incrementValue;
+                    config.stepValue = config.incrementValue;
                     delete config.incrementValue;
+                }
+
+                /**
+                 * @cfg {String} increment
+                 * The increment value of this spinner field.
+                 * @deprecated 2.0.0 Please use {@link #stepValue} instead
+                 */
+                if (config.hasOwnProperty('increment')) {
+                    //<debug warn>
+                    Ext.Logger.deprecate("'increment' config is deprecated, please use 'stepValue' config instead", this);
+                    //</debug>
+                    config.stepValue = config.increment;
+                    delete config.increment;
                 }
             }
 

@@ -1,202 +1,69 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<meta charset="UTF-8">
-		<title>Sencha Radio</title>
+<!DOCTYPE HTML>
+<html manifest="" lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <title>Sencha Radio</title>
+    <style type="text/css">
+        html, body {
+            height: 100%;
+			background: #1a1a1a url(resources/images/hexabump.png);
+            background-color: #1985D0
+        }
 
-		<link rel="stylesheet" href="resources/css/app.css" type="text/css">
+		@media
+        	(-webkit-min-device-pixel-ratio: 2),
+	        (-o-min-device-pixel-ratio: 3/2),
+	        (min-device-pixel-ratio: 2)
+	    {
+	        html, body {
+				background-image: url(resources/images/hexabump@2X.png);
+				background-size: 19px 33px;
+	        }
+	    }
 
-		<script type="text/javascript" src="touch/sencha-touch.js"></script>
-		<script type="text/javascript" src="app-all.js"></script>
-		<script type="text/javascript" src="intro.js"></script>
-	</head>
-	<body>
-		<div id="animation-wrapper" >
-<ol id="AN-sObj-parentOl">
+        #appLoadingIndicator {
+            position: absolute;
+            top: 50%;
+            margin-top: -15px;
+            text-align: center;
+            width: 100%;
+            height: 30px;
+            -webkit-animation-name: appLoadingIndicator;
+            -webkit-animation-duration: 0.5s;
+            -webkit-animation-iteration-count: infinite;
+            -webkit-animation-direction: linear;
+        }
 
-<li id="AN-sObj-scene-id-0" >
-<div class="AN-sObj-stage">
-    <div id="root">
-        <div id="pink-light"></div>
-        <div id="white-light"></div>
-        <div id="catch-phrase"><span>Made with ♥ in California.</span></div>
-        <div id="product-name"><span>Radio</span></div>
-        <div id="company-name"><span>Sencha</span></div>
-        <div id="logo-lit"><div id="AN-sObj-val-11402"></div></div>
-        <div id="logo-dimmed"><div id="AN-sObj-val-11403"></div></div>
-        <div id="equalizer">
-            <div id="AN-sObj-11254"></div>
-            <div id="AN-sObj-11255"></div>
-            <div id="AN-sObj-11256">
-                <div id="AN-sObj-11257">
-                    <div id="AN-sObj-11258"></div>
-                    <div id="AN-sObj-11259"></div>
-                    <div id="AN-sObj-11260"></div>
-                    <div id="AN-sObj-11261"></div>
-                    <div id="AN-sObj-11262"></div>
-                    <div id="AN-sObj-11263"></div>
-                    <div id="AN-sObj-11264"></div>
-                    <div id="AN-sObj-11265"></div>
-                    <div id="AN-sObj-11266"></div>
-                </div>
-                <div id="AN-sObj-11267">
-                    <div id="AN-sObj-11268"></div>
-                    <div id="AN-sObj-11269"></div>
-                    <div id="AN-sObj-11270"></div>
-                    <div id="AN-sObj-11271"></div>
-                    <div id="AN-sObj-11272"></div>
-                    <div id="AN-sObj-11273"></div>
-                    <div id="AN-sObj-11274"></div>
-                    <div id="AN-sObj-11275"></div>
-                    <div id="AN-sObj-11276"></div>
-                </div>
-                <div id="AN-sObj-11277">
-                    <div id="AN-sObj-11278"></div>
-                    <div id="AN-sObj-11279"></div>
-                    <div id="AN-sObj-11280"></div>
-                    <div id="AN-sObj-11281"></div>
-                    <div id="AN-sObj-11282"></div>
-                    <div id="AN-sObj-11283"></div>
-                    <div id="AN-sObj-11284"></div>
-                    <div id="AN-sObj-11285"></div>
-                    <div id="AN-sObj-11286"></div>
-                </div>
-                <div id="AN-sObj-11287">
-                    <div id="AN-sObj-11288"></div>
-                    <div id="AN-sObj-11289"></div>
-                    <div id="AN-sObj-11290"></div>
-                    <div id="AN-sObj-11291"></div>
-                    <div id="AN-sObj-11292"></div>
-                    <div id="AN-sObj-11293"></div>
-                    <div id="AN-sObj-11294"></div>
-                    <div id="AN-sObj-11295"></div>
-                    <div id="AN-sObj-11296"></div>
-                </div>
-                <div id="AN-sObj-11297">
-                    <div id="AN-sObj-11298"></div>
-                    <div id="AN-sObj-11299"></div>
-                    <div id="AN-sObj-11300"></div>
-                    <div id="AN-sObj-11301"></div>
-                    <div id="AN-sObj-11302"></div>
-                    <div id="AN-sObj-11303"></div>
-                    <div id="AN-sObj-11304"></div>
-                    <div id="AN-sObj-11305"></div>
-                    <div id="AN-sObj-11306"></div>
-                </div>
-                <div id="AN-sObj-11307">
-                    <div id="AN-sObj-11308"></div>
-                    <div id="AN-sObj-11309"></div>
-                    <div id="AN-sObj-11310"></div>
-                    <div id="AN-sObj-11311"></div>
-                    <div id="AN-sObj-11312"></div>
-                    <div id="AN-sObj-11313"></div>
-                    <div id="AN-sObj-11314"></div>
-                    <div id="AN-sObj-11315"></div>
-                    <div id="AN-sObj-11316"></div>
-                </div>
-                <div id="AN-sObj-11317">
-                    <div id="AN-sObj-11318"></div>
-                    <div id="AN-sObj-11319"></div>
-                    <div id="AN-sObj-11320"></div>
-                    <div id="AN-sObj-11321"></div>
-                    <div id="AN-sObj-11322"></div>
-                    <div id="AN-sObj-11323"></div>
-                    <div id="AN-sObj-11324"></div>
-                    <div id="AN-sObj-11325"></div>
-                    <div id="AN-sObj-11326"></div>
-                </div>
-                <div id="AN-sObj-11327">
-                    <div id="AN-sObj-11328"></div>
-                    <div id="AN-sObj-11329"></div>
-                    <div id="AN-sObj-11330"></div>
-                    <div id="AN-sObj-11331"></div>
-                    <div id="AN-sObj-11332"></div>
-                    <div id="AN-sObj-11333"></div>
-                    <div id="AN-sObj-11334"></div>
-                    <div id="AN-sObj-11335"></div>
-                    <div id="AN-sObj-11336"></div>
-                </div>
-                <div id="AN-sObj-11337">
-                    <div id="AN-sObj-11338"></div>
-                    <div id="AN-sObj-11339"></div>
-                    <div id="AN-sObj-11340"></div>
-                    <div id="AN-sObj-11341"></div>
-                    <div id="AN-sObj-11342"></div>
-                    <div id="AN-sObj-11343"></div>
-                    <div id="AN-sObj-11344"></div>
-                    <div id="AN-sObj-11345"></div>
-                    <div id="AN-sObj-11346"></div>
-                </div>
-                <div id="AN-sObj-11347">
-                    <div id="AN-sObj-11348"></div>
-                    <div id="AN-sObj-11349"></div>
-                    <div id="AN-sObj-11350"></div>
-                    <div id="AN-sObj-11351"></div>
-                    <div id="AN-sObj-11352"></div>
-                    <div id="AN-sObj-11353"></div>
-                    <div id="AN-sObj-11354"></div>
-                    <div id="AN-sObj-11355"></div>
-                    <div id="AN-sObj-11356"></div>
-                </div>
-                <div id="AN-sObj-11357">
-                    <div id="AN-sObj-11358"></div>
-                    <div id="AN-sObj-11359"></div>
-                    <div id="AN-sObj-11360"></div>
-                    <div id="AN-sObj-11361"></div>
-                    <div id="AN-sObj-11362"></div>
-                    <div id="AN-sObj-11363"></div>
-                    <div id="AN-sObj-11364"></div>
-                    <div id="AN-sObj-11365"></div>
-                    <div id="AN-sObj-11366"></div>
-                </div>
-                <div id="AN-sObj-11367">
-                    <div id="AN-sObj-11368"></div>
-                    <div id="AN-sObj-11369"></div>
-                    <div id="AN-sObj-11370"></div>
-                    <div id="AN-sObj-11371"></div>
-                    <div id="AN-sObj-11372"></div>
-                    <div id="AN-sObj-11373"></div>
-                    <div id="AN-sObj-11374"></div>
-                    <div id="AN-sObj-11375"></div>
-                    <div id="AN-sObj-11376"></div>
-                </div>
-                <div id="AN-sObj-11377">
-                    <div id="AN-sObj-11378"></div>
-                    <div id="AN-sObj-11379"></div>
-                    <div id="AN-sObj-11380"></div>
-                    <div id="AN-sObj-11381"></div>
-                    <div id="AN-sObj-11382"></div>
-                    <div id="AN-sObj-11383"></div>
-                    <div id="AN-sObj-11384"></div>
-                    <div id="AN-sObj-11385"></div>
-                    <div id="AN-sObj-11386"></div>
-                </div>
-                <div id="AN-sObj-11387">
-                    <div id="AN-sObj-11388"></div>
-                    <div id="AN-sObj-11389"></div>
-                    <div id="AN-sObj-11390"></div>
-                    <div id="AN-sObj-11391"></div>
-                    <div id="AN-sObj-11392"></div>
-                    <div id="AN-sObj-11393"></div>
-                    <div id="AN-sObj-11394"></div>
-                    <div id="AN-sObj-11395"></div>
-                    <div id="AN-sObj-11396"></div>
-                </div>
-            </div>
-        </div>
+        #appLoadingIndicator > * {
+            background-color: #44a65b;
+            display: inline-block;
+            height: 30px;
+            -webkit-border-radius: 15px;
+            margin: 0 5px;
+            width: 30px;
+            opacity: 0.8;
+        }
+
+        @-webkit-keyframes appLoadingIndicator{
+            0% {
+                opacity: 0.8
+            }
+            50% {
+                opacity: 0
+            }
+            100% {
+                opacity: 0.8
+            }
+        }
+    </style>
+    <!-- The line below must be kept intact for Sencha Command to build your application -->
+    <script id="microloader" type="text/javascript" src="touch/microloader/development.js"></script>
+</head>
+<body>
+    <div id="appLoadingIndicator">
+        <div></div>
+        <div></div>
+        <div></div>
     </div>
-</div>
-</li>
-</ol>
-		</div>
-        <!-- Content used for overlay -->
-        <div style="display: none;" id="overlay-content">
-            <div id="credits">
-                Please fill in text here
-                <h3>Bruno</h3>
-                <h3>Ryan</h3>
-                <h3>Juris</h3>
-            </div>
-        </div>
-	</body>
+</body>
 </html>

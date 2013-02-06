@@ -5,7 +5,7 @@
  *
  * ## Example
  *
- *     @example
+ *     @example miniphone
  *     Ext.Viewport.add({
  *         masked: {
  *            xtype: 'loadmask'
@@ -14,7 +14,7 @@
  *
  * You can customize the loading {@link #message} and whether or not you want to show the {@link #indicator}:
  *
- *     @example
+ *     @example miniphone
  *     Ext.Viewport.add({
  *         masked: {
  *            xtype: 'loadmask',
@@ -48,13 +48,7 @@ Ext.define('Ext.LoadMask', {
          * True to show the loading indicator on this {@link Ext.LoadMask}.
          * @accessor
          */
-        indicator: true,
-
-        // @inherit
-        listeners: {
-            painted: 'onPainted',
-            erased: 'onErased'
-        }
+        indicator: true
     },
 
     getTemplate: function() {
@@ -96,6 +90,14 @@ Ext.define('Ext.LoadMask', {
      * @private
      */
     updateMessage: function(newMessage) {
+        var cls = Ext.baseCSSPrefix + 'has-message';
+
+        if (newMessage) {
+            this.addCls(cls);
+        } else {
+            this.removeCls(cls);
+        }
+
         this.messageElement.setHtml(newMessage);
     },
 
@@ -108,46 +110,13 @@ Ext.define('Ext.LoadMask', {
     },
 
     /**
-     * Shows/hides the loading indicator when the {@link #indicator} configuration is changed.
+     * Shows or hides the loading indicator when the {@link #indicator} configuration is changed.
      * @private
      */
     updateIndicator: function(newIndicator) {
         this[newIndicator ? 'removeCls' : 'addCls'](Ext.baseCSSPrefix + 'indicator-hidden');
-    },
-
-    onPainted: function() {
-        this.getParent().on({
-            scope: this,
-            resize: this.refreshPosition
-        });
-
-        this.refreshPosition();
-    },
-
-    onErased: function() {
-        this.getParent().un({
-            scope: this,
-            resize: this.refreshPosition
-        });
-    },
-
-    /**
-     * @private
-     * Updates the location of the indicator
-     */
-    refreshPosition: function() {
-        var parent = this.getParent(),
-            scrollable = parent.getScrollable(),
-            scroller = (scrollable) ? scrollable.getScroller() : null,
-            offset = (scroller) ? scroller.position : { x: 0, y: 0 },
-            parentSize = parent.element.getSize(),
-            innerSize = this.element.getSize();
-
-        this.innerElement.setStyle({
-            marginTop: Math.round(parentSize.height - innerSize.height + (offset.y * 2)) + 'px',
-            marginLeft: Math.round(parentSize.width - innerSize.width + offset.x) + 'px'
-        });
     }
+
 }, function() {
     //<deprecated product=touch since=2.0>
     this.override({
@@ -185,11 +154,11 @@ Ext.define('Ext.LoadMask', {
                 /**
                  * @cfg {Ext.data.Store} store
                  * Optional Store to which the mask is bound. The mask is displayed when a load request is issued, and
-                 * hidden on either load sucess, or load fail.
-                 * @deprecated 2.0.0 You can no longer bind a store to a {@link Ext.LoadMask}
+                 * hidden on either load success, or load fail.
+                 * @removed 2.0.0 You can no longer bind a store to a {@link Ext.LoadMask}
                  */
                 if (config.hasOwnProperty('store')) {
-                    Ext.Logger.deprecate("'store' config is deprecated. You can no longer bind a store to a Ext.LoadMask", this);
+                    Ext.Logger.deprecate("'store' config has been removed. You can no longer bind a store to a Ext.LoadMask", this);
                     delete config.store;
                 }
             }
@@ -200,7 +169,7 @@ Ext.define('Ext.LoadMask', {
         /**
          * Changes the data store bound to this LoadMask.
          * @param {Ext.data.Store} store The store to bind to this LoadMask
-         * @deprecated 2.0.0 You can no longer bind a store to a {@link Ext.LoadMask}.
+         * @removed 2.0.0 You can no longer bind a store to a {@link Ext.LoadMask}.
          */
         bindStore: function() {
             Ext.Logger.deprecate("You can no longer bind a store to a Ext.LoadMask", this);

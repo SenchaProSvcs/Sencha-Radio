@@ -1,3 +1,6 @@
+/**
+ * @private
+ */
 Ext.define('Ext.scroll.indicator.Abstract', {
     extend: 'Ext.Component',
 
@@ -10,6 +13,8 @@ Ext.define('Ext.scroll.indicator.Abstract', {
 
         length: null,
 
+        minLength: 6,
+
         hidden: true,
 
         ui: 'dark'
@@ -18,7 +23,9 @@ Ext.define('Ext.scroll.indicator.Abstract', {
     cachedConfig: {
         ratio: 1,
 
-        barCls: 'x-scroll-bar'
+        barCls: 'x-scroll-bar',
+
+        active: true
     },
 
     barElement: null,
@@ -72,6 +79,10 @@ Ext.define('Ext.scroll.indicator.Abstract', {
         this.setOffset(this.gapLength * value);
     },
 
+    updateActive: function(active) {
+        this.barElement[active ? 'addCls' : 'removeCls']('active');
+    },
+
     doSetHidden: function(hidden) {
         var elementDomStyle = this.element.dom.style;
 
@@ -83,14 +94,21 @@ Ext.define('Ext.scroll.indicator.Abstract', {
         }
     },
 
-    updateLength: function(length) {
-        var axis = this.getAxis();
+    applyLength: function(length) {
+        return Math.max(this.getMinLength(), length);
+    },
 
-        if (axis === 'x') {
-            this.element.setWidth(length);
-        }
-        else {
-            this.element.setHeight(length);
+    updateLength: function(length) {
+        if (!this.isDestroyed) {
+            var axis = this.getAxis(),
+                element = this.element;
+
+            if (axis === 'x') {
+                element.setWidth(length);
+            }
+            else {
+                element.setHeight(length);
+            }
         }
     },
 

@@ -1,17 +1,7 @@
-$theme-name: 'default';
-
 /**
  * @class Global_CSS
- *
- * Global CSS variables and mixins of Sencha Touch.
+ * Global CSS variables and mixins of Sencha Touch's Default Theme.
  */
-
-/**
- * @var {boolean} $include-html-style
- * Optionally remove included HTML styles/typography (for components with styleHtmlContent: true).
- * Styles are scoped to .x-html. Set to false to reduce CSS weight.
- */
-$include-html-style: true !default;
 
 /**
  * @var {boolean} $include-default-icons
@@ -63,19 +53,21 @@ $basic-slider: false !default;
  * @var {color} $base-color
  * The primary color variable from which most elements derive their color scheme.
  */
-$base-color: #354F6E !default; // Graphite
+$base-color: #1985D0 !default; // Triton Blue
 
 /**
  * @var {string} $base-gradient
  * The primary gradient variable from which most elements derive their color scheme.
- * @see background-gradient
+ *
+ * See background-gradient mixin.
  */
-$base-gradient: 'matte' !default;
+$base-gradient: if($include-highlights, matte, null) !default;
 
 /**
  * @var {font-family} $font-family
  * The font-family to be used throughout the theme.
- * @see background-gradient
+ *
+ * See background-gradient mixin.
  */
 $font-family: "Helvetica Neue", HelveticaNeue, "Helvetica-Neue", Helvetica, "BBAlpha Sans", sans-serif !default;
 
@@ -98,6 +90,12 @@ $confirm-color: #92cf00 !default; // Green
 $active-color: darken(saturate($base-color, 55%), 10%) !default;
 
 /**
+ * @var {color} $neutral-color
+ * Color used for the neautral `ui` for Toolbars and Tabbars.
+ */
+$neutral-color: #e0e0e0;
+
+/**
  * @var {color} $page-bg-color
  * Background color for fullscreen components.
  */
@@ -105,6 +103,24 @@ $page-bg-color: #eee !default;
 
 /**
  * @var {measurement} $global-row-height
- * The minimum row height for items like toolbars and list items.
+ * The minimum row height for items like toolbars.
  */
 $global-row-height: 2.6em !default;
+
+/**
+ * @var {measurement} $global-list-height
+ * The minimum row height for items like toolbars.
+ */
+$global-list-height: 46px !default;
+
+/**
+ * @var {measurement} $toolbar-spacing
+ * Space between items in a toolbar (like buttons and fields)
+ */
+$toolbar-spacing: .2em !default;
+
+/**
+ * @var {color} $loading-spinner-color
+ * Background-color for the bars in the loading spinner.
+ */
+$loading-spinner-color: #aaa !default;

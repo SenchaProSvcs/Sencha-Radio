@@ -1,11 +1,15 @@
 /**
- * A simple event recogniser which knows when you double tap.
- * 
+ * A simple event recognizer which knows when you double tap.
+ *
  * @private
  */
 Ext.define('Ext.event.recognizer.DoubleTap', {
 
     extend: 'Ext.event.recognizer.SingleTouch',
+
+    inheritableStatics: {
+        DIFFERENT_TARGET: 0x03
+    },
 
     config: {
         maxDuration: 300
@@ -19,19 +23,23 @@ Ext.define('Ext.event.recognizer.DoubleTap', {
      * Fires when there is a single tap.
      * @param {Ext.event.Event} event The {@link Ext.event.Event} event encapsulating the DOM event.
      * @param {HTMLElement} node The target of the event.
-     * @param {Object} options The options object passed to Ext.util.Observable.addListener.
+     * @param {Object} options The options object passed to Ext.mixin.Observable.addListener.
      */
-    
+
     /**
      * @member Ext.dom.Element
      * @event doubletap
      * Fires when there is a double tap.
      * @param {Ext.event.Event} event The {@link Ext.event.Event} event encapsulating the DOM event.
      * @param {HTMLElement} node The target of the event.
-     * @param {Object} options The options object passed to Ext.util.Observable.addListener.
+     * @param {Object} options The options object passed to Ext.mixin.Observable.addListener.
      */
 
     singleTapTimer: null,
+
+    startTime: 0,
+
+    lastTapTime: 0,
 
     onTouchStart: function(e) {
         if (this.callParent(arguments) === false) {
@@ -39,6 +47,7 @@ Ext.define('Ext.event.recognizer.DoubleTap', {
         }
 
         this.startTime = e.time;
+
         clearTimeout(this.singleTapTimer);
     },
 
@@ -51,15 +60,23 @@ Ext.define('Ext.event.recognizer.DoubleTap', {
             maxDuration = this.getMaxDuration(),
             touch = e.changedTouches[0],
             time = e.time,
+            target = e.target,
             lastTapTime = this.lastTapTime,
+            lastTarget = this.lastTarget,
             duration;
 
         this.lastTapTime = time;
+        this.lastTarget = target;
 
         if (lastTapTime) {
             duration = time - lastTapTime;
 
             if (duration <= maxDuration) {
+                if (target !== lastTarget) {
+                    return this.fail(this.self.DIFFERENT_TARGET);
+                }
+
+                this.lastTarget = null;
                 this.lastTapTime = 0;
 
                 this.fire('doubletap', e, [touch], {

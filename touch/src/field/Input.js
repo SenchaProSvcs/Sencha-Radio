@@ -7,7 +7,7 @@ Ext.define('Ext.field.Input', {
 
     /**
      * @event clearicontap
-     * Fires whenever the clear icon is tapped
+     * Fires whenever the clear icon is tapped.
      * @param {Ext.field.Input} this
      * @param {Ext.EventObject} e The event object
      */
@@ -15,64 +15,64 @@ Ext.define('Ext.field.Input', {
     /**
      * @event masktap
      * @preventable doMaskTap
-     * Fires whenever a mask is tapped
+     * Fires whenever a mask is tapped.
      * @param {Ext.field.Input} this
-     * @param {Ext.EventObject} e The event object
+     * @param {Ext.EventObject} e The event object.
      */
 
     /**
      * @event focus
      * @preventable doFocus
-     * Fires whenever the input get focus
-     * @param {Ext.EventObject} e The event object
+     * Fires whenever the input get focus.
+     * @param {Ext.EventObject} e The event object.
      */
 
     /**
      * @event blur
      * @preventable doBlur
-     * Fires whenever the input loses focus
-     * @param {Ext.EventObject} e The event object
+     * Fires whenever the input loses focus.
+     * @param {Ext.EventObject} e The event object.
      */
 
     /**
      * @event click
-     * Fires whenever the input is clicked
-     * @param {Ext.EventObject} e The event object
+     * Fires whenever the input is clicked.
+     * @param {Ext.EventObject} e The event object.
      */
 
     /**
      * @event keyup
-     * Fires whenever keyup is detected
-     * @param {Ext.EventObject} e The event object
+     * Fires whenever keyup is detected.
+     * @param {Ext.EventObject} e The event object.
      */
 
     /**
      * @event paste
-     * Fires whenever paste is detected
-     * @param {Ext.EventObject} e The event object
+     * Fires whenever paste is detected.
+     * @param {Ext.EventObject} e The event object.
      */
 
     /**
      * @event mousedown
-     * Fires whenever the input has a mousedown occur
-     * @param {Ext.EventObject} e The event object
+     * Fires whenever the input has a mousedown occur.
+     * @param {Ext.EventObject} e The event object.
      */
 
     /**
-     * @property {String} tag The el tag
+     * @property {String} tag The el tag.
      * @private
      */
     tag: 'input',
 
     cachedConfig: {
         /**
-         * @cfg {String} cls The className to be applied to this input
+         * @cfg {String} cls The `className` to be applied to this input.
          * @accessor
          */
         cls: Ext.baseCSSPrefix + 'form-field',
 
         /**
-         * @cfg {String} focusCls The CSS class to use when the field receives focus
+         * @cfg {String} focusCls The CSS class to use when the field receives focus.
          * @accessor
          */
         focusCls: Ext.baseCSSPrefix + 'field-focus',
@@ -81,55 +81,59 @@ Ext.define('Ext.field.Input', {
         maskCls: Ext.baseCSSPrefix + 'field-mask',
 
         /**
-         * True to use a mask on this field, or `auto` to automatically select when you should use it.
-         * @cfg {String/Boolean} useMask
+          * @cfg {String/Boolean} useMask
+         * `true` to use a mask on this field, or `auto` to automatically select when you should use it.
          * @private
          * @accessor
          */
         useMask: 'auto',
 
         /**
-         * @cfg {String} type The type attribute for input fields -- e.g. radio, text, password, file (defaults
-         * to 'text'). The types 'file' and 'password' must be used to render those field types currently -- there are
-         * no separate Ext components for those.
+         * @cfg {String} type The type attribute for input fields -- e.g. radio, text, password.
+         *
+         * If you want to use a `file` input, please use the {@link Ext.field.File} component instead.
          * @accessor
          */
         type: 'text',
 
         /**
-         * @cfg {Boolean} checked <tt>true</tt> if the checkbox should render initially checked (defaults to <tt>false</tt>)
+         * @cfg {Boolean} checked `true` if the checkbox should render initially checked.
          * @accessor
          */
         checked: false
     },
 
     config: {
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         baseCls: Ext.baseCSSPrefix + 'field-input',
 
         /**
-         * @cfg {String} name The field's HTML name attribute
-         * <b>Note</b>: this property must be set if this field is to be automatically included with
+         * @cfg {String} name The field's HTML name attribute.
+         * __Note:__ This property must be set if this field is to be automatically included with
          * {@link Ext.form.Panel#method-submit form submit()}.
          * @accessor
          */
         name: null,
 
         /**
-         * @cfg {Mixed} value A value to initialize this field with (defaults to undefined).
+         * @cfg {Mixed} value A value to initialize this field with.
          * @accessor
          */
         value: null,
 
         /**
-         * @property {Boolean} <tt>True</tt> if the field currently has focus.
+         * @property {Boolean} `true` if the field currently has focus.
          * @accessor
          */
         isFocused: false,
 
         /**
-         * @cfg {Number} tabIndex The tabIndex for this field. Note this only applies to fields that are rendered,
-         * not those which are built via applyTo (defaults to undefined).
+         * @cfg {Number} tabIndex The `tabIndex` for this field.
+         *
+         * __Note:__ This only applies to fields that are rendered, not those which are built via `applyTo`.
          * @accessor
          */
         tabIndex: null,
@@ -141,84 +145,112 @@ Ext.define('Ext.field.Input', {
         placeHolder: null,
 
         /**
-         * @cfg {Number} minValue The minimum value that this Number field can accept (defaults to undefined, e.g. no minimium)
+         * @cfg {Number} [minValue=undefined] The minimum value that this Number field can accept (defaults to `undefined`, e.g. no minimum).
          * @accessor
          */
         minValue: null,
 
         /**
-         * @cfg {Number} maxValue The maximum value that this Number field can accept (defaults to undefined, e.g. no maximum)
+         * @cfg {Number} [maxValue=undefined] The maximum value that this Number field can accept (defaults to `undefined`, e.g. no maximum).
          * @accessor
          */
         maxValue: null,
 
         /**
-         * @cfg {Number} stepValue The amount by which the field is incremented or decremented each time the spinner is tapped.
-         * Defaults to undefined, which means that the field goes up or down by 1 each time the spinner is tapped
+         * @cfg {Number} [stepValue=undefined] The amount by which the field is incremented or decremented each time the spinner is tapped.
+         * Defaults to `undefined`, which means that the field goes up or down by 1 each time the spinner is tapped.
          * @accessor
          */
         stepValue: null,
 
         /**
-         * @cfg {Number} maxLength The maximum number of permitted input characters (defaults to 0).
+         * @cfg {Number} [maxLength=0] The maximum number of permitted input characters.
          * @accessor
          */
         maxLength: null,
 
         /**
-         * True to set the field's DOM element autocomplete attribute to "on", false to set to "off". Defaults to undefined, leaving the attribute unset
-         * @cfg {Boolean} autoComplete
+         * @cfg {Boolean} [autoComplete=undefined]
+         * `true` to set the field's DOM element `autocomplete` attribute to `"on"`, `false` to set to `"off"`. Defaults to `undefined`, leaving the attribute unset.
          * @accessor
          */
         autoComplete: null,
 
         /**
-         * True to set the field's DOM element autocapitalize attribute to "on", false to set to "off". Defaults to undefined, leaving the attribute unset
-         * @cfg {Boolean} autoCapitalize
+         * @cfg {Boolean} [autoCapitalize=undefined]
+         * `true` to set the field's DOM element `autocapitalize` attribute to `"on"`, `false` to set to `"off"`. Defaults to `undefined`, leaving the attribute unset
          * @accessor
          */
         autoCapitalize: null,
 
         /**
-         * True to set the field DOM element autocorrect attribute to "on", false to set to "off". Defaults to undefined, leaving the attribute unset.
+         * `true` to set the field DOM element `autocorrect` attribute to `"on"`, `false` to set to `"off"`. Defaults to `undefined`, leaving the attribute unset.
          * @cfg {Boolean} autoCorrect
          * @accessor
          */
         autoCorrect: null,
 
         /**
-         * True to set the field DOM element readonly attribute to "true". Defaults to undefined, leaving the attribute unset.
-         * @cfg {Boolean} readOnly
+         * @cfg {Boolean} [readOnly=undefined]
+         * `true` to set the field DOM element `readonly` attribute to `"true"`. Defaults to `undefined`, leaving the attribute unset.
          * @accessor
          */
         readOnly: null,
 
         /**
-         * Sets the field DOM element maxRows attribute. Defaults to undefined, leaving the attribute unset.
-         * @cfg {Number} maxRows
+         * @cfg {Number} [maxRows=undefined]
+         * Sets the field DOM element `maxRows` attribute. Defaults to `undefined`, leaving the attribute unset.
          * @accessor
          */
         maxRows: null,
 
         /**
-         * @cfg {Boolean} disabled True to disable the field (defaults to false).
-         * <p>Be aware that conformant with the <a href="http://www.w3.org/TR/html401/interact/forms.html#h-17.12.1">HTML specification</a>,
-         * disabled Fields will not be {@link Ext.form.Panel#method-submit submitted}.</p>
+         * @cfg {String} pattern The value for the HTML5 `pattern` attribute.
+         * You can use this to change which keyboard layout will be used.
+         *
+         *     Ext.define('Ux.field.Pattern', {
+         *         extend : 'Ext.field.Text',
+         *         xtype  : 'patternfield',
+         *
+         *         config : {
+         *             component : {
+         *                 pattern : '[0-9]*'
+         *             }
+         *         }
+         *     });
+         *
+         * Even though it extends {@link Ext.field.Text}, it will display the number keyboard.
+         *
+         * @accessor
+         */
+        pattern: null,
+
+        /**
+         * @cfg {Boolean} [disabled=false] `true` to disable the field.
+         *
+         * Be aware that conformant with the [HTML specification](http://www.w3.org/TR/html401/interact/forms.html),
+         * disabled Fields will not be {@link Ext.form.Panel#method-submit submitted}.
          * @accessor
          */
 
         /**
-         * <p>The value that the Field had at the time it was last focused. This is the value that is passed
-         * to the {@link Ext.field.Text#change} event which is fired if the value has been changed when the Field is blurred.</p>
-         * <p><b>This will be undefined until the Field has been visited.</b> Compare {@link #originalValue}.</p>
          * @cfg {Mixed} startValue
+         * The value that the Field had at the time it was last focused. This is the value that is passed
+         * to the {@link Ext.field.Text#change} event which is fired if the value has been changed when the Field is blurred.
+         *
+         * __This will be `undefined` until the Field has been visited.__ Compare {@link #originalValue}.
          * @accessor
          */
-        startValue: false
+        startValue: false,
+
+        /**
+         * True to hide sencha-styled clear button and set CSS native clear button (currently supports in IE10 only).
+         */
+        useNativeClearButton: false
     },
 
     /**
-     * @cfg {String/Number} originalValue The original value when the input is rendered
+     * @cfg {String/Number} originalValue The original value when the input is rendered.
      * @private
      */
 
@@ -243,7 +275,6 @@ Ext.define('Ext.field.Input', {
         return items;
     },
 
-    // @inherit
     initElement: function() {
         var me = this;
 
@@ -252,10 +283,12 @@ Ext.define('Ext.field.Input', {
         me.input.on({
             scope: me,
 
-            keyup    : 'onKeyUp',
-            focus    : 'onFocus',
-            blur     : 'onBlur',
-            paste    : 'onPaste'
+            keyup: 'onKeyUp',
+            keydown: 'onKeyDown',
+            focus: 'onFocus',
+            blur: 'onBlur',
+            input: 'onInput',
+            paste: 'onPaste'
         });
 
         me.mask.on({
@@ -264,9 +297,20 @@ Ext.define('Ext.field.Input', {
         });
 
         if (me.clearIcon) {
+            me.element.addCls((this.config.useNativeClearButton)?'native-clear-icon':'sencha-clear-icon');
             me.clearIcon.on({
                 tap: 'onClearIconTap',
+                touchstart: 'onClearIconPress',
+                touchend: 'onClearIconRelease',
                 scope: me
+            });
+        }
+
+        // Hack for IE10. Seems like keyup event is not fired for 'enter' keyboard button, so we use keypress event instead to handle enter.
+        if(Ext.browser.is.ie && Ext.browser.version.major >=10){
+            me.input.on({
+                scope: me,
+                keypress    : 'onKeyPress'
             });
         }
     },
@@ -286,8 +330,12 @@ Ext.define('Ext.field.Input', {
         this.mask[newUseMask ? 'show' : 'hide']();
     },
 
+    updatePattern : function (pattern) {
+        this.updateFieldAttribute('pattern', pattern);
+    },
+
     /**
-     * Helper method to update a specified attribute on the fieldEl, or remove the attribute all together
+     * Helper method to update a specified attribute on the `fieldEl`, or remove the attribute all together.
      * @private
      */
     updateFieldAttribute: function(attribute, newValue) {
@@ -301,7 +349,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Updates the {@link #cls} configuration
+     * Updates the {@link #cls} configuration.
      */
     updateCls: function(newCls, oldCls) {
         this.input.addCls(Ext.baseCSSPrefix + 'input-el');
@@ -309,7 +357,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Updates the type attribute with the {@link #type} configuration
+     * Updates the type attribute with the {@link #type} configuration.
      * @private
      */
     updateType: function(newType, oldType) {
@@ -320,7 +368,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Updates the name attribute with the {@link #name} configuration
+     * Updates the name attribute with the {@link #name} configuration.
      * @private
      */
     updateName: function(newName) {
@@ -328,8 +376,8 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Returns the field data value
-     * @return {Mixed} value The field value
+     * Returns the field data value.
+     * @return {Mixed} value The field value.
      */
     getValue: function() {
         var input = this.input;
@@ -347,7 +395,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Updates the {@link #value} configuration
+     * Updates the {@link #value} configuration.
      * @private
      */
     updateValue: function(newValue) {
@@ -359,7 +407,16 @@ Ext.define('Ext.field.Input', {
     },
 
     setValue: function(newValue) {
+        var oldValue = this._value;
+
         this.updateValue(this.applyValue(newValue));
+
+        newValue = this.getValue();
+
+        if (String(newValue) != String(oldValue) && this.initialized) {
+            this.onChange(this, newValue, oldValue);
+        }
+
         return this;
     },
 
@@ -396,7 +453,7 @@ Ext.define('Ext.field.Input', {
     //</debug>
 
     /**
-     * Updates the maxlength attribute with the {@link #maxLength} configuration
+     * Updates the `maxlength` attribute with the {@link #maxLength} configuration.
      * @private
      */
     updateMaxLength: function(newMaxLength) {
@@ -404,7 +461,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Updates the placeholder attribute with the {@link #placeHolder} configuration
+     * Updates the `placeholder` attribute with the {@link #placeHolder} configuration.
      * @private
      */
     updatePlaceHolder: function(newPlaceHolder) {
@@ -417,7 +474,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Updates the autocomplete attribute with the {@link #autoComplete} configuration
+     * Updates the `autocomplete` attribute with the {@link #autoComplete} configuration.
      * @private
      */
     updateAutoComplete: function(newAutoComplete) {
@@ -431,7 +488,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Updates the autocapitalize attribute with the {@link #autoCapitalize} configuration
+     * Updates the `autocapitalize` attribute with the {@link #autoCapitalize} configuration.
      * @private
      */
     updateAutoCapitalize: function(newAutoCapitalize) {
@@ -445,7 +502,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Updates the autocorrect attribute with the {@link #autoCorrect} configuration
+     * Updates the `autocorrect` attribute with the {@link #autoCorrect} configuration.
      * @private
      */
     updateAutoCorrect: function(newAutoCorrect) {
@@ -454,7 +511,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Updates the min attribute with the {@link #minValue} configuration
+     * Updates the `min` attribute with the {@link #minValue} configuration.
      * @private
      */
     updateMinValue: function(newMinValue) {
@@ -462,7 +519,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Updates the max attribute with the {@link #maxValue} configuration
+     * Updates the `max` attribute with the {@link #maxValue} configuration.
      * @private
      */
     updateMaxValue: function(newMaxValue) {
@@ -470,7 +527,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Updates the step attribute with the {@link #stepValue} configuration
+     * Updates the `step` attribute with the {@link #stepValue} configuration
      * @private
      */
     updateStepValue: function(newStepValue) {
@@ -481,7 +538,7 @@ Ext.define('Ext.field.Input', {
     checkedRe: /^(true|1|on)/i,
 
     /**
-     * Returns the checked value of this field
+     * Returns the `checked` value of this field
      * @return {Mixed} value The field value
      */
     getChecked: function() {
@@ -507,7 +564,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Updates the autocorrect attribute with the {@link #autoCorrect} configuration
+     * Updates the `autocorrect` attribute with the {@link #autoCorrect} configuration
      * @private
      */
     updateChecked: function(newChecked) {
@@ -515,7 +572,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Updates the readonly attribute with the {@link #readOnly} configuration
+     * Updates the `readonly` attribute with the {@link #readOnly} configuration
      * @private
      */
     updateReadOnly: function(readOnly) {
@@ -528,6 +585,8 @@ Ext.define('Ext.field.Input', {
         if (maxRows !== null && typeof maxRows !== 'number') {
             throw new Error("Ext.field.Input: [applyMaxRows] trying to pass a value which is not a number");
         }
+
+        return maxRows;
     },
     //</debug>
 
@@ -535,7 +594,6 @@ Ext.define('Ext.field.Input', {
         this.updateFieldAttribute('rows', newRows);
     },
 
-    // @inherit
     doSetDisabled: function(disabled) {
         this.callParent(arguments);
 
@@ -547,8 +605,9 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * <p>Returns true if the value of this Field has been changed from its original value.
-     * Will return false if the field is disabled or has not been rendered yet.</p>
+     * Returns `true` if the value of this Field has been changed from its original value.
+     * Will return `false` if the field is disabled or has not been rendered yet.
+     * @return {Boolean}
      */
     isDirty: function() {
         if (this.getDisabled()) {
@@ -559,7 +618,7 @@ Ext.define('Ext.field.Input', {
     },
 
     /**
-     * Resets the current field value to the originally loaded value and clears any validation messages.
+     * Resets the current field value to the original value.
      */
     reset: function() {
         this.setValue(this.originalValue);
@@ -611,6 +670,7 @@ Ext.define('Ext.field.Input', {
     /**
      * Attempts to forcefully blur input focus for the field.
      * @return {Ext.field.Input} this
+     * @chainable
      */
     blur: function() {
         var me = this,
@@ -625,6 +685,7 @@ Ext.define('Ext.field.Input', {
     /**
      * Attempts to forcefully select all the contents of the input field.
      * @return {Ext.field.Input} this
+     * @chainable
      */
     select: function() {
         var me = this,
@@ -678,19 +739,21 @@ Ext.define('Ext.field.Input', {
 
     // @private
     onClearIconTap: function(e) {
-        var oldValue = this.getValue(),
-            newValue;
-
-        //hide the clear icon
-        this.clearIcon.hide();
-
         this.fireEvent('clearicontap', this, e);
 
-        newValue = this.getValue();
-
-        if (String(newValue) != String(oldValue)) {
-            this.onChange(this, newValue, oldValue);
+        //focus the field after cleartap happens, but only on android.
+        //this is to stop the keyboard from hiding. TOUCH-2064
+        if (Ext.os.is.Android) {
+            this.focus();
         }
+    },
+
+    onClearIconPress: function() {
+        this.clearIcon.addCls(Ext.baseCSSPrefix + 'pressing');
+    },
+
+    onClearIconRelease: function() {
+        this.clearIcon.removeCls(Ext.baseCSSPrefix + 'pressing');
     },
 
     onClick: function(e) {
@@ -703,6 +766,37 @@ Ext.define('Ext.field.Input', {
 
     onKeyUp: function(e) {
         this.fireEvent('keyup', e);
+    },
+
+    onKeyDown: function() {
+        // tell the class to ignore the input event. this happens when we want to listen to the field change
+        // when the input autocompletes
+        this.ignoreInput = true;
+    },
+
+    onInput: function(e) {
+        var me = this;
+
+        // if we should ignore input, stop now.
+        if (me.ignoreInput) {
+            me.ignoreInput = false;
+            return;
+        }
+
+        // set a timeout for 10ms to check if we want to stop the input event.
+        // if not, then continue with the event (keyup)
+        setTimeout(function() {
+            if (!me.ignoreInput) {
+                me.fireEvent('keyup', e);
+                me.ignoreInput = false;
+            }
+        }, 10);
+    },
+    // Hack for IE10 mobile. Handle pressing 'enter' button and fire keyup event in this case.
+    onKeyPress: function(e) {
+        if(e.browserEvent.keyCode == 13){
+            this.fireEvent('keyup', e);
+        }
     },
 
     onPaste: function(e) {

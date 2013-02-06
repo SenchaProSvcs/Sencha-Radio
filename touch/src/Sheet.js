@@ -2,7 +2,7 @@
  * A general sheet class. This renderable container provides base support for orientation-aware transitions for popup or
  * side-anchored sliding Panels.
  *
- * In most cases, you should use {@link Ext.ActionSheet}, {@link Ext.MessageBox}, {@link Ext.picker.Picker} or {@link Ext.picker.Date}.
+ * In most cases, you should use {@link Ext.ActionSheet}, {@link Ext.MessageBox}, {@link Ext.picker.Picker}, or {@link Ext.picker.Date}.
  */
 Ext.define('Ext.Sheet', {
     extend: 'Ext.Panel',
@@ -12,53 +12,53 @@ Ext.define('Ext.Sheet', {
     requires: ['Ext.fx.Animation'],
 
     config: {
-        // @inherited
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         baseCls: Ext.baseCSSPrefix + 'sheet',
 
         /**
-         * @inherit
-         */
-        hidden: true,
-
-        /**
-         * @inherit
+         * @cfg
+         * @inheritdoc
          */
         modal: true,
 
         /**
          * @cfg {Boolean} centered
-         * Whether or not this component is absolutely centered inside its container
+         * Whether or not this component is absolutely centered inside its container.
          * @accessor
          * @evented
          */
         centered: true,
 
         /**
-         * @cfg {Boolean} stretchX True to stretch this sheet horizontally.
+         * @cfg {Boolean} stretchX `true` to stretch this sheet horizontally.
          */
         stretchX: null,
 
         /**
-         * @cfg {Boolean} stretchY True to stretch this sheet vertically.
+         * @cfg {Boolean} stretchY `true` to stretch this sheet vertically.
          */
         stretchY: null,
 
         /**
          * @cfg {String} enter
-         * The viewport side used as the enter point when shown (top, bottom, left, right)
-         * Applies to sliding animation effects only. Defaults to 'bottom'
+         * The viewport side used as the enter point when shown. Valid values are 'top', 'bottom', 'left', and 'right'.
+         * Applies to sliding animation effects only.
          */
         enter: 'bottom',
 
         /**
          * @cfg {String} exit
-         * The viewport side used as the exit point when hidden (top, bottom, left, right)
-         * Applies to sliding animation effects only. Defaults to 'bottom'
+         * The viewport side used as the exit point when hidden. Valid values are 'top', 'bottom', 'left', and 'right'.
+         * Applies to sliding animation effects only.
          */
         exit: 'bottom',
 
         /**
-         * @inherit
+         * @cfg
+         * @inheritdoc
          */
         showAnimation: !Ext.os.is.Android2 ? {
             type: 'slideIn',
@@ -67,7 +67,8 @@ Ext.define('Ext.Sheet', {
         } : null,
 
         /**
-         * @inherit
+         * @cfg
+         * @inheritdoc
          */
         hideAnimation: !Ext.os.is.Android2 ? {
             type: 'slideOut',
@@ -76,7 +77,20 @@ Ext.define('Ext.Sheet', {
         } : null
     },
 
+    platformConfig: [{
+        platform: ['ie10'],
+        enter: 'top',
+        exit: 'top'
+    }],
+
     applyHideAnimation: function(config) {
+        var exit = this.getExit(),
+            direction = exit;
+
+        if (exit === null) {
+            return null;
+        }
+
         if (config === true) {
             config = {
                 type: 'slideOut'
@@ -90,9 +104,6 @@ Ext.define('Ext.Sheet', {
         var anim = Ext.factory(config, Ext.fx.Animation);
 
         if (anim) {
-            var exit = this.getExit(),
-                direction = exit;
-
             if (exit == 'bottom') {
                 direction = 'down';
             }
@@ -105,6 +116,13 @@ Ext.define('Ext.Sheet', {
     },
 
     applyShowAnimation: function(config) {
+        var enter = this.getEnter(),
+            direction = enter;
+
+        if (enter === null) {
+            return null;
+        }
+
         if (config === true) {
             config = {
                 type: 'slideIn'
@@ -118,9 +136,6 @@ Ext.define('Ext.Sheet', {
         var anim = Ext.factory(config, Ext.fx.Animation);
 
         if (anim) {
-            var enter = this.getEnter(),
-                direction = enter;
-
             if (enter == 'bottom') {
                 direction = 'down';
             }

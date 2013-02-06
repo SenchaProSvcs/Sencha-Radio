@@ -1,21 +1,27 @@
 /**
+ * @aside guide forms
+ *
  * The Search field creates an HTML5 search input and is usually created inside a form. Because it creates an HTML
- * search input type, the visual styling of this input is slightly different to normal text input contrls (the corners
+ * search input type, the visual styling of this input is slightly different to normal text input controls (the corners
  * are rounded), though the virtual keyboard displayed by the operating system is the standard keyboard control.
  *
  * As with all other form fields in Sencha Touch, the search field gains a "clear" button that appears whenever there
  * is text entered into the form, and which removes that text when tapped.
  *
+ *     @example
  *     Ext.create('Ext.form.Panel', {
- *         tbar: {
- *             text: 'Search'
- *         },
- *
+ *         fullscreen: true,
  *         items: [
  *             {
- *                 xtype: 'searchfield',
- *                 label: 'Query',
- *                 name: 'query'
+ *                 xtype: 'fieldset',
+ *                 title: 'Search',
+ *                 items: [
+ *                     {
+ *                         xtype: 'searchfield',
+ *                         label: 'Query',
+ *                         name: 'query'
+ *                     }
+ *                 ]
  *             }
  *         ]
  *     });
@@ -38,12 +44,18 @@ Ext.define('Ext.field.Search', {
     alternateClassName: 'Ext.form.Search',
 
     config: {
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         component: {
 	        type: 'search'
 	    },
 
-	    // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
 	    ui: 'search'
     }
 });

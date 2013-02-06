@@ -1,23 +1,29 @@
 /**
+ * @aside guide forms
+ *
  * The text field is the basis for most of the input fields in Sencha Touch. It provides a baseline of shared
  * functionality such as input validation, standard events, state management and look and feel. Typically we create
  * text fields inside a form, like this:
  *
+ *     @example
  *     Ext.create('Ext.form.Panel', {
- *         tbar: {
- *             text: 'Enter your name'
- *         },
- *
+ *         fullscreen: true,
  *         items: [
  *             {
- *                 xtype: 'textfield',
- *                 label: 'First Name',
- *                 name: 'firstName'
- *             },
- *             {
- *                 xtype: 'textfield',
- *                 label: 'Last Name',
- *                 name: 'lastName'
+ *                 xtype: 'fieldset',
+ *                 title: 'Enter your name',
+ *                 items: [
+ *                     {
+ *                         xtype: 'textfield',
+ *                         label: 'First Name',
+ *                         name: 'firstName'
+ *                     },
+ *                     {
+ *                         xtype: 'textfield',
+ *                         label: 'Last Name',
+ *                         name: 'lastName'
+ *                     }
+ *                 ]
  *             }
  *         ]
  *     });
@@ -126,10 +132,16 @@ Ext.define('Ext.field.Text', {
      */
 
     config: {
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         ui: 'text',
 
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         clearIcon: true,
 
         /**
@@ -173,12 +185,16 @@ Ext.define('Ext.field.Text', {
         readOnly: null,
 
         /**
-         * @cfg {Object} component The inner component for this field, which defaults to an input text.
+         * @cfg {Object} component The inner component for this field, which defaults to an input text. You are also
+         * able to use the {@link Ext.field.File} component by using the `file` xtype.
+         * @accessor
          */
         component: {
             xtype: 'input',
             type : 'text'
-        }
+        },
+
+        bubbleEvents: ['action']
     },
 
     // @private
@@ -202,21 +218,43 @@ Ext.define('Ext.field.Text', {
         // set the originalValue of the textfield, if one exists
         me.originalValue = me.originalValue || "";
         me.getComponent().originalValue = me.originalValue;
+
+        me.syncEmptyCls();
+    },
+
+    syncEmptyCls: function() {
+        var empty = (this._value) ? this._value.length : false,
+            cls = Ext.baseCSSPrefix + 'empty';
+
+        if (empty) {
+            this.removeCls(cls);
+        } else {
+            this.addCls(cls);
+        }
     },
 
     // @private
     updateValue: function(newValue) {
-        var component = this.getComponent();
+        var component  = this.getComponent(),
+            // allows newValue to be zero but not undefined, null or an empty string (other falsey values)
+            valueValid = newValue !== undefined && newValue !== null && newValue !== '';
+
         if (component) {
             component.setValue(newValue);
         }
 
-        this[newValue ? 'showClearIcon' : 'hideClearIcon']();
+        this[valueValid ? 'showClearIcon' : 'hideClearIcon']();
+
+        this.syncEmptyCls();
     },
 
     getValue: function() {
         var me = this;
+
         me._value = me.getComponent().getValue();
+
+        me.syncEmptyCls();
+
         return me._value;
     },
 
@@ -291,7 +329,6 @@ Ext.define('Ext.field.Text', {
         }
     },
 
-    // @inherit
     doSetDisabled: function(disabled) {
         var me = this;
 
@@ -311,9 +348,12 @@ Ext.define('Ext.field.Text', {
 
     // @private
     showClearIcon: function() {
-        var me = this;
+        var me         = this,
+            value      = me.getValue(),
+            // allows value to be zero but not undefined, null or an empty string (other falsey values)
+            valueValid = value !== undefined && value !== null && value !== '';
 
-        if (!me.getDisabled() && !me.getReadOnly() && me.getValue() && me.getClearIcon()) {
+        if (me.getClearIcon() && !me.getDisabled() && !me.getReadOnly() && valueValid) {
             me.element.addCls(Ext.baseCSSPrefix + 'field-clearable');
         }
 
@@ -337,17 +377,20 @@ Ext.define('Ext.field.Text', {
      */
     doKeyUp: function(me, e) {
         // getValue to ensure that we are in sync with the dom
-        var value = me.getValue();
+        var value      = me.getValue(),
+            // allows value to be zero but not undefined, null or an empty string (other falsey values)
+            valueValid = value !== undefined && value !== null && value !== '';
 
-        // show the {@link #clearIcon} if it is being used
-        me[value ? 'showClearIcon' : 'hideClearIcon']();
+        this[valueValid ? 'showClearIcon' : 'hideClearIcon']();
 
         if (e.browserEvent.keyCode === 13) {
             me.fireAction('action', [me, e], 'doAction');
         }
     },
 
-    doAction: Ext.emptyFn,
+    doAction: function() {
+        this.blur();
+    },
 
     onClearIconTap: function(e) {
         this.fireAction('clearicontap', [this, e], 'doClearIconTap');
@@ -356,6 +399,9 @@ Ext.define('Ext.field.Text', {
     // @private
     doClearIconTap: function(me, e) {
         me.setValue('');
+
+        //sync with the input
+        me.getValue();
     },
 
     onChange: function(me, value, startValue) {
@@ -363,6 +409,7 @@ Ext.define('Ext.field.Text', {
     },
 
     onFocus: function(e) {
+        this.addCls(Ext.baseCSSPrefix + 'field-focused');
         this.isFocused = true;
         this.fireEvent('focus', this, e);
     },
@@ -370,6 +417,7 @@ Ext.define('Ext.field.Text', {
     onBlur: function(e) {
         var me = this;
 
+        this.removeCls(Ext.baseCSSPrefix + 'field-focused');
         this.isFocused = false;
 
         me.fireEvent('blur', me, e);
@@ -414,7 +462,6 @@ Ext.define('Ext.field.Text', {
         return this;
     },
 
-    // @inherit
     reset: function() {
         this.getComponent().reset();
 
@@ -424,7 +471,6 @@ Ext.define('Ext.field.Text', {
         this[this._value ? 'showClearIcon' : 'hideClearIcon']();
     },
 
-    // @inherit
     isDirty: function() {
         var component = this.getComponent();
         if (component) {
@@ -438,8 +484,8 @@ Ext.define('Ext.field.Text', {
 /**
  * @property startValue
  * @type String/Number
- * Deprecated, used to contain the previous value of the field before the edit
- * @deprecated 2.0.0
+ * Used to contain the previous value of the field before the edit
+ * @removed 2.0.0
  * @member Ext.field.Text
  */
 //</deprecated>

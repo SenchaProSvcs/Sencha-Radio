@@ -1,4 +1,8 @@
+// Using @mixins to include all members of Ext.event.Touch
+// into here to keep documentation simpler
 /**
+ * @mixins Ext.event.Touch
+ *
  * Just as {@link Ext.dom.Element} wraps around a native DOM node, {@link Ext.event.Event} wraps the browser's native
  * event-object normalizing cross-browser differences such as mechanisms to stop event-propagation along with a method
  * to prevent default actions from taking place.
@@ -37,11 +41,11 @@
  *         }
  *     });
  *
- * ## Recgonisers
+ * ## Recognizers
  *
- * Sencha Touch includes a bunch of default event recognisers to know when a user taps, swipes, etc.
+ * Sencha Touch includes a bunch of default event recognizers to know when a user taps, swipes, etc.
  *
- * For a full list of default recognisers, and more information, please view the {@link Ext.event.recognizer.Recognizer} documentation
+ * For a full list of default recognizers, and more information, please view the {@link Ext.event.recognizer.Recognizer} documentation.
  */
 Ext.define('Ext.event.Event', {
     alternateClassName: 'Ext.EventObject',
@@ -63,7 +67,8 @@ Ext.define('Ext.event.Event', {
     },
 
     /**
-     * Stop the event (preventDefault and stopPropagation)
+     * Stop the event (`preventDefault` and `{@link #stopPropagation}`).
+     * @chainable
      */
     stopEvent: function() {
         return this.stopPropagation();
@@ -71,6 +76,7 @@ Ext.define('Ext.event.Event', {
 
     /**
      * Cancels bubbling of the event.
+     * @chainable
      */
     stopPropagation: function() {
         this.isStopped = true;

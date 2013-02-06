@@ -1,3 +1,8 @@
+//@require @core
+
+/**
+ * @private
+ */
 Ext.define('Ext.event.Controller', {
 
     isFiring: false,

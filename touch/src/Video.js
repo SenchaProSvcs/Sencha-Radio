@@ -1,4 +1,5 @@
 /**
+ * @aside example video
  * Provides a simple Container for HTML5 Video.
  *
  * ## Notes
@@ -14,13 +15,13 @@
  *
  * ## Useful Methods
  *
- * - {@link #pause}
+ * - {@link #method-pause}
  * - {@link #method-play}
  * - {@link #toggle}
  *
  * ## Example
  *
- *     var panel = new Ext.Panel({
+ *     var panel = Ext.create('Ext.Panel', {
  *         fullscreen: true,
  *         items: [
  *             {
@@ -34,7 +35,6 @@
  *             }
  *         ]
  *     });
- *
  */
 Ext.define('Ext.Video', {
     extend: 'Ext.Media',
@@ -42,7 +42,7 @@ Ext.define('Ext.Video', {
 
     config: {
         /**
-         * @cfg {String} url
+         * @cfg {String/Array} urls
          * Location of the video to play. This should be in H.264 format and in a .mov file format.
          * @accessor
          */
@@ -54,7 +54,10 @@ Ext.define('Ext.Video', {
          */
         posterUrl: null,
 
-        // @inherited
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         cls: Ext.baseCSSPrefix + 'video'
     },
 
@@ -102,10 +105,6 @@ Ext.define('Ext.Video', {
         return [].concat(url);
     },
 
-    /**
-     * Sets the URL of the media element. If the media element already exists, it is update the src attribute of the
-     * element. If it is currently playing, it will start the new video.
-     */
     updateUrl: function(newUrl) {
         var me = this,
             media = me.media,
@@ -126,7 +125,7 @@ Ext.define('Ext.Video', {
             }));
         }
 
-        if (me.getPlaying()) {
+        if (me.isPlaying()) {
             me.play();
         }
     },
@@ -159,13 +158,13 @@ Ext.define('Ext.Video', {
             // we can control the Viewport
             ghost.hide();
             me.play();
-            setTimeout(function() {
-                me.play();
-            }, 10);
         }
     },
 
-    // native video tag display only only, move the media down so we can control the Viewport
+    /**
+     * @private
+     * native video tag display only, move the media down so we can control the Viewport
+     */
     onPause: function() {
         this.callParent(arguments);
         if (!this.isInlineVideo) {
@@ -174,7 +173,10 @@ Ext.define('Ext.Video', {
         }
     },
 
-    // native video tag display only only, move the media down so we can control the Viewport
+    /**
+     * @private
+     * native video tag display only, move the media down so we can control the Viewport
+     */
     onPlay: function() {
         this.callParent(arguments);
         this.media.setTop(0);

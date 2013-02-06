@@ -3,29 +3,30 @@
  * like any other component. This component typically takes between 1 and 3 configurations - a {@link #src}, and
  * optionally a {@link #height} and a {@link #width}:
  *
- *     Ext.create('Ext.Img', {
- *         src: 'path/to/my/image.jpg',
- *         height: 300,
- *         width: 400
+ *     @example miniphone
+ *     var img = Ext.create('Ext.Img', {
+ *         src: 'http://www.sencha.com/assets/images/sencha-avatar-64x64.png',
+ *         height: 64,
+ *         width: 64
  *     });
+ *     Ext.Viewport.add(img);
  *
  * It's also easy to add an image into a panel or other container using its xtype:
  *
+ *     @example miniphone
  *     Ext.create('Ext.Panel', {
- *         layout: '{@link Ext.layout.HBox hbox}',
+ *         fullscreen: true,
+ *         layout: 'hbox',
  *         items: [
  *             {
  *                 xtype: 'image',
- *                 src: 'path/to/my/profilePicture.jpg',
+ *                 src: 'http://www.sencha.com/assets/images/sencha-avatar-64x64.png',
  *                 flex: 1
  *             },
  *             {
- *                 xtype: 'textareafield',
+ *                 xtype: 'panel',
  *                 flex: 2,
- *                 label: {
- *                     text: 'My Profile',
- *                     align: 'top'
- *                 }
+ *                 html: 'Sencha Inc.<br/>1700 Seaport Boulevard Suite 120, Redwood City, CA'
  *             }
  *         ]
  *     });
@@ -67,9 +68,28 @@ Ext.define('Ext.Img', {
          */
         src: null,
 
-        // @inherit
-        baseCls: Ext.baseCSSPrefix + 'img',
+        /**
+         * @cfg
+         * @inheritdoc
+         */
+        baseCls : Ext.baseCSSPrefix + 'img',
 
+        /**
+         * @cfg {String} imageCls The CSS class to be used when {@link #mode} is not set to 'background'
+         * @accessor
+         */
+        imageCls : Ext.baseCSSPrefix + 'img-image',
+
+        /**
+         * @cfg {String} backgroundCls The CSS class to be used when {@link #mode} is set to 'background'
+         * @accessor
+         */
+        backgroundCls : Ext.baseCSSPrefix + 'img-background',
+
+        /**
+         * @cfg {String} mode If set to 'background', uses a background-image CSS property instead of an
+         * `<img>` tag to display the image.
+         */
         mode: 'background'
     },
 
@@ -106,16 +126,31 @@ Ext.define('Ext.Img', {
     },
 
     updateMode: function(mode) {
+        var me            = this,
+            imageCls      = me.getImageCls(),
+            backgroundCls = me.getBackgroundCls();
+
         if (mode === 'background') {
-            if (this.imageElement) {
-                this.imageElement.destroy();
-                delete this.imageElement;
-                this.updateSrc(this.getSrc());
+            if (me.imageElement) {
+                me.imageElement.destroy();
+                delete me.imageElement;
+                me.updateSrc(me.getSrc());
             }
+
+            me.replaceCls(imageCls, backgroundCls);
+        } else {
+            me.imageElement = me.element.createChild({ tag: 'img' });
+
+            me.replaceCls(backgroundCls, imageCls);
         }
-        else {
-            this.imageElement = this.element.createChild({ tag: 'img' });
-        }
+    },
+
+    updateImageCls : function (newCls, oldCls) {
+        this.replaceCls(oldCls, newCls);
+    },
+
+    updateBackgroundCls : function (newCls, oldCls) {
+        this.replaceCls(oldCls, newCls);
     },
 
     onTap: function(e) {
@@ -142,7 +177,7 @@ Ext.define('Ext.Img', {
 
         this.imageObject = dom;
 
-        dom.setAttribute('src', newSrc);
+        dom.setAttribute('src', Ext.isString(newSrc) ? newSrc : '');
         dom.addEventListener('load', me.onLoad, false);
         dom.addEventListener('error', me.onError, false);
     },
@@ -150,8 +185,10 @@ Ext.define('Ext.Img', {
     detachListeners: function() {
         var dom = this.imageObject;
 
-        dom.removeEventListener('load', this.onLoad, false);
-        dom.removeEventListener('error', this.onError, false);
+        if (dom) {
+            dom.removeEventListener('load', this.onLoad, false);
+            dom.removeEventListener('error', this.onError, false);
+        }
     },
 
     onLoad : function(e) {
@@ -188,8 +225,9 @@ Ext.define('Ext.Img', {
     destroy: function() {
         this.detachListeners();
 
-        Ext.destroy(this.imageElement);
+        Ext.destroy(this.imageObject, this.imageElement);
         delete this.imageObject;
+        delete this.imageElement;
 
         this.callParent();
     }

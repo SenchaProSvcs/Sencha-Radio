@@ -5,6 +5,7 @@
  *
  * ## Example
  *
+ *     @example miniphone
  *     // Create our container
  *     var container = Ext.create('Ext.Container', {
  *         html: 'My container!'
@@ -14,14 +15,17 @@
  *     Ext.Viewport.add(container);
  *
  *     // Mask the container
- *     container.setMasked(true;)
+ *     container.setMasked(true);
  */
 Ext.define('Ext.Mask', {
     extend: 'Ext.Component',
     xtype: 'mask',
 
     config: {
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         baseCls: Ext.baseCSSPrefix + 'mask',
 
         /**
@@ -30,21 +34,25 @@ Ext.define('Ext.Mask', {
         transparent: false,
 
         /**
+         * @cfg
          * @hide
          */
         top: 0,
 
         /**
+         * @cfg
          * @hide
          */
         left: 0,
 
         /**
+         * @cfg
          * @hide
          */
         right: 0,
 
         /**
+         * @cfg
          * @hide
          */
         bottom: 0
@@ -57,20 +65,18 @@ Ext.define('Ext.Mask', {
      * @param {Ext.EventObject} e The event object
      */
     initialize: function() {
-        this.callParent();
+        this.callSuper();
+
+        this.element.on('*', 'onEvent', this);
 
         this.on({
-            painted: 'onPainted',
-            erased: 'onErased'
-        })
+            hide:  'onHide'
+        });
+        this.inputBlocker = new Ext.util.InputBlocker();
     },
 
-    onPainted: function() {
-        this.element.on('*', 'onEvent', this);
-    },
-
-    onErased: function() {
-        this.element.un('*', 'onEvent', this);
+    onHide: function(){
+        this.inputBlocker.unblockInputs();
     },
 
     onEvent: function(e) {

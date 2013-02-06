@@ -4,7 +4,9 @@
  *
  *     Ext.define('User', {
  *         extend: 'Ext.data.Model',
- *         fields: ['id', 'name', 'email']
+ *         config: {
+ *             fields: ['id', 'name', 'email']
+ *         }
  *     });
  *
  *     var store = Ext.create('Ext.data.Store', {
@@ -48,7 +50,7 @@
  * ## Reading other JSON formats
  *
  * If you already have your JSON format defined and it doesn't look quite like what we have above, you can usually pass
- * JsonReader a couple of configuration options to make it parse your format. For example, we can use the 
+ * JsonReader a couple of configuration options to make it parse your format. For example, we can use the
  * {@link #rootProperty} configuration to parse data that comes back like this:
  *
  *     {
@@ -130,7 +132,7 @@
  *     }
  *
  * If you were to pass a response object containing attributes different from those initially defined above, you could
- * use the `metaData` attribute to reconifgure the Reader on the fly. For example:
+ * use the `metaData` attribute to reconfigure the Reader on the fly. For example:
  *
  *     {
  *         "count": 1,
@@ -176,19 +178,6 @@
  *             ]
  *         }
  *     }
- *
- * The Reader will automatically read the meta fields config and rebuild the Model based on the new fields, but to handle
- * the new column configuration you would need to handle the metadata within the application code. This is done simply enough
- * by handling the metachange event on either the store or the proxy, e.g.:
- *
- *     var store = Ext.create('Ext.data.Store', {
- *         ...
- *         listeners: {
- *             'metachange': function(store, meta) {
- *                 myGrid.reconfigure(store, meta.columns);
- *             }
- *         }
- *     });
  */
 Ext.define('Ext.data.reader.Json', {
     extend: 'Ext.data.reader.Reader',
@@ -205,40 +194,43 @@ Ext.define('Ext.data.reader.Json', {
 
         /**
          * @cfg {Boolean} [useSimpleAccessors=false]
-         * True to ensure that field names/mappings are treated as literals when reading values. Defalts to false. For
+         * `true` to ensure that field names/mappings are treated as literals when reading values. For
          * example, by default, using the mapping "foo.bar.baz" will try and read a property foo from the root, then a
-         * property bar from foo, then a property baz from bar. Setting the simple accessors to true will read the
+         * property bar from foo, then a property baz from bar. Setting the simple accessors to `true` will read the
          * property with the name "foo.bar.baz" direct from the root object.
          */
         useSimpleAccessors: false
     },
 
-    //inherit docs
+    objectRe: /[\[\.]/,
+
+    // @inheritdoc
     getResponseData: function(response) {
+        var responseText = response;
+
         // Handle an XMLHttpRequest object
         if (response && response.responseText) {
-            response = response.responseText;
+            responseText = response.responseText;
         }
 
         // Handle the case where data has already been decoded
-        if (typeof response !== 'string') {
-            return response;
+        if (typeof responseText !== 'string') {
+            return responseText;
         }
 
         var data;
         try {
-            data = Ext.decode(response);
+            data = Ext.decode(responseText);
         }
         catch (ex) {
             /**
              * @event exception Fires whenever the reader is unable to parse a response.
-             * @param {Ext.data.reader.Xml} reader A reference to this reader
+             * @param {Ext.data.reader.Xml} reader A reference to this reader.
              * @param {XMLHttpRequest} response The XMLHttpRequest response object.
              * @param {String} error The error message.
              */
             this.fireEvent('exception', this, response, 'Unable to parse the JSON returned by the server: ' + ex.toString());
-
-            Ext.Logger.error('Unable to parse the JSON returned by the server: ' + ex.toString());
+            Ext.Logger.warn('Unable to parse the JSON returned by the server: ' + ex.toString());
         }
         //<debug>
         if (!data) {
@@ -251,7 +243,7 @@ Ext.define('Ext.data.reader.Json', {
         return data;
     },
 
-    // inherit docs
+    // @inheritdoc
     buildExtractors: function() {
         var me = this,
             root = me.getRootProperty();
@@ -266,8 +258,8 @@ Ext.define('Ext.data.reader.Json', {
     },
 
     /**
-     * We create this method because root is now a config so getRoot is already defined, but in the old
-     * data package getRoot was passed a data argument and it would return the data inside of the root
+     * We create this method because `root` is now a config so `getRoot` is already defined, but in the old
+     * data package `getRoot` was passed a data argument and it would return the data inside of the `root`
      * property. This method handles both cases.
      * @param data (Optional)
      * @return {String/Object} Returns the config root value if this method was called without passing
@@ -352,5 +344,37 @@ Ext.define('Ext.data.reader.Json', {
                 return obj[expr];
             };
         };
-    }()
+    }(),
+
+    /**
+     * @private
+     * Returns an accessor expression for the passed Field. Gives support for properties such as the following:
+     * 'someProperty'
+     * 'some.property'
+     * 'some["property"]'
+     * This is used by buildExtractors to create optimized on extractor function which converts raw data into model instances.
+     */
+    createFieldAccessExpression: function(field, fieldVarName, dataName) {
+        var me     = this,
+            re     = me.objectRe,
+            hasMap = (field.getMapping() !== null),
+            map    = hasMap ? field.getMapping() : field.getName(),
+            result, operatorSearch;
+
+        if (typeof map === 'function') {
+            result = fieldVarName + '.getMapping()(' + dataName + ', this)';
+        }
+        else if (me.getUseSimpleAccessors() === true || ((operatorSearch = String(map).search(re)) < 0)) {
+            if (!hasMap || isNaN(map)) {
+                // If we don't provide a mapping, we may have a field name that is numeric
+                map = '"' + map + '"';
+            }
+            result = dataName + "[" + map + "]";
+        }
+        else {
+            result = dataName + (operatorSearch > 0 ? '.' : '') + map;
+        }
+
+        return result;
+    }
 });

@@ -210,7 +210,7 @@ Ext.define('Ext.fx.runner.Css', {
             formattedName = cache[name];
 
         if (!formattedName) {
-            if (this.prefixedProperties[name]) {
+            if (this.prefixedProperties[name] && Ext.browser.is.WebKit) {
                 formattedName = this.vendorPrefix + name;
             }
             else {
@@ -229,6 +229,10 @@ Ext.define('Ext.fx.runner.Css', {
             transformMethods,
             method, i, ln,
             transformValues, values, unit;
+
+        if (value === null) {
+            return '';
+        }
 
         if (type == 'string') {
             if (this.lengthProperties[name]) {

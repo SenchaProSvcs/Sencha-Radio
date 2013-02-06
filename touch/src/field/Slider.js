@@ -1,18 +1,22 @@
 /**
+ * @aside guide forms
+ *
  * The slider is a way to allow the user to select a value from a given numerical range. You might use it for choosing
  * a percentage, combine two of them to get min and max values, or use three of them to specify the hex values for a
  * color. Each slider contains a single 'thumb' that can be dragged along the slider's length to change the value.
  * Sliders are equally useful inside {@link Ext.form.Panel forms} and standalone. Here's how to quickly create a
  * slider in form, in this case enabling a user to choose a percentage:
  *
+ *     @example
  *     Ext.create('Ext.form.Panel', {
+ *         fullscreen: true,
  *         items: [
  *             {
  *                 xtype: 'sliderfield',
  *                 label: 'Percentage',
  *                 value: 50,
- *                 {@link #minValue}: 0,
- *                 {@link #maxValue}: 100
+ *                 minValue: 0,
+ *                 maxValue: 100
  *             }
  *         ]
  *     });
@@ -25,12 +29,19 @@
  * allows a user to choose the waist measurement of a pair of jeans. Let's say the online store we're making this for
  * sells jeans with waist sizes from 24 inches to 60 inches in 2 inch increments - here's how we might achieve that:
  *
- *     var slider = Ext.create('Ext.field.Slider', {
- *         label: 'Waist Measurement',
- *         minValue: 24,
- *         maxValue: 60,
- *         increment: 2,
- *         value: 32
+ *     @example
+ *     Ext.create('Ext.form.Panel', {
+ *         fullscreen: true,
+ *         items: [
+ *             {
+ *                 xtype: 'sliderfield',
+ *                 label: 'Waist Measurement',
+ *                 minValue: 24,
+ *                 maxValue: 60,
+ *                 increment: 2,
+ *                 value: 32
+ *             }
+ *         ]
  *     });
  *
  * Now that we've got our slider, we can ask it what value it currently has and listen to events that it fires. For
@@ -39,7 +50,7 @@
  *
  *     slider.on('change', function(field, newValue) {
  *         if (newValue[0] > 40) {
- *             imgComponent.setSrc('large.png')
+ *             imgComponent.setSrc('large.png');
  *         } else {
  *             imgComponent.setSrc('small.png');
  *         }
@@ -58,50 +69,97 @@ Ext.define('Ext.field.Slider', {
     /**
      * @event change
      * Fires when an option selection has changed.
-     * @param {Ext.field.Select} me
+     * @param {Ext.field.Slider} me
+     * @param {Ext.slider.Slider} sl Slider Component.
      * @param {Ext.slider.Thumb} thumb
-     * @param {Number} newValue the new value of this thumb
-     * @param {Number} oldValue the old value of this thumb
+     * @param {Number} newValue The new value of this thumb.
+     * @param {Number} oldValue The old value of this thumb.
      */
 
+    /**
+    * @event dragstart
+    * Fires when the slider thumb starts a drag operation.
+    * @param {Ext.field.Slider} this
+    * @param {Ext.slider.Slider} sl Slider Component.
+    * @param {Ext.slider.Thumb} thumb The thumb being dragged.
+    * @param {Array} value The start value.
+    * @param {Ext.EventObject} e
+    */
+
+    /**
+    * @event drag
+    * Fires when the slider thumb starts a drag operation.
+    * @param {Ext.field.Slider} this
+    * @param {Ext.slider.Slider} sl Slider Component.
+    * @param {Ext.slider.Thumb} thumb The thumb being dragged.
+    * @param {Ext.EventObject} e
+    */
+
+    /**
+    * @event dragend
+    * Fires when the slider thumb ends a drag operation.
+    * @param {Ext.field.Slider} this
+    * @param {Ext.slider.Slider} sl Slider Component.
+    * @param {Ext.slider.Thumb} thumb The thumb being dragged.
+    * @param {Array} value The end value.
+    * @param {Ext.EventObject} e
+    */
+
     config: {
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         cls: Ext.baseCSSPrefix + 'slider-field',
 
         /**
-         * @inherit
+         * @cfg
+         * @inheritdoc
          */
-        tabIndex: -1
+        tabIndex: -1,
+
+        /**
+         * Will make this field read only, meaning it cannot be changed with used interaction.
+         * @cfg {Boolean} readOnly
+         * @accessor
+         */
+        readOnly: false
     },
 
     proxyConfig: {
+
         /**
-         * @cfg {Number/Number[]} value See {@link Ext.slider.Slider#value}
+         * @inheritdoc Ext.slider.Slider#increment
+         * @cfg {Number} increment
+         * @accessor
+         */
+        increment : 1,
+
+        /**
+         * @inheritdoc Ext.slider.Slider#value
+         * @cfg {Number/Number[]} value
          * @accessor
          */
         value: 0,
 
         /**
-         * @cfg {Number} minValue See {@link Ext.slider.Slider#minValue}
+         * @inheritdoc Ext.slider.Slider#minValue
+         * @cfg {Number} minValue
          * @accessor
          */
         minValue: 0,
 
         /**
-         * @cfg {Number} maxValue See {@link Ext.slider.Slider#maxValue}
+         * @inheritdoc Ext.slider.Slider#maxValue
+         * @cfg {Number} maxValue
          * @accessor
          */
-        maxValue: 100,
-
-        /**
-         * @cfg {Number} increment See {@link Ext.slider.Slider#increment}
-         * @accessor
-         */
-        increment: 1
+        maxValue: 100
     },
 
     /**
-     * @cfg {Number/Number[]} values See {@link Ext.slider.Slider#values}
+     * @inheritdoc Ext.slider.Slider#values
+     * @cfg {Number/Number[]} values
      */
 
     constructor: function(config) {
@@ -112,6 +170,7 @@ Ext.define('Ext.field.Slider', {
         }
 
         this.callParent([config]);
+        this.updateMultipleState();
     },
 
     // @private
@@ -120,7 +179,11 @@ Ext.define('Ext.field.Slider', {
 
         this.getComponent().on({
             scope: this,
-            change: 'onSliderChange'
+
+            change: 'onSliderChange',
+            dragstart: 'onSliderDragStart',
+            drag: 'onSliderDrag',
+            dragend: 'onSliderDragEnd'
         });
     },
 
@@ -129,25 +192,39 @@ Ext.define('Ext.field.Slider', {
         return Ext.factory(config, Ext.slider.Slider);
     },
 
-    onSliderChange: function(me, thumb, newValue, oldValue) {
-        this.fireEvent('change', this, thumb, newValue, oldValue);
+    onSliderChange: function() {
+        this.fireEvent.apply(this, [].concat('change', this, Array.prototype.slice.call(arguments)));
+    },
+
+    onSliderDragStart: function() {
+        this.fireEvent.apply(this, [].concat('dragstart', this, Array.prototype.slice.call(arguments)));
+    },
+
+    onSliderDrag: function() {
+        this.fireEvent.apply(this, [].concat('drag', this, Array.prototype.slice.call(arguments)));
+    },
+
+    onSliderDragEnd: function() {
+        this.fireEvent.apply(this, [].concat('dragend', this, Array.prototype.slice.call(arguments)));
     },
 
     /**
-     * Convience method. Calls {@link #setValue}
+     * Convenience method. Calls {@link #setValue}.
+     * @param {Object} value
      */
     setValues: function(value) {
         this.setValue(value);
+        this.updateMultipleState();
     },
 
     /**
-     * Convience method. Calls {@link #getValue}
+     * Convenience method. Calls {@link #getValue}
+     * @return {Object}
      */
     getValues: function() {
         return this.getValue();
     },
 
-    // @inherit
     reset: function() {
         var config = this.config,
             initialValue = (this.config.hasOwnProperty('values')) ? config.values : config.value;
@@ -159,5 +236,24 @@ Ext.define('Ext.field.Slider', {
         this.callParent(arguments);
 
         this.getComponent().setDisabled(disabled);
+    },
+
+    updateReadOnly: function(newValue) {
+        this.getComponent().setReadOnly(newValue);
+    },
+
+    isDirty : function () {
+        if (this.getDisabled()) {
+            return false;
+        }
+
+        return this.getValue() !== this.originalValue;
+    },
+
+    updateMultipleState: function() {
+        var value = this.getValue();
+        if (value && value.length > 1) {
+            this.addCls(Ext.baseCSSPrefix + 'slider-multiple');
+        }
     }
 });

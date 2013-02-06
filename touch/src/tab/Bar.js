@@ -15,12 +15,9 @@ Ext.define('Ext.tab.Bar', {
 
     config: {
         /**
-         * @cfg {Ext.Component} activeTab
-         * @accessor
+         * @cfg
+         * @inheritdoc
          */
-        activeTab: null,
-
-        // @inherit
         baseCls: Ext.baseCSSPrefix + 'tabbar',
 
         // @private
@@ -33,8 +30,20 @@ Ext.define('Ext.tab.Bar', {
         }
     },
 
+    eventedConfig: {
+        /**
+         * @cfg {Number/String/Ext.Component} activeTab
+         * The initially activated tab. Can be specified as numeric index,
+         * component ID or as the component instance itself.
+         * @accessor
+         * @evented
+         */
+        activeTab: null
+    },
+
     /**
      * @event tabchange
+     * Fired when active tab changes.
      * @param {Ext.tab.Bar} this
      * @param {Ext.tab.Tab} newTab The new Tab
      * @param {Ext.tab.Tab} oldTab The old Tab
@@ -60,55 +69,55 @@ Ext.define('Ext.tab.Bar', {
     /**
      * @private
      */
-    applyActiveTab: function(activeTab) {
-        if (!activeTab && activeTab !== 0) {
+    applyActiveTab: function(newActiveTab, oldActiveTab) {
+        if (!newActiveTab && newActiveTab !== 0) {
             return;
         }
 
-        var activeTabInstance = this.parseActiveTab(activeTab);
-        if (!activeTabInstance) {
+        var newTabInstance = this.parseActiveTab(newActiveTab);
+
+        if (!newTabInstance) {
             // <debug warn>
-            Ext.Logger.warn('Trying to set a non-existent activeTab');
+            if (oldActiveTab) {
+                Ext.Logger.warn('Trying to set a non-existent activeTab');
+            }
             // </debug>
             return;
         }
-        return activeTabInstance;
+        return newTabInstance;
     },
 
     /**
      * @private
-     * When docked to the top, pack left, when on the bottom pack center
+     * Default pack to center when docked to the bottom, otherwise default pack to left
      */
     doSetDocked: function(newDocked) {
         var layout = this.getLayout(),
-            pack   = newDocked == 'bottom' ? 'center' : 'left';
+            initialConfig = this.getInitialConfig(),
+            pack;
 
-        //layout isn't guaranteed to be instantiated so must test
-        if (layout.isLayout) {
-            layout.setPack(pack);
-        } else {
-            layout.pack = (layout && layout.pack) ? layout.pack : pack;
+        if (!initialConfig.layout || !initialConfig.layout.pack) {
+            pack = (newDocked == 'bottom') ? 'center' : 'left';
+            //layout isn't guaranteed to be instantiated so must test
+            if (layout.isLayout) {
+                layout.setPack(pack);
+            } else {
+                layout.pack = (layout && layout.pack) ? layout.pack : pack;
+            }
         }
-    },
-
-    /**
-     * @private
-     * Fires off the tabchange action
-     */
-    updateActiveTab: function(newTab, oldTab) {
-        this.fireAction('tabchange', [this, newTab, oldTab], 'doActiveTabChange');
     },
 
     /**
      * @private
      * Sets the active tab
      */
-    doActiveTabChange: function(me, newTab, oldTab) {
+    doSetActiveTab: function(newTab, oldTab) {
         if (newTab) {
             newTab.setActive(true);
         }
 
-        if (oldTab) {
+        //Check if the parent is present, if not it is destroyed
+        if (oldTab && oldTab.parent) {
             oldTab.setActive(false);
         }
     },

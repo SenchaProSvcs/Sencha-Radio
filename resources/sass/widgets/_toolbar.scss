@@ -1,0 +1,15 @@
+@include sencha-toolbar-ui('dark', #1a1a1a);
+
+.x-toolbar-dark {
+  &.x-docked-top {
+    border-bottom-color: #357a44;
+  }
+  .x-title {
+    color: #44a65b;
+  }
+  
+  .x-button {
+    background-color: transparent;
+    border: none;
+  }
+}

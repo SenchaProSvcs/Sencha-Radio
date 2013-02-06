@@ -18,7 +18,7 @@
  * See the {@link Ext.picker.Picker} documentation on how to use slots.
  */
 Ext.define('Ext.picker.Slot', {
-    extend: 'Ext.DataView',
+    extend: 'Ext.dataview.DataView',
     xtype : 'pickerslot',
     alternateClassName: 'Ext.Picker.Slot',
     requires: [
@@ -40,8 +40,7 @@ Ext.define('Ext.picker.Slot', {
 
     config: {
         /**
-         * @cfg {String} title
-         * The title to use for this slot. Null for no title
+         * @cfg {String} title The title to use for this slot, or `null` for no title.
          * @accessor
          */
         title: null,
@@ -55,15 +54,13 @@ Ext.define('Ext.picker.Slot', {
 
         /**
          * @private
-         * @cfg {String} cls
-         * The main component class
+         * @cfg {String} cls The main component class
          * @accessor
          */
         cls: Ext.baseCSSPrefix + 'picker-slot',
 
         /**
-         * @cfg {String} name
-         * The name of this slot. This config option is required.
+         * @cfg {String} name (required) The name of this slot.
          * @accessor
          */
         name: null,
@@ -75,59 +72,72 @@ Ext.define('Ext.picker.Slot', {
         value: null,
 
         /**
-         * @hide
          * @cfg {Number} flex
          * @accessor
+         * @private
          */
         flex: 1,
 
         /**
-         * @cfg {String} align
-         * The horizontal alignment of the slot's contents. Valid values are "left", "center",
-         * and "right". Defaults to "left".
+         * @cfg {String} align The horizontal alignment of the slot's contents.
+         *
+         * Valid values are: "left", "center", and "right".
          * @accessor
          */
         align: 'left',
 
         /**
-         * @hide
-         * @cfg {String} itemSelector
-         * @accessor
-         */
-        itemSelector: 'div.' + Ext.baseCSSPrefix + 'picker-item',
-
-        /**
-         * @cfg {String} displayField
-         * The display field in the store.
-         * Defaults to 'text'.
+         * @cfg {String} displayField The display field in the store.
          * @accessor
          */
         displayField: 'text',
 
         /**
-         * @cfg {String} valueField
-         * The value field in the store.
-         * Defaults to 'value'.
+         * @cfg {String} valueField The value field in the store.
          * @accessor
          */
         valueField: 'value',
 
         /**
-         * @hide
+         * @cfg {String} itemTpl The template to be used in this slot.
+         * If you set this, {@link #displayField} will be ignored.
+         */
+        itemTpl: null,
+
+        /**
          * @cfg {Object} scrollable
          * @accessor
+         * @hide
          */
         scrollable: {
-            direction : 'vertical',
-            indicators: false
-        }
+            direction: 'vertical',
+            indicators: false,
+            momentumEasing: {
+                minVelocity: 2
+            },
+            slotSnapEasing: {
+                duration: 100
+            }
+        },
+
+        /**
+         * @cfg {Boolean} verticallyCenterItems
+         * @private
+         */
+        verticallyCenterItems: true
     },
+
+    platformConfig: [{
+        platform: ['ie10'],
+        title: 'choose an item',
+        verticallyCenterItems: false
+    }],
 
     constructor: function() {
         /**
          * @property selectedIndex
          * @type Number
-         * The current selectedIndex of the picker slot
+         * The current `selectedIndex` of the picker slot.
          * @private
          */
         this.selectedIndex = 0;
@@ -135,7 +145,7 @@ Ext.define('Ext.picker.Slot', {
         /**
          * @property picker
          * @type Ext.picker.Picker
-         * A reference to the owner Picker
+         * A reference to the owner Picker.
          * @private
          */
 
@@ -143,7 +153,9 @@ Ext.define('Ext.picker.Slot', {
     },
 
     /**
-     * Sets the title for this dataview by creating element
+     * Sets the title for this dataview by creating element.
+     * @param {String} title
+     * @return {String}
      */
     applyTitle: function(title) {
         //check if the title isnt defined
@@ -180,7 +192,9 @@ Ext.define('Ext.picker.Slot', {
     },
 
     updateDisplayField: function(newDisplayField) {
-        this.setItemTpl('<div class="' + Ext.baseCSSPrefix + 'picker-item {cls} <tpl if="extra">' + Ext.baseCSSPrefix + 'picker-invalid</tpl>">{' + newDisplayField + '}</div>');
+        if (!this.config.itemTpl) {
+            this.setItemTpl('<div class="' + Ext.baseCSSPrefix + 'picker-item {cls} <tpl if="extra">' + Ext.baseCSSPrefix + 'picker-invalid</tpl>">{' + newDisplayField + '}</div>');
+        }
     },
 
     /**
@@ -193,7 +207,9 @@ Ext.define('Ext.picker.Slot', {
     },
 
     /**
-     * Looks at the {@link #data} configuration and turns it into {@link #store}
+     * Looks at the {@link #data} configuration and turns it into {@link #store}.
+     * @param {Object} data
+     * @return {Object}
      */
     applyData: function(data) {
         var parsedData = [],
@@ -224,7 +240,7 @@ Ext.define('Ext.picker.Slot', {
 
     updateData: function(data) {
         this.setStore(Ext.create('Ext.data.Store', {
-            model: 'x-textvalue',
+            fields: ['text', 'value'],
             data : data
         }));
     },
@@ -253,7 +269,8 @@ Ext.define('Ext.picker.Slot', {
     },
 
     /**
-     * Returns an instance of the owner picker
+     * Returns an instance of the owner picker.
+     * @return {Object}
      * @private
      */
     getPicker: function() {
@@ -280,31 +297,26 @@ Ext.define('Ext.picker.Slot', {
             title = this.getTitle(),
             scrollable = this.getScrollable(),
             scroller = scrollable.getScroller(),
-            barY, elY, barHeight, padding, titleHeight, paddingBottom;
+            titleHeight = 0,
+            barHeight, padding;
 
-        barY = bar.getY();
-        elY = element.getY();
-
-        if (showTitle && title) {
-            elY += title.element.getHeight();
-        }
-
-        padding = paddingBottom = Math.abs(elY - barY);
-        this.slotPadding = padding;
+        barHeight = bar.getHeight();
 
         if (showTitle && title) {
             titleHeight = title.element.getHeight();
-            paddingBottom += titleHeight;
         }
 
-        innerElement.setStyle({
-            padding: padding + 'px 0 ' + paddingBottom + 'px'
-        });
+        padding = Math.ceil((element.getHeight() - titleHeight - barHeight) / 2);
 
-        barHeight = bar.getHeight();
+        if (this.getVerticallyCenterItems()) {
+            innerElement.setStyle({
+                padding: padding + 'px 0 ' + padding + 'px'
+            });
+        }
+
+
         scroller.refresh();
-        scroller.setSnap(barHeight);
-
+        scroller.setSlotSnapSize(barHeight);
         this.setValue(value);
     },
 
@@ -314,32 +326,33 @@ Ext.define('Ext.picker.Slot', {
         me.selectedIndex = index;
         me.selectedNode = item;
         me.scrollToItem(item, true);
-
-        me.fireEvent('slotpick', me, me.getValue(), me.selectedNode);
     },
 
     // @private
     scrollToItem: function(item, animated) {
+//        if (Ext.getThemeName() == 'WP') {
+//            var me = this;
+//            me.selectedNode = item;
+//            me.select(me.selectedIndex);
+//            return;
+//        }
+
         var y = item.getY(),
             parentEl = item.parent(),
             parentY = parentEl.getY(),
-            // padding = this.slotPadding,
             scrollView = this.getScrollable(),
             scroller = scrollView.getScroller(),
             difference;
 
         difference = y - parentY;
-        if (animated) {
-            scroller.scrollToAnimated(0, difference);
-        } else {
-            scroller.scrollTo(0, difference);
-        }
+
+        scroller.scrollTo(0, difference, animated);
     },
 
     // @private
-    onScrollEnd: function(scroller, position) {
+    onScrollEnd: function(scroller, x, y) {
         var me = this,
-            index = Math.round(position.y / me.picker.bar.getHeight()),
+            index = Math.round(y / me.picker.bar.getHeight()),
             viewItems = me.getViewItems(),
             item = viewItems[index];
 
@@ -352,10 +365,10 @@ Ext.define('Ext.picker.Slot', {
     },
 
     /**
-     * Returns the vlaue of this slot
+     * Returns the value of this slot
      * @private
      */
-    getValue: function() {
+    getValue: function(useDom) {
         var store = this.getStore(),
             record, value;
 
@@ -363,10 +376,19 @@ Ext.define('Ext.picker.Slot', {
             return;
         }
 
+        if (!this.rendered || !useDom) {
+            return this._value;
+        }
+
+        //if the value is ever false, that means we do not want to return anything
+        if (this._value === false) {
+            return null;
+        }
+
         record = store.getAt(this.selectedIndex);
 
         value = record ? record.get(this.getValueField()) : null;
-        this._value = value;
+//        this._value = value;
 
         return value;
     },
@@ -376,30 +398,7 @@ Ext.define('Ext.picker.Slot', {
      * @private
      */
     setValue: function(value) {
-        if (!Ext.isDefined(value)){
-            return;
-        }
-
-        if (!this.rendered) {
-            //we don't want to call this until the slot has been rendered
-            this._value = value;
-            return;
-        }
-
-        var store = this.getStore(),
-            viewItems = this.getViewItems(),
-            valueField = this.getValueField(),
-            index, item;
-
-        index = store.find(valueField, value);
-        if (index != -1) {
-            item = Ext.get(viewItems[index]);
-
-            this.selectedIndex = index;
-            this.scrollToItem(item);
-
-            this._value = value;
-        }
+        return this.doSetValue(value);
     },
 
     /**
@@ -407,7 +406,11 @@ Ext.define('Ext.picker.Slot', {
      * @private
      */
     setValueAnimated: function(value) {
-        if (!value) {
+        return this.doSetValue(value, true);
+    },
+
+    doSetValue: function(value, animated) {
+        if (!Ext.isDefined(value)) {
             return;
         }
 
@@ -422,12 +425,16 @@ Ext.define('Ext.picker.Slot', {
             valueField = this.getValueField(),
             index, item;
 
-        index = store.find(valueField, value);
+        index = store.findExact(valueField, value);
         if (index != -1) {
             item = Ext.get(viewItems[index]);
 
             this.selectedIndex = index;
-            this.scrollToItem(item, true);
+            if (item) {
+                this.scrollToItem(item, (animated) ? {
+                    duration: 100
+                } : false);
+            }
 
             this._value = value;
         }

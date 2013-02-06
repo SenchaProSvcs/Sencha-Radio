@@ -1,4 +1,6 @@
 /**
+ * @aside guide layouts
+ * @aside video layouts
  *
  * Sometimes you want to show several screens worth of information but you've only got a small screen to work with.
  * TabPanels and Carousels both enable you to see one screen of many at a time, and underneath they both use a Card
@@ -33,7 +35,7 @@
  *         ]
  *     });
  *
- *     panel.getLayout().{@link Ext.Container#setActiveItem setActiveItem}(1);
+ *     panel.{@link Ext.Container#setActiveItem setActiveItem}(1);
  *
  * Here we create a Panel with a Card Layout and later set the second item active (the active item index is zero-based,
  * so 1 corresponds to the second item). Normally you're better off using a {@link Ext.tab.Panel tab panel} or a
@@ -42,9 +44,12 @@
  * For a more detailed overview of what layouts are and the types of layouts shipped with Sencha Touch 2, check out the
  * [Layout Guide](#!/guide/layouts).
  */
+
+
 Ext.define('Ext.layout.Card', {
-    extend: 'Ext.layout.Fit',
-    alternateClassName: 'Ext.layout.CardLayout',
+    extend: 'Ext.layout.Default',
+
+    alias: 'layout.card',
 
     isCard: true,
 
@@ -56,30 +61,14 @@ Ext.define('Ext.layout.Card', {
      * @param {Mixed} newActiveItem The new active item
      * @param {Mixed} oldActiveItem The old active item
      */
+        
+    layoutClass: 'x-layout-card',
+
+    itemClass: 'x-layout-card-item',
 
     requires: [
         'Ext.fx.layout.Card'
     ],
-
-    alias: 'layout.card',
-
-    cls: Ext.baseCSSPrefix + 'layout-card',
-
-    itemCls: Ext.baseCSSPrefix + 'layout-card-item',
-
-    config: {
-        /**
-         * @cfg {Ext.fx.layout.Card} animation Card animation configuration
-         * Controls how card transitions are animated
-         * @accessor
-         */
-        animation: null
-    },
-
-    constructor: function() {
-        this.callParent(arguments);
-        this.container.onInitialized(this.onContainerInitialized, this);
-    },
 
     /**
      * @private
@@ -101,30 +90,16 @@ Ext.define('Ext.layout.Card', {
         }
     },
 
-    /**
-     * @private
-     */
-    doItemAdd: function(item, index) {
-        if (item.isInnerItem()) {
-            item.hide();
-        }
+    setContainer: function(container) {
+        this.callSuper(arguments);
 
-        this.callParent(arguments);
+        container.innerElement.addCls(this.layoutClass);
+        container.onInitialized('onContainerInitialized', this);
     },
 
-    /**
-     * @private
-     */
-    doItemRemove: function(item) {
-        this.callParent(arguments);
-
-        if (item.isInnerItem()) {
-            item.show();
-        }
-    },
-
-    onContainerInitialized: function(container) {
-        var activeItem = container.getActiveItem();
+    onContainerInitialized: function() {
+        var container = this.container,
+            activeItem = container.getActiveItem();
 
         if (activeItem) {
             activeItem.show();
@@ -140,6 +115,26 @@ Ext.define('Ext.layout.Card', {
         this.relayEvent(arguments, 'doActiveItemChange');
     },
 
+    onItemInnerStateChange: function(item, isInner, destroying) {
+        this.callSuper(arguments);
+        var container = this.container,
+            activeItem = container.getActiveItem();
+
+        item.toggleCls(this.itemClass, isInner);
+        item.setLayoutSizeFlags(isInner ? container.LAYOUT_BOTH : 0);
+
+        if (isInner) {
+            if (activeItem !== container.innerIndexOf(item) && activeItem !== item && item !== container.pendingActiveItem) {
+                item.hide();
+            }
+        }
+        else {
+            if (!destroying && !item.isDestroyed && item.isDestroying !== true) {
+                item.show();
+            }
+        }
+    },
+
     /**
      * @private
      */
@@ -153,16 +148,8 @@ Ext.define('Ext.layout.Card', {
         }
     },
 
-    doItemDockedChange: function(item, docked) {
-        var element = item.element;
-        // See https://sencha.jira.com/browse/TOUCH-1508
-        if (docked) {
-            element.removeCls(this.itemCls);
-        }
-        else {
-            element.addCls(this.itemCls);
-        }
-
+    destroy:  function () {
         this.callParent(arguments);
+        Ext.destroy(this.getAnimation());
     }
 });

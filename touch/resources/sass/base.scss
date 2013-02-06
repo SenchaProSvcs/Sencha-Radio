@@ -1,0 +1,31 @@
+@import 'sencha-touch/base';
+
+@import 'sencha-touch/base/reset';
+@import 'sencha-touch/base/core';
+@import 'sencha-touch/base/layout';
+
+@import 'sencha-touch/base/button';
+@import 'sencha-touch/base/carousel';
+@import 'sencha-touch/base/toolbar';
+@import 'sencha-touch/base/tab';
+@import 'sencha-touch/base/img';
+@import 'sencha-touch/base/media';
+@import 'sencha-touch/base/map';
+@import 'sencha-touch/base/sheet';
+@import 'sencha-touch/base/panel';
+@import 'sencha-touch/base/msgbox';
+@import 'sencha-touch/base/mask';
+@import 'sencha-touch/base/picker';
+
+@import 'sencha-touch/base/list';
+@import 'sencha-touch/base/list/pullrefresh';
+@import 'sencha-touch/base/list/paging';
+@import 'sencha-touch/base/list/indexbar';
+
+@import 'sencha-touch/base/form';
+@import 'sencha-touch/base/form/toolbar';
+@import 'sencha-touch/base/form/slider';
+
+@import 'sencha-touch/base/charts';
+
+@include icon-font('Pictos', inline-font-files('pictos/pictos-web.woff', woff, 'pictos/pictos-web.ttf', truetype));

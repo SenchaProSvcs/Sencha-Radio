@@ -3,11 +3,14 @@
  */
 Ext.define('Ext.util.Droppable', {
     mixins: {
-        observable: 'Ext.util.Observable'
+        observable: 'Ext.mixin.Observable'
     },
 
     config: {
-        // @inherit
+        /**
+         * The base CSS class to apply to this component's element.
+         * This will also be prepended to other elements within this component.
+         */
         baseCls: Ext.baseCSSPrefix + 'droppable'
     },
 

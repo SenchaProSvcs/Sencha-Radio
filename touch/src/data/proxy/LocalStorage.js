@@ -1,5 +1,6 @@
 /**
  * @author Ed Spencer
+ * @aside guide proxies
  *
  * The LocalStorageProxy uses the new HTML5 localStorage API to save {@link Ext.data.Model Model} data locally on the
  * client browser. HTML5 localStorage is a key-value store (e.g. cannot save complex objects like JSON), so
@@ -10,11 +11,13 @@
  * searches locally so they can easily perform a saved search again later. We'd start by creating a Search model:
  *
  *     Ext.define('Search', {
- *         fields: ['id', 'query'],
  *         extend: 'Ext.data.Model',
- *         proxy: {
- *             type: 'localstorage',
- *             id  : 'twitter-Searches'
+ *         config: {
+ *             fields: ['id', 'query'],
+ *             proxy: {
+ *                 type: 'localstorage',
+ *                 id  : 'twitter-Searches'
+ *             }
  *         }
  *     });
  *

@@ -1,20 +1,21 @@
-/*
- * @class Ext.util.translatable.ScrollPosition
+/**
  * @private
  *
  * Scroll position implementation
  */
 Ext.define('Ext.util.translatable.ScrollPosition', {
-    extend: 'Ext.util.translatable.Abstract',
+    extend: 'Ext.util.translatable.Dom',
 
     wrapperWidth: 0,
+
     wrapperHeight: 0,
 
-    baseCls: 'x-translatable',
+    config: {
+        useWrapper: true
+    },
 
     getWrapper: function() {
         var wrapper = this.wrapper,
-            baseCls = this.baseCls,
             element = this.getElement(),
             container;
 
@@ -25,19 +26,20 @@ Ext.define('Ext.util.translatable.ScrollPosition', {
                 return null;
             }
 
-            wrapper = element.wrap({
-                className: baseCls + '-wrapper'
-            });
+            if (this.getUseWrapper()) {
+                wrapper = element.wrap();
+            }
+            else {
+                wrapper = container;
+            }
 
-            wrapper.insertFirst(Ext.Element.create({
-                className: baseCls + '-stretcher'
-            }));
+            element.addCls('x-translatable');
+            wrapper.addCls('x-translatable-container');
 
-            element.addCls(baseCls);
-            container.addCls(baseCls + '-container');
-
-            this.container = container;
             this.wrapper = wrapper;
+
+            wrapper.on('resize', 'onWrapperResize', this);
+            wrapper.on('painted', 'refresh', this);
 
             this.refresh();
         }
@@ -45,51 +47,51 @@ Ext.define('Ext.util.translatable.ScrollPosition', {
         return wrapper;
     },
 
-    doTranslate: function(translation) {
+    doTranslate: function(x, y) {
         var wrapper = this.getWrapper(),
-            wrapperDom;
+            dom;
 
         if (wrapper) {
-            wrapperDom = wrapper.dom;
+            dom = wrapper.dom;
 
-            if ('x' in translation) {
-                wrapperDom.scrollLeft = this.wrapperWidth - translation.x;
+            if (typeof x == 'number') {
+                dom.scrollLeft = this.wrapperWidth - x;
             }
 
-            if ('y' in translation) {
-                wrapperDom.scrollTop = this.wrapperHeight - translation.y;
+            if (typeof y == 'number') {
+                dom.scrollTop = this.wrapperHeight - y;
             }
         }
-
-        return this.callParent(arguments);
     },
 
-    refresh: function() {
-        var wrapper = this.getWrapper(),
-            wrapperDom;
+    onWrapperResize: function(wrapper, info) {
+        this.wrapperWidth = info.width;
+        this.wrapperHeight = info.height;
 
-        if (wrapper) {
-            wrapperDom = wrapper.dom;
-
-            this.wrapperWidth = wrapperDom.offsetWidth;
-            this.wrapperHeight = wrapperDom.offsetHeight;
-
-            this.callParent(arguments);
-        }
+        this.refresh();
     },
 
     destroy: function() {
         var element = this.getElement(),
-            wrapper = this.getWrapper(),
-            baseCls = this.baseCls;
+            wrapper = this.wrapper;
 
         if (wrapper) {
-            this.container.removeCls(baseCls + '-container');
-            element.unwrap();
-            element.removeCls(baseCls);
-            wrapper.destroy();
+            if (!element.isDestroyed) {
+                if (this.getUseWrapper()) {
+                    wrapper.doReplaceWith(element);
+                }
+                element.removeCls('x-translatable');
+            }
+
+            wrapper.removeCls('x-translatable-container');
+            wrapper.un('resize', 'onWrapperResize', this);
+            wrapper.un('painted', 'refresh', this);
+
+            delete this.wrapper;
+            delete this._element;
         }
 
-        this.callParent(arguments);
+        this.callSuper();
     }
+
 });

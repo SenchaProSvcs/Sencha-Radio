@@ -1,23 +1,29 @@
 /**
+ * @aside video list
+ * @aside guide list
+ *
  * IndexBar is a component used to display a list of data (primarily an alphabet) which can then be used to quickly
  * navigate through a list (see {@link Ext.List}) of data. When a user taps on an item in the {@link Ext.IndexBar},
  * it will fire the {@link #index} event.
  *
- * ## Example:
- *
  * Here is an example of the usage in a {@link Ext.List}:
  *
  *     @example phone portrait preview
- *     Ext.regModel('Contact', {
- *        fields: ['firstName', 'lastName']
+ *     Ext.define('Contact', {
+ *         extend: 'Ext.data.Model',
+ *         config: {
+ *             fields: ['firstName', 'lastName']
+ *         }
  *     });
  *
  *     var store = new Ext.data.JsonStore({
  *        model: 'Contact',
  *        sorters: 'lastName',
  *
- *        getGroupString: function(record) {
- *            return record.get('lastName')[0];
+ *        grouper: {
+ *            groupFn: function(record) {
+ *                return record.get('lastName')[0];
+ *            }
  *        },
  *
  *        data: [
@@ -33,7 +39,6 @@
  *            {firstName: 'Nigel',   lastName: 'White'},
  *            {firstName: 'Don',     lastName: 'Griffin'},
  *            {firstName: 'Nico',    lastName: 'Ferrero'},
- *            {firstName: 'Nicolas', lastName: 'Belmonte'},
  *            {firstName: 'Jason',   lastName: 'Johnston'}
  *        ]
  *     });
@@ -46,15 +51,6 @@
  *        indexBar    : true,
  *        store: store,
  *        hideOnMaskTap: false
- *     });
- *
- * Alternatively you can initate the {@link Ext.IndexBar} component manually in a custom component by using something
- * similar to the following example:
- *
- *     var indexBar = new Ext.dataview.IndexBar({
- *        docked: 'right',
- *        overlay: true,
- *        alphabet: true
  *     });
  *
 */
@@ -74,7 +70,6 @@ Ext.define('Ext.dataview.IndexBar', {
         baseCls: Ext.baseCSSPrefix + 'indexbar',
 
         /**
-         * @private
          * @cfg {String} direction
          * Layout direction, can be either 'vertical' or 'horizontal'
          * @accessor
@@ -92,7 +87,7 @@ Ext.define('Ext.dataview.IndexBar', {
 
         /**
          * @cfg {String} listPrefix
-         * The prefix string to be appended at the beginning of the list.
+         * The prefix string to be used at the beginning of the list.
          * E.g: useful to add a "#" prefix before numbers.
          * @accessor
          */
@@ -144,28 +139,28 @@ Ext.define('Ext.dataview.IndexBar', {
         this.callParent();
 
         this.innerElement.on({
-            touchstart: this.onTouchStart,
-            touchend: this.onTouchEnd,
-            touchmove: this.onTouchMove,
+            dragstart: this.onDragStart,
+            dragend: this.onDragEnd,
+            drag: this.onDrag,
             scope: this
         });
     },
 
     // @private
-    onTouchStart: function(e, t) {
+    onDragStart: function(e, t) {
         e.stopPropagation();
         this.innerElement.addCls(this.getBaseCls() + '-pressed');
         this.pageBox = this.innerElement.getPageBox();
-        this.onTouchMove(e);
+        this.onDrag(e);
     },
 
     // @private
-    onTouchEnd: function(e, t) {
+    onDragEnd: function(e, t) {
         this.innerElement.removeCls(this.getBaseCls() + '-pressed');
     },
 
     // @private
-    onTouchMove: function(e) {
+    onDrag: function(e) {
         var point = Ext.util.Point.fromEvent(e),
             target,
             pageBox = this.pageBox;
@@ -203,4 +198,57 @@ Ext.define('Ext.dataview.IndexBar', {
         }
         this.callParent();
     }
+
+}, function() {
+    //<deprecated product=touch since=2.0>
+
+    /**
+     * @member Ext.dataview.IndexBar
+     * @method isHorizontal
+     * Returns `true` when direction is horizontal.
+     * @removed 2.0.0
+     */
+    Ext.deprecateMethod(this, 'isHorizontal', null, "Ext.dataview.IndexBar.isHorizontal() has been removed");
+
+    /**
+     * @member Ext.dataview.IndexBar
+     * @method isVertical
+     * Returns `true` when direction is vertical.
+     * @removed 2.0.0
+     */
+    Ext.deprecateMethod(this, 'isVertical', null, "Ext.dataview.IndexBar.isVertical() has been removed");
+
+    /**
+     * @member Ext.dataview.IndexBar
+     * @method refresh
+     * Refreshes the view by reloading the data from the store and re-rendering the template.
+     * @removed 2.0.0
+     */
+    Ext.deprecateMethod(this, 'refresh', null, "Ext.dataview.IndexBar.refresh() has been removed");
+
+    /**
+     * @member Ext.dataview.IndexBar
+     * @cfg {Boolean} alphabet
+     * `true` to use the letters property to show a list of the alphabet.
+     * @removed 2.0.0
+     */
+    Ext.deprecateProperty(this, 'alphabet', null, "Ext.dataview.IndexBar.alphabet has been removed");
+
+    /**
+     * @member Ext.dataview.IndexBar
+     * @cfg {Boolean} itemSelector
+     * A simple CSS selector for items.
+     * @removed 2.0.0
+     */
+    Ext.deprecateProperty(this, 'itemSelector', null, "Ext.dataview.IndexBar.itemSelector has been removed");
+
+    /**
+     * @member Ext.dataview.IndexBar
+     * @cfg {Boolean} store
+     * The store to be used for displaying data on the index bar.
+     * @removed 2.0.0
+     */
+    Ext.deprecateProperty(this, 'store', null, "Ext.dataview.IndexBar.store has been removed");
+
+    //</deprecated>
 });

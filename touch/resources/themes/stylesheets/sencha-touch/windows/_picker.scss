@@ -1,0 +1,106 @@
+$picker-row-height: 2.5em !default;
+//$picker-active-border: .12em solid $active-color !default;
+$picker-sheet-radius: .4em !default;
+$picker-title-color: darken(desaturate($base-color, 10%), 25%) !default;
+$picker-title-bg-color: lighten(saturate($base-color, 10%), 5%) !default;
+
+.x-sheet.x-picker {
+  .x-toolbar {
+    background-color: $dialog-color;
+    padding-top: .5em;
+  }
+}
+
+.x-sheet.x-picker .x-sheet-inner {
+  background-color: $dialog-color;
+  margin: $sheet-padding;
+
+  .x-picker-slot {
+    .x-body {
+      border-left: 1px solid #999999;
+      border-right: 1px solid #ACACAC;
+    }
+
+    &.x-first {
+      .x-body {
+        border-left: 0;
+      }
+    }
+
+    &.x-last {
+      .x-body {
+        border-left: 0;
+        border-right: 0;
+      }
+    }
+  }
+}
+
+.x-picker-bar {
+  display: none;
+}
+
+.x-use-titles {
+  .x-picker-bar {
+    margin-top: 1.5em;
+  }
+}
+
+.x-picker-slot-title {
+  position:relative;
+  z-index: 2;
+  background-color: $dialog-color;
+
+  > div {
+    font-weight: 700;
+    margin-left: 10px !important;
+    font-size: $font-size-normal;
+    text-transform: uppercase;
+    color: $foreground-color;
+  }
+}
+
+.x-picker-slot {
+
+
+  .x-dataview-item {
+    height: $picker-row-height;
+    font-weight: normal;
+    padding: 0 10px;
+    color: $foreground-color;
+
+    &.x-item-selected {
+      color: $base-color;
+      font-weight: normal;
+    }
+  }
+
+  .x-picker-item {
+    font-size: $font-size-medium-large;
+
+    &:active {
+      color: $base-color;
+    }
+  }
+}
+
+.x-ie .x-picker-item {
+    cursor: default;
+}
+
+.x-ie .x-picker {
+  .x-button {
+    -ms-flex: 1;
+    max-width: 50%;
+  }
+}
+
+.x-picker-right {
+    text-align: right;
+}
+.x-picker-center {
+    text-align: center;
+}
+.x-picker-left {
+    text-align: left;
+}

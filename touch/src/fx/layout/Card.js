@@ -9,7 +9,7 @@ Ext.define('Ext.fx.layout.Card', {
         'Ext.fx.layout.card.Fade',
         'Ext.fx.layout.card.Flip',
         'Ext.fx.layout.card.Pop',
-        'Ext.fx.layout.card.Cube',
+//        'Ext.fx.layout.card.Cube',
         'Ext.fx.layout.card.Scroll'
     ],
 
@@ -39,6 +39,9 @@ Ext.define('Ext.fx.layout.Card', {
                 if (type != 'fade') {
                     type = 'scroll';
                 }
+            }
+            else if (type === 'slide' && Ext.browser.is.ChromeMobile) {
+                type = 'scroll';
             }
 
             defaultClass = Ext.ClassManager.getByAlias('fx.layout.card.' + type);

@@ -20,82 +20,83 @@ Ext.define('Ext.data.proxy.Server', {
 
         /**
          * @cfg {String} pageParam
-         * The name of the 'page' parameter to send in a request. Defaults to 'page'. Set this to false if you don't
+         * The name of the `page` parameter to send in a request. Set this to `false` if you don't
          * want to send a page parameter.
          */
         pageParam: 'page',
 
         /**
          * @cfg {String} startParam
-         * The name of the 'start' parameter to send in a request. Defaults to 'start'. Set this to false if you don't
+         * The name of the `start` parameter to send in a request. Set this to `false` if you don't
          * want to send a start parameter.
          */
         startParam: 'start',
 
         /**
          * @cfg {String} limitParam
-         * The name of the 'limit' parameter to send in a request. Defaults to 'limit'. Set this to false if you don't
+         * The name of the `limit` parameter to send in a request. Set this to `false` if you don't
          * want to send a limit parameter.
          */
         limitParam: 'limit',
 
         /**
          * @cfg {String} groupParam
-         * The name of the 'group' parameter to send in a request. Defaults to 'group'. Set this to false if you don't
+         * The name of the `group` parameter to send in a request. Set this to `false` if you don't
          * want to send a group parameter.
          */
         groupParam: 'group',
 
         /**
          * @cfg {String} sortParam
-         * The name of the 'sort' parameter to send in a request. Defaults to 'sort'. Set this to undefined if you don't
+         * The name of the `sort` parameter to send in a request. Set this to `undefined` if you don't
          * want to send a sort parameter.
          */
         sortParam: 'sort',
 
         /**
          * @cfg {String} filterParam
-         * The name of the 'filter' parameter to send in a request. Defaults to 'filter'. Set this to undefined if you don't
+         * The name of the 'filter' parameter to send in a request. Set this to `undefined` if you don't
          * want to send a filter parameter.
          */
         filterParam: 'filter',
 
         /**
          * @cfg {String} directionParam
-         * The name of the direction parameter to send in a request. **This is only used when simpleSortMode is set to
-         * true.** Defaults to 'dir'.
+         * The name of the direction parameter to send in a request.
+         *
+         * __Note:__ This is only used when `simpleSortMode` is set to `true`.
          */
         directionParam: 'dir',
 
         /**
-         * @cfg {Boolean} enablePagingParams This can be set to false if you want to prevent the paging params to be
+         * @cfg {Boolean} enablePagingParams This can be set to `false` if you want to prevent the paging params to be
          * sent along with the requests made by this proxy.
          */
         enablePagingParams: true,
 
         /**
          * @cfg {Boolean} simpleSortMode
-         * Enabling simpleSortMode in conjunction with remoteSort will only send one sort property and a direction when a
-         * remote sort is requested. The directionParam and sortParam will be sent with the property name and either 'ASC'
+         * Enabling `simpleSortMode` in conjunction with `remoteSort` will only send one sort property and a direction when a
+         * remote sort is requested. The `directionParam` and `sortParam` will be sent with the property name and either 'ASC'
          * or 'DESC'.
          */
         simpleSortMode: false,
 
         /**
          * @cfg {Boolean} noCache
-         * Disable caching by adding a unique parameter name to the request. Set to false to allow caching. Defaults to true.
+         * Disable caching by adding a unique parameter name to the request. Set to `false` to allow caching.
          */
         noCache : true,
 
         /**
          * @cfg {String} cacheString
-         * The name of the cache param added to the url when using noCache. Defaults to "_dc".
+         * The name of the cache param added to the url when using `noCache`.
          */
         cacheString: "_dc",
 
         /**
          * @cfg {Number} timeout
-         * The number of milliseconds to wait for a response. Defaults to 30000 milliseconds (30 seconds).
+         * The number of milliseconds to wait for a response.
          */
         timeout : 30000,
 
@@ -210,7 +211,7 @@ Ext.define('Ext.data.proxy.Server', {
     /**
      * This method handles the processing of the response and is usually overridden by subclasses to
      * do additional processing.
-     * @param {Boolean} success Wether or not this request was successful
+     * @param {Boolean} success Whether or not this request was successful
      * @param {Ext.data.Operation} operation The operation we made this request for
      * @param {Ext.data.Request} request The request that was made
      * @param {Object} response The response that we got
@@ -229,15 +230,16 @@ Ext.define('Ext.data.proxy.Server', {
             try {
                 resultSet = reader.process(response);
             } catch(e) {
-                operation.setException(operation, {
-                    status: null,
-                    statusText: e.getMessage()
-                });
+                operation.setException(e.message);
 
                 me.fireEvent('exception', this, response, operation);
                 return;
             }
 
+            // This could happen if the model was configured using metaData
+            if (!operation.getModel()) {
+                operation.setModel(this.getModel());
+            }
 
             if (operation.process(action, resultSet, request, response) === false) {
                 this.fireEvent('exception', this, response, operation);
@@ -269,10 +271,12 @@ Ext.define('Ext.data.proxy.Server', {
      * @param {Object} response The response
      */
     setException: function(operation, response) {
-        operation.setException({
-            status: response.status,
-            statusText: response.statusText
-        });
+        if (Ext.isObject(response)) {
+            operation.setException({
+                status: response.status,
+                statusText: response.statusText
+            });
+        }
     },
 
     /**
@@ -333,7 +337,7 @@ Ext.define('Ext.data.proxy.Server', {
     getParams: function(operation) {
         var me = this,
             params = {},
-            groupers = operation.getGroupers(),
+            grouper = operation.getGrouper(),
             sorters = operation.getSorters(),
             filters = operation.getFilters(),
             page = operation.getPage(),
@@ -364,9 +368,9 @@ Ext.define('Ext.data.proxy.Server', {
             }
         }
 
-        if (groupParam && groupers && groupers.length > 0) {
+        if (groupParam && grouper) {
             // Grouper is a subclass of sorter, so we can just use the sorter method
-            params[groupParam] = me.encodeSorters(groupers);
+            params[groupParam] = me.encodeSorters([grouper]);
         }
 
         if (sortParam && sorters && sorters.length > 0) {
@@ -418,7 +422,7 @@ Ext.define('Ext.data.proxy.Server', {
      * @return {String} The url
      */
     getUrl: function(request) {
-        return request.getUrl() || this.getApi()[request.getAction()] || this._url;
+        return request ? request.getUrl() || this.getApi()[request.getAction()] || this._url : this._url;
     },
 
     /**
@@ -430,6 +434,8 @@ Ext.define('Ext.data.proxy.Server', {
      * @param {Ext.data.Operation} operation The Ext.data.Operation object
      * @param {Function} callback The callback function to call when the Operation has completed
      * @param {Object} scope The scope in which to execute the callback
+     * @protected
+     * @template
      */
     doRequest: function(operation, callback, scope) {
         //<debug>

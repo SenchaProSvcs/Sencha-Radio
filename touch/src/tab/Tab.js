@@ -12,12 +12,15 @@ Ext.define('Ext.tab.Tab', {
     isTab: true,
 
     config: {
-        // @inherit
+        /**
+         * @cfg
+         * @inheritdoc
+         */
         baseCls: Ext.baseCSSPrefix + 'tab',
 
         /**
          * @cfg {String} pressedCls
-         * The CSS class to be applied to a Tab when it is pressed. Defaults to 'x-tab-pressed'.
+         * The CSS class to be applied to a Tab when it is pressed.
          * Providing your own CSS for this class enables you to customize the pressed state.
          * @accessor
          */
@@ -25,7 +28,7 @@ Ext.define('Ext.tab.Tab', {
 
         /**
          * @cfg {String} activeCls
-         * The CSS class to be applied to a Tab when it is active. Defaults to 'x-tab-active'.
+         * The CSS class to be applied to a Tab when it is active. 
          * Providing your own CSS for this class enables you to customize the active state.
          * @accessor
          */
@@ -33,7 +36,7 @@ Ext.define('Ext.tab.Tab', {
 
         /**
          * @cfg {Boolean} active
-         * Set this to true to have the tab be active by default.
+         * Set this to `true` to have the tab be active by default.
          * @accessor
          */
         active: false,
@@ -46,7 +49,7 @@ Ext.define('Ext.tab.Tab', {
         title: '&nbsp;'
     },
 
-    // We need to override this so the iconElement is properly hidden using visibilty
+    // We need to override this so the `iconElement` is properly hidden using visibility
     // when we render it.
     template: [
         {
@@ -67,6 +70,18 @@ Ext.define('Ext.tab.Tab', {
         }
     ],
 
+    updateIconCls : function(newCls, oldCls) {
+        this.callParent([newCls, oldCls]);
+
+        if (oldCls) {
+            this.removeCls('x-tab-icon');
+        }
+
+        if (newCls) {
+            this.addCls('x-tab-icon');
+        }
+    },
+
     /**
      * @event activate
      * Fires when a tab is activated
@@ -79,22 +94,18 @@ Ext.define('Ext.tab.Tab', {
      * @param {Ext.tab.Tab} this
      */
 
-     // @inherit
     updateTitle: function(title) {
         this.setText(title);
     },
 
-    // @inherit
     hideIconElement: function() {
-        this.iconElement.dom.style.setProperty('visibility', 'hidden', '!important');
+        this.iconElement.dom.style.setProperty('visibility', 'hidden', 'important');
     },
 
-    // @inherit
     showIconElement: function() {
-        this.iconElement.dom.style.setProperty('visibility', 'visible', '!important');
+        this.iconElement.dom.style.setProperty('visibility', 'visible', 'important');
     },
 
-    // @inherit
     updateActive: function(active, oldActive) {
         var activeCls = this.getActiveCls();
         if (active && !oldActive) {
