@@ -7,7 +7,7 @@
     /**
      * The file path to this application's front HTML document, relative to this app.json file
      */
-    "indexHtmlPath": "index.html",
+    "indexHtmlPath": "index-app.html",
 
     /**
      * The absolute URL to this application in development environment, i.e: the URL to run this application
@@ -81,7 +81,7 @@
          * List of items in the CACHE MANIFEST section
          */
         "cache": [
-            "index.html"
+            "index-app.html"
         ],
         /**
          * List of items in the NETWORK section

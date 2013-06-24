@@ -24,7 +24,7 @@
     "app.json.tpl.merge": {
       "9e5765ed32fe918485b96fd10fff4a5b6b2c8810": "eJzFWE1v2zgQvedXEMYCbQPHOu0l2BbIpima3TQt6hR7aHugKcpiS5EqSdkxAv/3fUN9WLKTtE6LRkAgxRJn3ny9GfLmgOFKDg/jnR2yq1wyXpZaCR6UNU88M7yQvuRCjlnlZcpmKzaVRuScndqi4CZlwbK5NNLxIJnQ3HvpG3FJvI9IxOiYjW7oYT0aH9ymNVNaspKHnOSFXPktHJmzJrDXV28uWGpFVUgTxsxJjfcL2V8z+eKtieKGKJRJ5fXrUOh3UEJw4g+THL/cAYnPvNUVrPrw/uI2VEwZlsqF1LYkOEyahQLKGpqayGOs6Ba7yuwIaJVB1MpWji3ljM2cXXrpWFo5ZeZ9+WMmJ3PgzkMoj5NEW8F1bn1IihVkJj1zJo3gjTHQu+C6kgwPRsoUgVzm0rBZpXSMoJOwFY6MOIaeT2UpIdsIJT1TGVMBX3+rFJYwIF1Id+RVKqOIyoku+jCXB8adZMbiLvDGqxmivFC8Drdf+SALVjobrLB6MgxY5TTCZCqtd8NzoXxgNmNca/YPX/CpcKqEEiRf8BQX8rxT8xxRuZaiiuGyLpWuVcLOuMhhC/RTUPB29kWKwJaKUpAS0mptlxSDzLqCh+N2YbxuBv9FvGWTV3RPgk18xIR0HLEkYe+a1CbDx+TGGL/aD/BoUcGgmfyxjO4pdbKwgaorOER3cEHp07clWc71s52V911YecReyoxXGt4Ekgrxz5RB1jzNuPZy9Yx+9WoO0Yz3TVnmCm5dKsQF1ghbKpnur3taSqGyVW0UfBU9UbsKHmG10TsKKc0A6269o6pMefTWKJU68NGv8hYgn2dRv4/IoXzcAx3RWaNXhE1bTuVnDVEq+HNvXYwJpC5EKBPrLnp/Gqzjc4lIBaVr1V3Bg6zNXKaTB1jV+glulYZT8Vqqd9THEVcgKXrLaq9SmWxsfoiuDKU+YoXkBjLw3Apus6mA42ra2ri2ts3vhvr6aGZt8MHxcrs6firU5yYlapSUh33yLyzAxRh3fLmaMLavePQdX2e23yR1l9EIeeQF2RB3ChIWiPwK3IaqyKSD2v0LruHLrot3nIP+rjIJZqpjixAo4Wydwm67y8RrPeRwkN8x+3jQ6ro56GvuGPMmc5gMltZ9JZZcJz4OGEfBViL/K5QaFPB8pNXMcVj6/Dl7Atp/MnpxhNtfCd6/IJIdD2Xvxr97vx5/D1DtgG2RM9Cgbrl2TP2olw11s0PA4gg0bJrUAwUKHh8a/HVh7Phh04obx3U6txlrY0R8+nx/azydTm/ticoIXflH6IkkeyL8I7XEBxf+IzbER+qHP+Oq39UNf6YZxo6GtMakbQ3oFDy+3N/M39Ief1l3vI+oqSZ/gKm7GT/BgoQKkRZu8eT+nPXB1xHhVbCgFVCqRnpsdpUU4knXjJ7GXeCfg61Y/KTrV896vIodTc2tQ4Ox+JTWAObG1g5SDaulUmKtjkFPT05fn7E3J5fnr86mV9gBic1Wrqeg9mqj4ePQQb2tWvfi83gvFJdnV/+9ff/v/eqNDNRUdwEcPljvq5OLi79PTr+jGJyoZ1xEzZ/jz+vdoJ9dozlvdo0DqkL3sugym8Y4DF63aGBaLztVgfrvJ2b/HVrxHa984C5U5eiuPH1FWZX0xi460UDWBYTZRQvQAaxrMg+mrKhX9kc2P+76GihJpbB/XmnusE0tHW2QgW3r3CJKHBr66dPEL8wfd+J82QFsT1R8IFg0E0DNQtnK07Y7rWIQG2gTdkltJE4yBBh+CjTatnXYkWwkmM4JrdLWrq+ypAkjcFHPjdBTgmYbKXHoyGpq9Pg8LCVcVVPGluXciRx9vz2vaf695bCmzdQSKUe8H8+s6lONeE7Rja+iSJs5C6DoPGI7repjjc7Zt1GVUd8q2WMneCXdkHuPk5oDM06exrBwHT8a9KevcuW72euSJiqiPSIsn9sKKA02GK5h8V4f2zooUWkcoquI7Dxdjw7WB/8DtDZ1vA\u003d\u003d"
     },
-    "index-dev.html.tpl.merge": {
+    "index-app.html.tpl.merge": {
       "422ecbc52593a542eb5b1d644ff234e7380778b9": "eJydVU1rGzEQvftXTDbkErpZh2JIXdsU8kEDKQ3EOfSolcZexVppkcZ2jMl/72jXTvxFTaqDkTyaeU9vhre9k5vf18M/j7fwc/jrYdDqFVQaKIXVIwzUTxIwwo77Cdr0+SmJcRRq0AJevRJJgCyED8g3n4d36VWyCpEmg4OlFSW+9bLm1EQCLQwCLSrsJ4SvlMkQVln1ys7PPw7ncPsqyooT3AiEBW01aWHAOKG0HfNZaSnI+YvNnHsCHcCjdGWJVqECcjBBrIAKDogAJRcquQ5vKxeCziMlB5V3M62QywYSlmCEqHIhJ5vF54WOdKhAzxDBTb1ErukRAmljIMdILBJk3JHzjIkw0j4QkC5xo1T2vo+af4HcqQUsPy7EAOpxQV24bLfPvm9FIq2xd1OrUumM8104vfx21blpv996a71vT0VVPTSS3a8V20FiGVhaZ7sg8uDMlHAbj1zVhc4ui1L4sbZpHUwvO9XrThL3NxVGj7msREvot+Nzrag49Lr1u7+2d0umc8wnmqvGBkbCaZwxZr3/wmOJaupF8+T2RSccu62ZfbOTrDpz03YUxxGPwmiexAbHaItig9exFg143pbH2n5Xr20WSofKiEUkGTHT3Dg5+azEufMKfeqZ1DRwl/ba23Sf5YO90Kqz+8VdJaSmRdT86qAQP9bwE1yMPPc2HOrttirtsx2ZdpG2gm9bp86R5H+kxrn9P+Bm18tqM1wZ40mawpC9IjaMXcS4OZRTdo0c2bsqtjRLQlJtKU9o2Xbhmv1N2Nrd8qk2ChbsRlEtE0XiiYM0Xbuu9DrWUP2k1NK72p98sunDL2ImmmsJBC/7ybKWf+785FFQ8ZZtJGYKZ8ywYnulixf2b35KncofiKz5QvSina3QlZ7V0AcauWH98RoXir+f+m+17WUNIhNgOx20/gKKM+Jb"
     },
     "packager.json.tpl.merge": {
@@ -198,8 +198,8 @@
         "appStores": ""
       }
     },
-    "index-dev.html": {
-      "source": "index-dev.html.tpl.merge",
+    "index-app.html": {
+      "source": "index-app.html.tpl.merge",
       "version": "422ecbc52593a542eb5b1d644ff234e7380778b9",
       "parameters": {
         "viewNamespace": "Radio.view",
