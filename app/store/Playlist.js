@@ -7,8 +7,12 @@ Ext.define('Radio.store.Playlist',{
     config: {
         model: 'Radio.model.Song',
         proxy: {
-            type: 'jsonp',
-            callbackKey: 'jsoncallbackfunction'
+            type        : 'jsonp',
+            startParam  : 'offset',
+            pageParam   : false,
+            reader      : {
+                rootProperty: 'results'
+            }
         }
     },
     

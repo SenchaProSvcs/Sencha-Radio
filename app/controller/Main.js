@@ -124,7 +124,7 @@ Ext.define('Radio.controller.Main',{
              }
          
              audio.on('canplay', me.onPlayerPlayBtnTap, me, {single: true});
-             audio.setUrl(song.get('stream'));
+             audio.setUrl(song.get('audio'));
          }
     },
     

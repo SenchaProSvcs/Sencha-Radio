@@ -11,7 +11,7 @@ Ext.define('Radio.model.Song',{
             name:'name',
             type: 'string'
         },{
-            name:'stream',
+            name:'audio',
             type: 'string'
         },{
             name:'artist_name',
