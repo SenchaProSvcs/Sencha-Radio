@@ -1,6 +1,9 @@
 .player-view {
+  
+  .x-list-item.x-list-item-tpl .x-innerhtml {
+    padding-left: 30px;
+  }
   .x-list-item .x-innerhtml {
-    padding-left: 1.1em;
     &:before {
       content: "";
       font-family: pictos;

@@ -71,6 +71,11 @@ Ext.define('Ext.field.Toggle', {
         labelAlign: 'left'
     },
 
+    platformConfig: [{
+        theme: ['Windows'],
+        labelAlign: 'left'
+    }],
+
     /**
      * @event change
      * Fires when an option selection has changed.
@@ -79,13 +84,15 @@ Ext.define('Ext.field.Toggle', {
      *         xtype: 'togglefield',
      *         label: 'Event Example',
      *         listeners: {
-     *             change: function(field, newValue) {
+     *             change: function(field, slider, thumb, newValue, oldValue) {
      *                 console.log('Value of this toggle has changed:', (newValue) ? 'ON' : 'OFF');
      *             }
      *         }
      *     });
      *
-     * @param {Ext.field.Toggle} me
+     * @param {Ext.field.Toggle} this
+     * @param {Ext.slider.Toggle} Slider instance
+     * @param {Ext.slider.Thumb} Thumb instance
      * @param {Number} newValue the new value of this thumb
      * @param {Number} oldValue the old value of this thumb
      */
@@ -120,12 +127,12 @@ Ext.define('Ext.field.Toggle', {
     },
 
     /**
-     * @property {String} label for toggle 'on' state.
+     * For toggle 'on' state.
      */
     toggleOnLabel: 'On',
 
     /**
-     * @property {String} label for toggle 'off' state.
+     * For toggle 'off' state.
      */
     toggleOffLabel: 'Off',
 
@@ -146,7 +153,7 @@ Ext.define('Ext.field.Toggle', {
 
     /**
      * Sets the value of the toggle.
-     * @param {Number} value **1** for toggled, **0** for untoggled.
+     * @param {Number} newValue **1** for toggled, **0** for untoggled.
      * @return {Object} this
      */
     setValue: function(newValue) {

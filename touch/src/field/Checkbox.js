@@ -131,17 +131,25 @@ Ext.define('Ext.field.Checkbox', {
          */
     },
 
+    platformConfig: [{
+        theme: ['Windows'],
+        labelAlign: 'left'
+    }],
+
     // @private
     initialize: function() {
-        var me = this;
+        var me = this,
+            component = me.getComponent();
 
         me.callParent();
 
-        me.getComponent().on({
+        component.on({
             scope: me,
             order: 'before',
             masktap: 'onMaskTap'
         });
+
+        component.doMaskTap = Ext.emptyFn;
 
         me.label.on({
             scope: me,
@@ -197,7 +205,7 @@ Ext.define('Ext.field.Checkbox', {
      * @return {Boolean/String} value The value of {@link #value} or `true`, if {@link #checked}.
      */
     getSubmitValue: function() {
-        return (this.getChecked()) ? this._value || true : null;
+        return (this.getChecked()) ? Ext.isEmpty(this._value) ? true : this._value : null;
     },
 
     setChecked: function(newChecked) {
@@ -312,7 +320,7 @@ Ext.define('Ext.field.Checkbox', {
         ln = elements.length;
         for (i = 0; i < ln; i++) {
             element = elements[i];
-            element = Ext.fly(element).up('.x-field-' + element.getAttribute('type'));
+            element = Ext.fly(element).up('.x-field');
             if (element && element.id) {
                 components.push(Ext.getCmp(element.id));
             }

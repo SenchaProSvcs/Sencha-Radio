@@ -133,7 +133,7 @@ Ext.define('Ext.field.Select', {
          * `false` if you want it to use a popup overlay {@link Ext.List}.
          * `auto` if you want to show a {@link Ext.picker.Picker} only on phones.
          */
-        usePicker: 'auto',
+        usePicker: (Ext.os.is.BlackBerry && Ext.os.version.getMajor() === 10) ? false : 'auto',
 
         /**
          * @cfg {Boolean} autoSelect
@@ -169,7 +169,7 @@ Ext.define('Ext.field.Select', {
     },
 
     platformConfig: [{
-        platform: ['ie10'],
+        theme: ['Windows'],
         pickerSlotAlign: 'left'
     }],
 
@@ -185,7 +185,9 @@ Ext.define('Ext.field.Select', {
             masktap: 'onMaskTap'
         });
 
-        if (Ext.os.is.Android2 || Ext.os.is.WindowsPhone) {
+        component.doMaskTap = Ext.emptyFn;
+
+        if (Ext.browser.is.AndroidStock2) {
             component.input.dom.disabled = true;
         }
     },
@@ -307,7 +309,7 @@ Ext.define('Ext.field.Select', {
                 layout: 'fit',
                 hideOnMaskTap: true,
                 width: Ext.os.is.Phone ? '14em' : '18em',
-                height: Ext.os.is.Phone ? '12.5em' : '22em',
+                height: (Ext.os.is.BlackBerry && Ext.os.version.getMajor() === 10) ? '12em' : (Ext.os.is.Phone ? '12.5em' : '22em'),
                 items: {
                     xtype: 'list',
                     store: this.getStore(),
@@ -326,10 +328,6 @@ Ext.define('Ext.field.Select', {
 
     // @private
     onMaskTap: function() {
-        if (this.getDisabled()) {
-            return false;
-        }
-
         this.onFocus();
 
         return false;
@@ -376,7 +374,7 @@ Ext.define('Ext.field.Select', {
                 Ext.Viewport.add(listPanel);
             }
 
-            listPanel.showBy(this.getComponent());
+            listPanel.showBy(this.getComponent(), null);
             list.select(record, null, true);
         }
     },
@@ -411,7 +409,7 @@ Ext.define('Ext.field.Select', {
     onChange: function(component, newValue, oldValue) {
         var me = this,
             store = me.getStore(),
-            index = (store) ? store.find(me.getDisplayField(), oldValue) : -1,
+            index = (store) ? store.find(me.getDisplayField(), oldValue, null, null, null, true) : -1,
             valueField = me.getValueField(),
             record = (store) ? store.getAt(index) : null;
 
@@ -422,7 +420,8 @@ Ext.define('Ext.field.Select', {
 
     /**
      * Updates the underlying `<options>` list with new values.
-     * @param {Array} options An array of options configurations to insert or append.
+     *
+     * @param {Array} newOptions An array of options configurations to insert or append.
      *
      *     selectBox.setOptions([
      *         {text: 'First Option',  value: 'first'},
@@ -432,6 +431,7 @@ Ext.define('Ext.field.Select', {
      *
      * __Note:__ option object member names should correspond with defined {@link #valueField valueField} and
      * {@link #displayField displayField} values.
+     *
      * @return {Ext.field.Select} this
      */
     updateOptions: function(newOptions) {
@@ -515,6 +515,10 @@ Ext.define('Ext.field.Select', {
      * @private
      */
     doSetDisabled: function(disabled) {
+        var component = this.getComponent();
+        if (component) {
+            component.setDisabled(disabled);
+        }
         Ext.Component.prototype.doSetDisabled.apply(this, arguments);
     },
 
@@ -542,6 +546,10 @@ Ext.define('Ext.field.Select', {
     },
 
     onFocus: function(e) {
+        if (this.getDisabled()) {
+            return false;
+        }
+
         var component = this.getComponent();
         this.fireEvent('focus', this, e);
 
@@ -562,5 +570,7 @@ Ext.define('Ext.field.Select', {
         if (store && store.getAutoDestroy()) {
             Ext.destroy(store);
         }
+
+        Ext.destroy(this.listPanel, this.picker);
     }
 });

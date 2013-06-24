@@ -1,6 +1,6 @@
 .x-list {
   background: #1a1a1a url(../images/hexabump.png);
-  @include media-highres() {
+  @media (-webkit-min-device-pixel-ratio: 2),(-o-min-device-pixel-ratio: 3/2),(min-device-pixel-ratio: 2) {
     background-image: url(../images/hexabump@2X.png);
     background-size: 19px 33px;
   }

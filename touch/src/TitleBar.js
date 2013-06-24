@@ -123,7 +123,12 @@ Ext.define('Ext.TitleBar', {
          */
         defaultType: 'button',
 
-        height: '2.6em',
+        /**
+         * @cfg {String} minHeight
+         * The minimum height height of the Toolbar.
+         * @accessor
+         */
+        minHeight: null,
 
         /**
          * @cfg
@@ -145,17 +150,13 @@ Ext.define('Ext.TitleBar', {
         items: []
     },
 
+    hasCSSMinHeight: true,
+
     /**
      * The max button width in this toolbar
      * @private
      */
     maxButtonWidth: '40%',
-
-    constructor: function() {
-        this.refreshTitlePosition = Ext.Function.createThrottled(this.refreshTitlePosition, 50, this);
-
-        this.callParent(arguments);
-    },
 
     beforeInitialize: function() {
         this.applyItems = this.applyInitialItems;
@@ -235,21 +236,21 @@ Ext.define('Ext.TitleBar', {
         }
     },
 
-    doBoxRemove: function(item) {
+    doBoxRemove: function(item, destroy) {
         if (item.config.align == 'right') {
-            this.rightBox.remove(item);
+            this.rightBox.remove(item, destroy);
         }
         else {
-            this.leftBox.remove(item);
+            this.leftBox.remove(item, destroy);
         }
     },
 
     doBoxInsert: function(index, item) {
         if (item.config.align == 'right') {
-            this.rightBox.add(item);
+            this.rightBox.insert(index, item);
         }
         else {
-            this.leftBox.add(item);
+            this.leftBox.insert(index, item);
         }
     },
 

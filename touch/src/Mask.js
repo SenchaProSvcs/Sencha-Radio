@@ -77,6 +77,14 @@ Ext.define('Ext.Mask', {
 
     onHide: function(){
         this.inputBlocker.unblockInputs();
+
+        // Oh how I loves the Android
+        if (Ext.browser.is.AndroidStock4 && Ext.os.version.getMinor() === 0) {
+            var firstChild = this.element.getFirstChild();
+            if (firstChild) {
+                firstChild.redraw();
+            }
+        }
     },
 
     onEvent: function(e) {

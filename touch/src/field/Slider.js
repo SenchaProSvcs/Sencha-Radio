@@ -192,6 +192,14 @@ Ext.define('Ext.field.Slider', {
         return Ext.factory(config, Ext.slider.Slider);
     },
 
+    // @private
+    updateComponent: function(component) {
+        this.callSuper(arguments);
+
+        component.setMinValue(this.getMinValue());
+        component.setMaxValue(this.getMaxValue());
+    },
+
     onSliderChange: function() {
         this.fireEvent.apply(this, [].concat('change', this, Array.prototype.slice.call(arguments)));
     },

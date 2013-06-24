@@ -68,6 +68,10 @@ Ext.define('Ext.util.sizemonitor.Abstract', {
         Ext.TaskQueue.requestRead('refresh', this);
     },
 
+    getContentBounds: function() {
+        return this.detectorsContainer.getBoundingClientRect();
+    },
+
     getContentWidth: function() {
         return this.detectorsContainer.offsetWidth;
     },

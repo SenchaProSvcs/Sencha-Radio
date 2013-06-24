@@ -13,7 +13,8 @@ Ext.define('Ext.viewport.Default', {
 
     requires: [
         'Ext.LoadMask',
-        'Ext.layout.Card'
+        'Ext.layout.Card',
+        'Ext.util.InputBlocker'
     ],
 
     /**
@@ -168,7 +169,7 @@ Ext.define('Ext.viewport.Default', {
         this.callParent([config]);
 
         // Android is handled separately
-        if (!Ext.os.is.Android || Ext.browser.name == 'ChromeMobile') {
+        if (!Ext.os.is.Android || Ext.browser.is.ChromeMobile) {
             if (this.supportsOrientation()) {
                 this.addWindowListener('orientationchange', bind(this.onOrientationChange, this));
             }
@@ -237,6 +238,10 @@ Ext.define('Ext.viewport.Default', {
 
             if (osEnv.is.BlackBerry) {
                 classList.push(clsPrefix + 'bb');
+            }
+
+            if (Ext.browser.is.WebKit) {
+                classList.push(clsPrefix + 'webkit');
             }
 
             if (Ext.browser.is.Standalone) {
@@ -534,7 +539,7 @@ Ext.define('Ext.viewport.Default', {
         var portrait = this.PORTRAIT,
             landscape = this.LANDSCAPE;
 
-        if (this.supportsOrientation()) {
+        if (!Ext.os.is.Android && this.supportsOrientation()) {
             if (this.getWindowOrientation() % 180 === 0) {
                 return portrait;
             }

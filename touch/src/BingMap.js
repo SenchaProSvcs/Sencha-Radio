@@ -1,6 +1,6 @@
 Ext.define('Ext.BingMap', {
     extend: 'Ext.Map',
-    xtype : 'map',
+    xtype : 'bingmap',
     requires: ['Ext.util.Geolocation'],
 
     // @private
@@ -37,10 +37,10 @@ Ext.define('Ext.BingMap', {
         }
         });
 
-        map = me.getMap();
+        var map = me.getMap();
 
         //Track zoomLevel and mapType changes
-        event = MM.event;
+//        event = MM.event;
         //TODO Investigate how to add listeners in Bing
 //            event.addListener(map, 'zoom_changed', Ext.bind(me.onZoomChange, me));
 //            event.addListener(map, 'maptypeid_changed', Ext.bind(me.onTypeChange, me));

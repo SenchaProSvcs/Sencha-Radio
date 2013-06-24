@@ -5,6 +5,10 @@
 Ext.define('Ext.viewport.Android', {
     extend: 'Ext.viewport.Default',
 
+    config: {
+        autoBlurInput: false
+    },
+
     constructor: function() {
         this.on('orientationchange', 'doFireOrientationChangeEvent', this, { prepend: true });
         this.on('orientationchange', 'hideKeyboardIfNeeded', this, { prepend: true });
@@ -23,6 +27,7 @@ Ext.define('Ext.viewport.Android', {
             this.dummyInput = input = document.createElement('input');
             input.style.position = 'absolute';
             input.style.opacity = '0';
+            input.style.pointerEvents = 'none';
             document.body.appendChild(input);
         }
 
@@ -283,7 +288,12 @@ Ext.define('Ext.viewport.Android', {
 
     if (version.gtEq('4')) {
         this.override({
-            doBlurInput: Ext.emptyFn
+            onResize: function() {
+                this.callParent();
+                if (this.getAutoMaximize()) {
+                    this.doFixSize();
+                }
+            }
         });
     }
 });

@@ -7,7 +7,10 @@ Ext.define('Ext.util.translatable.CssTransform', {
     extend: 'Ext.util.translatable.Dom',
 
     doTranslate: function(x, y) {
-        this.getElement().translate(x, y);
+        var element = this.getElement();
+        if (!this.isDestroyed && !element.isDestroyed) {
+            element.translate(x, y);
+        }
     },
 
     destroy: function() {

@@ -4,6 +4,7 @@ Ext.define('Radio.view.Player',{
     requires: [
         'Ext.Audio',
         'Ext.Button',
+        'Ext.plugin.ListPaging',
         'Ext.Spacer',
         'Ext.Toolbar'
     ],
@@ -12,6 +13,11 @@ Ext.define('Radio.view.Player',{
         store: 'Playlist',
         cls: 'player-view',
         itemTpl: '<h1>{name}</h1></h2>{artist_name}</h2>',
+        infinite: true,
+        variableHeights: true,
+        plugins: [{
+            type: 'listpaging'
+        }],
         items: [{
             xtype: 'toolbar',
             docked: 'top',
@@ -26,11 +32,6 @@ Ext.define('Radio.view.Player',{
                 tpl:    '<div class="song" style="background-image:url({album_image});">' +
                         '<h1>{name}</h1>' +
                         '<h2>{artist_name}</h2>'
-            },{
-                xtype: 'spacer'
-            },{
-                iconCls: 'action',
-                itemId: 'action-btn'
             }]
         },{
             xtype: 'toolbar',

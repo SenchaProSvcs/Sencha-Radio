@@ -137,7 +137,7 @@ Ext.define('Ext.Toolbar', {
          * The minimum height height of the Toolbar.
          * @accessor
          */
-        minHeight: '2.6em',
+        minHeight: null,
 
         /**
          * @cfg {Object/String} layout Configuration for this Container's layout. Example:
@@ -174,10 +174,7 @@ Ext.define('Ext.Toolbar', {
         }
     },
 
-    platformConfig: [{
-        platform: ['ie10'],
-        minHeight: '80px'
-    }],
+    hasCSSMinHeight: true,
 
     constructor: function(config) {
         config = config || {};
@@ -208,8 +205,6 @@ Ext.define('Ext.Toolbar', {
     updateTitle: function(newTitle, oldTitle) {
         if (newTitle) {
             this.add(newTitle);
-            //Hack for IE10. If flex = 1 IE stretches title on the whole width of parent container instead of sets it equal to content width
-            this.getLayout().setItemFlex(newTitle, (Ext.browser.is.ie)?'0 0 auto':1);
         }
 
         if (oldTitle) {

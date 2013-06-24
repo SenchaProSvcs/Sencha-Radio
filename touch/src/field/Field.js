@@ -143,7 +143,7 @@ Ext.define('Ext.field.Field', {
     },
 
     platformConfig: [{
-        platform: ['ie10'],
+        theme: ['Windows'],
         labelAlign: 'top'
     }],
 
@@ -322,6 +322,15 @@ Ext.define('Ext.field.Field', {
         this.setValue(this.originalValue);
 
         return this;
+    },
+
+    /**
+     * Resets the field's {@link #originalValue} property so it matches the current {@link #getValue value}. This is
+     * called by {@link Ext.form.Panel}.{@link Ext.form.Panel#setValues setValues} if the form's
+     * {@link Ext.form.Panel#trackResetOnLoad trackResetOnLoad} property is set to true.
+     */
+    resetOriginalValue: function() {
+        this.originalValue = this.getValue();
     },
 
     /**

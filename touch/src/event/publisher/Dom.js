@@ -14,8 +14,7 @@ Ext.define('Ext.event.publisher.Dom', {
 
     idOrClassSelectorRegex: /^([#|\.])([\w\-]+)$/,
 
-    handledEvents: ['click', 'focus', 'blur', 'paste', 'input',
-                    'mousemove', 'mousedown', 'mouseup', 'mouseover', 'mouseout',
+    handledEvents: ['focus', 'blur', 'paste', 'input', 'change',
                     'keyup', 'keydown', 'keypress', 'submit',
                     'transitionend', 'animationstart', 'animationend'],
 
@@ -91,25 +90,56 @@ Ext.define('Ext.event.publisher.Dom', {
         return eventName;
     },
 
-    attachListener: function(eventName) {
-        var addEventListener;
-        if (document.defaultView && document.defaultView.addEventListener) {
-            addEventListener = document.defaultView.addEventListener;
+    bindListeners: function (doc, bind) {
+        var handlesEvents = this.getHandledEvents(),
+            handlesEventsLength = handlesEvents.length,
+            i;
+
+        for (i = 0; i < handlesEventsLength; i++) {
+            this.bindListener(doc, this.getVendorEventName(handlesEvents[i]), bind);
+        }
+    },
+
+    bindListener: function (doc, eventName, bind) {
+        if (bind) {
+            this.attachListener(eventName, doc);
+        } else {
+            this.removeListener(eventName, doc);
+        }
+        return this
+    },
+
+    attachListener: function(eventName, doc) {
+        if (!doc) {
+            doc = document;
+        }
+
+        var defaultView = doc.defaultView,
+            addEventListener;
+
+        if (defaultView && defaultView.addEventListener) {
+            addEventListener = defaultView.addEventListener;
         }
         else {
-            addEventListener = document.addEventListener;
+            addEventListener = doc.addEventListener;
         }
         addEventListener(eventName, this.onEvent, !this.doesEventBubble(eventName));
         return this;
     },
 
-    removeListener: function(eventName) {
-        var removeEventListener;
-        if (document.defaultView && document.defaultView.removeEventListener) {
-            removeEventListener = document.defaultView.removeEventListener;
+    removeListener: function(eventName, doc) {
+        if (!doc) {
+            doc = document;
+        }
+
+        var defaultView = doc.defaultView,
+            removeEventListener;
+
+        if (defaultView && defaultView.removeEventListener) {
+            removeEventListener = defaultView.removeEventListener;
         }
         else {
-            removeEventListener = document.addEventListener;
+            removeEventListener = doc.addEventListener;
         }
         removeEventListener(eventName, this.onEvent, !this.doesEventBubble(eventName));
 
@@ -372,7 +402,9 @@ Ext.define('Ext.event.publisher.Dom', {
 
     matchesSelector: function() {
         var test = Element.prototype,
-            matchesSelector = ('webkitMatchesSelector' in test) ? 'webkitMatchesSelector' : (('msMatchesSelector' in test) ? 'msMatchesSelector' : null);
+            matchesSelector =
+                ('webkitMatchesSelector' in test) ? 'webkitMatchesSelector' :
+                (('msMatchesSelector' in test) ? 'msMatchesSelector' : ('mozMatchesSelector' in test ? 'mozMatchesSelector' : null));
 
         if (matchesSelector) {
             return function(element, selector) {
@@ -387,7 +419,6 @@ Ext.define('Ext.event.publisher.Dom', {
 
     onEvent: function(e) {
         var eventName = this.eventNameMap[e.type];
-
         // Set the current frame start time to be the timestamp of the event.
         Ext.frameStartTime = e.timeStamp;
 

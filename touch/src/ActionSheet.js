@@ -77,8 +77,36 @@ Ext.define('Ext.ActionSheet', {
     },
 
     platformConfig: [{
-        platform: ['ie10'],
+        theme: ['Windows'],
         top: 0,
         bottom: null
+    }, {
+        theme: ['Blackberry'],
+        top: 0,
+        left: null,
+        enter: 'right',
+        exit: 'right',
+        hideOnMaskTap: true,
+        baseCls: 'bb-crosscut',
+        scrollable: true,
+        layout: {
+            type: 'vbox',
+            pack: 'middle'
+        },
+        defaultType: 'button',
+        showAnimation: {
+            easing: 'linear',
+            preserveEndState: true,
+            to: {
+                width: 250
+            }
+        },
+        hideAnimation: {
+            easing: 'linear',
+            preserveEndState: true,
+            to: {
+                width: 68
+            }
+        }
     }]
 });

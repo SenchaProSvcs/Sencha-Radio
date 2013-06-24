@@ -19,8 +19,13 @@ Ext.define('Ext.viewport.Viewport', {
             case 'Android':
                 viewportName = (Ext.browser.name == 'ChromeMobile') ? 'Default' : 'Android';
                 break;
+
             case 'iOS':
                 viewportName = 'Ios';
+                break;
+
+            case 'Windows':
+                viewportName = (Ext.browser.name == 'IE') ? 'WindowsPhone' : 'Default';
                 break;
 
             case 'WindowsPhone':
@@ -28,8 +33,8 @@ Ext.define('Ext.viewport.Viewport', {
                 break;
 
             default:
-                // for IE desktop use the same viewport as for mobile phone
-                viewportName = Ext.browser.is.ie ? 'WindowsPhone' : 'Default'
+                viewportName = 'Default';
+                break;
         }
 
         viewport = Ext.create('Ext.viewport.' + viewportName, config);

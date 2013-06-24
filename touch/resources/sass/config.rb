@@ -8,5 +8,5 @@ load File.join(dir, '..', 'themes')
 fonts_path = File.join(dir, '..', 'themes/fonts/')
 sass_path = dir
 css_path = File.join(dir, "..", "css")
-environment  = :production
+environment  = :development
 output_style = :compressed

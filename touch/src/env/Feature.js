@@ -18,7 +18,32 @@ Ext.define('Ext.env.Feature', {
             return !!this.has[name];
         };
 
-        return this;
+        if (!Ext.theme) {
+            Ext.theme = {
+                name: 'Default'
+            };
+        }
+
+        Ext.onDocumentReady(function() {
+            this.registerTest({
+                ProperHBoxStretching: function() {
+                    // IE10 currently has a bug in their flexbox row layout. We feature detect the issue here.
+                    var bodyElement = document.createElement('div'),
+                        innerElement = bodyElement.appendChild(document.createElement('div')),
+                        contentElement = innerElement.appendChild(document.createElement('div')),
+                        innerWidth;
+
+                    bodyElement.setAttribute('style', 'width: 100px; height: 100px; position: relative;');
+                    innerElement.setAttribute('style', 'position: absolute; display: -ms-flexbox; display: -webkit-flex; display: -moz-flexbox; display: flex; -ms-flex-direction: row; -webkit-flex-direction: row; -moz-flex-direction: row; flex-direction: row; min-width: 100%;');
+                    contentElement.setAttribute('style', 'width: 200px; height: 50px;');
+                    document.body.appendChild(bodyElement);
+                    innerWidth = innerElement.offsetWidth;
+                    document.body.removeChild(bodyElement);
+
+                    return (innerWidth > 100);
+                }
+            });
+        }, this);
     },
 
     getTestElement: function(tag, createNew) {
@@ -46,6 +71,16 @@ Ext.define('Ext.env.Feature', {
 
         if (typeof elementStyle[name] !== 'undefined'
             || typeof elementStyle[Ext.browser.getStylePrefix(name) + cName] !== 'undefined') {
+            return true;
+        }
+
+        return false;
+    },
+
+    isStyleSupportedWithoutPrefix: function(name, tag) {
+        var elementStyle = this.getTestElement(tag).style;
+
+        if (typeof elementStyle[name] !== 'undefined') {
             return true;
         }
 
@@ -189,7 +224,7 @@ Ext.define('Ext.env.Feature', {
         },
 
         Touch: function() {
-            return this.isEventSupported('touchstart') && !(Ext.os && Ext.os.name.match(/Windows|MacOS|Linux/) && !Ext.os.is.BlackBerry6);
+            return Ext.browser.is.Ripple || (this.isEventSupported('touchstart') && !(Ext.os && Ext.os.name.match(/Windows|MacOS|Linux/) && !Ext.os.is.BlackBerry6));
         },
 
         Pointer: function() {
@@ -237,9 +272,13 @@ Ext.define('Ext.env.Feature', {
             return this.isStyleSupported('transform');
         },
 
+        CssTransformNoPrefix: function() {
+            return this.isStyleSupportedWithoutPrefix('transform');
+        },
+
         Css3dTransforms: function() {
             // See https://sencha.jira.com/browse/TOUCH-1544
-            return this.has('CssTransforms') && this.isStyleSupported('perspective') && !Ext.os.is.Android2;
+            return this.has('CssTransforms') && this.isStyleSupported('perspective') && !Ext.browser.is.AndroidStock2;
         },
 
         CssAnimations: function() {
@@ -341,6 +380,6 @@ Ext.define('Ext.env.Feature', {
         if (has.hasOwnProperty(name)) {
             Ext.deprecatePropertyValue(Ext.supports, name, has[name], "Ext.supports." + name + " is deprecated, please use Ext.feature.has." + name + " instead");
         }
-    }1
+    }
     //</deprecated>
 });

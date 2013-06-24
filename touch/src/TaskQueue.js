@@ -32,8 +32,11 @@ Ext.define('Ext.TaskQueue', {
         if (!this.pending) {
             this.pending = true;
             this.mode = mode;
-
-            requestAnimationFrame(this.run);
+            if (mode) {
+                setTimeout(this.run, 1);
+            } else {
+                requestAnimationFrame(this.run);
+            }
         }
     },
 

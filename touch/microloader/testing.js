@@ -3,6 +3,8 @@
  * @author Jacky Nguyen <jacky@sencha.com>
  */
 (function(global) {
+    var head = global.document.head;
+
     if (typeof Ext === 'undefined') {
         var Ext = global.Ext = {};
     }
@@ -11,46 +13,86 @@
         document.write(content);
     }
 
-    function meta(name, content) {
-        write('<meta name="' + name + '" content="' + content + '">');
+    function addMeta(name, content) {
+        var meta = document.createElement('meta');
+
+        meta.setAttribute('name', name);
+        meta.setAttribute('content', content);
+        head.appendChild(meta);
     }
 
     Ext.blink = function(options) {
         var scripts = options.js || [],
             styleSheets = options.css || [],
-            i, ln, path, profile;
+            i, ln, path, platform, theme;
 
-        meta('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no');
-        meta('apple-mobile-web-app-capable', 'yes');
-        meta('apple-touch-fullscreen', 'yes');
-
-        var ua = navigator.userAgent;
-
-        function isPhone(ua) {
-            var isMobile = /Mobile(\/|\s)/.test(ua);
-
-            // Either:
-            // - iOS but not iPad
-            // - Android 2
-            // - Android with "Mobile" in the UA
-
-            return /(iPhone|iPod)/.test(ua) ||
-                      (!/(Silk)/.test(ua) && (/(Android)/.test(ua) && (/(Android 2)/.test(ua) || isMobile))) ||
-                      (/(BlackBerry|BB)/.test(ua) && isMobile) ||
-                      /(Windows Phone)/.test(ua);
+        if (navigator.userAgent.match(/IEMobile\/10\.0/)) {
+            var msViewportStyle = document.createElement("style");
+            msViewportStyle.appendChild(
+                document.createTextNode(
+                    "@media screen and (orientation: portrait) {" +
+                        "@-ms-viewport {width: 320px !important;}" +
+                    "}" +
+                    "@media screen and (orientation: landscape) {" +
+                        "@-ms-viewport {width: 560px !important;}" +
+                    "}"
+                )
+            );
+            document.getElementsByTagName("head")[0].appendChild(msViewportStyle);
         }
+        addMeta('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no');
+        addMeta('apple-mobile-web-app-capable', 'yes');
+        addMeta('apple-touch-fullscreen', 'yes');
 
-        function isTablet(ua) {
-            return !isPhone(ua) && (/iPad/.test(ua) || /Android/.test(ua) || /(RIM Tablet OS)/.test(ua) ||
-                (/MSIE 10/.test(ua) && /; Touch/.test(ua)));
+        if (!window.Ext) {
+            window.Ext = {};
         }
+        Ext.microloaded = true;
 
-        function filterProfile(profile) {
+        var filterPlatform = window.Ext.filterPlatform = function(platform) {
             var profileMatch = false,
+                ua = navigator.userAgent,
                 j, jln;
 
-            for (j = 0, jln = profile.length; j < jln; j++) {
-                switch (profile[j]) {
+            platform = [].concat(platform);
+
+            function isPhone(ua) {
+                var isMobile = /Mobile(\/|\s)/.test(ua);
+
+                // Either:
+                // - iOS but not iPad
+                // - Android 2
+                // - Android with "Mobile" in the UA
+
+                return /(iPhone|iPod)/.test(ua) ||
+                          (!/(Silk)/.test(ua) && (/(Android)/.test(ua) && (/(Android 2)/.test(ua) || isMobile))) ||
+                          (/(BlackBerry|BB)/.test(ua) && isMobile) ||
+                          /(Windows Phone)/.test(ua);
+            }
+
+            function isTablet(ua) {
+                return !isPhone(ua) && (/iPad/.test(ua) || /Android/.test(ua) || /(RIM Tablet OS)/.test(ua) ||
+                    (/MSIE 10/.test(ua) && /; Touch/.test(ua)));
+            }
+
+            // Check if the ?platform parameter is set in the URL
+            var paramsString = window.location.search.substr(1),
+                paramsArray = paramsString.split("&"),
+                params = {},
+                testPlatform, i;
+
+            for (i = 0; i < paramsArray.length; i++) {
+                var tmpArray = paramsArray[i].split("=");
+                params[tmpArray[0]] = tmpArray[1];
+            }
+
+            testPlatform = params.platform;
+            if (testPlatform) {
+                return platform.indexOf(testPlatform) != -1;
+            }
+
+            for (j = 0, jln = platform.length; j < jln; j++) {
+                switch (platform[j]) {
                     case 'phone':
                         profileMatch = isPhone(ua);
                         break;
@@ -70,7 +112,7 @@
                         profileMatch = /(BlackBerry|BB)/.test(ua);
                         break;
                     case 'safari':
-                        profileMatch = /Safari/.test(ua);
+                        profileMatch = /Safari/.test(ua) && !(/(BlackBerry|BB)/.test(ua));
                         break;
                     case 'chrome':
                         profileMatch = /Chrome/.test(ua);
@@ -84,20 +126,24 @@
                 }
             }
             return false;
-        }
+        };
 
         for (i = 0,ln = styleSheets.length; i < ln; i++) {
             path = styleSheets[i];
 
             if (typeof path != 'string') {
-                profile = path.profile;
+                platform = path.platform;
+                theme = path.theme;
                 path = path.path;
             }
 
-            if (profile) {
-                if (!filterProfile(profile)) {
+            if (platform) {
+                if (!filterPlatform(platform)) {
                     continue;
                 }
+                Ext.theme = {
+                    name: theme || 'Default'
+                };
             }
             write('<link rel="stylesheet" href="'+path+'">');
         }
@@ -106,12 +152,12 @@
             path = scripts[i];
 
             if (typeof path != 'string') {
-                profile = path.profile;
+                platform = path.platform;
                 path = path.path;
             }
 
-            if (profile) {
-                if (!filterProfile(profile)) {
+            if (platform) {
+                if (!filterPlatform(platform)) {
                     continue;
                 }
             }

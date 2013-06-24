@@ -241,12 +241,7 @@ Ext.define('Ext.field.Input', {
          * __This will be `undefined` until the Field has been visited.__ Compare {@link #originalValue}.
          * @accessor
          */
-        startValue: false,
-
-        /**
-         * True to hide sencha-styled clear button and set CSS native clear button (currently supports in IE10 only).
-         */
-        useNativeClearButton: false
+        startValue: false
     },
 
     /**
@@ -262,15 +257,14 @@ Ext.define('Ext.field.Input', {
                 tag: this.tag
             },
             {
+                reference: 'mask',
+                classList: [this.config.maskCls]
+            },
+            {
                 reference: 'clearIcon',
                 cls: 'x-clear-icon'
             }
         ];
-
-        items.push({
-            reference: 'mask',
-            classList: [this.config.maskCls]
-        });
 
         return items;
     },
@@ -288,16 +282,16 @@ Ext.define('Ext.field.Input', {
             focus: 'onFocus',
             blur: 'onBlur',
             input: 'onInput',
-            paste: 'onPaste'
+            paste: 'onPaste',
+            tap: 'onInputTap'
         });
 
         me.mask.on({
-            tap: 'onMaskTap',
-            scope: me
+            scope: me,
+            tap: 'onMaskTap'
         });
 
         if (me.clearIcon) {
-            me.element.addCls((this.config.useNativeClearButton)?'native-clear-icon':'sencha-clear-icon');
             me.clearIcon.on({
                 tap: 'onClearIconTap',
                 touchstart: 'onClearIconPress',
@@ -310,9 +304,18 @@ Ext.define('Ext.field.Input', {
         if(Ext.browser.is.ie && Ext.browser.version.major >=10){
             me.input.on({
                 scope: me,
-                keypress    : 'onKeyPress'
+                keypress: 'onKeyPress'
             });
         }
+    },
+
+    /**
+     * Manual Max Length processing is required for the stock "Browser" on Android
+     * @private
+     * @return {Boolean} 'true' if non-chrome browser is detected on Android
+     */
+    useManualMaxLength: function() {
+        return Boolean((Ext.os.is.Android && !Ext.browser.is.Chrome));
     },
 
     applyUseMask: function(useMask) {
@@ -457,7 +460,9 @@ Ext.define('Ext.field.Input', {
      * @private
      */
     updateMaxLength: function(newMaxLength) {
-        this.updateFieldAttribute('maxlength', newMaxLength);
+        if (!this.useManualMaxLength()) {
+            this.updateFieldAttribute('maxlength', newMaxLength);
+        }
     },
 
     /**
@@ -625,6 +630,20 @@ Ext.define('Ext.field.Input', {
     },
 
     // @private
+    onInputTap: function(e) {
+        this.fireAction('inputtap', [this, e], 'doInputTap');
+    },
+
+    // @private
+    doInputTap: function(me, e) {
+        if (me.getDisabled()) {
+            return false;
+        }
+
+        me.focus();
+    },
+
+    // @private
     onMaskTap: function(e) {
         this.fireAction('masktap', [this, e], 'doMaskTap');
     },
@@ -635,20 +654,19 @@ Ext.define('Ext.field.Input', {
             return false;
         }
 
-        me.maskCorrectionTimer = Ext.defer(me.showMask, 1000, me);
-        me.hideMask();
+        me.focus();
     },
 
     // @private
-    showMask: function(e) {
-        if (this.mask) {
+    showMask: function() {
+        if (this.getUseMask()) {
             this.mask.setStyle('display', 'block');
         }
     },
 
     // @private
-    hideMask: function(e) {
-        if (this.mask) {
+    hideMask: function() {
+        if (this.getUseMask()) {
             this.mask.setStyle('display', 'none');
         }
     },
@@ -705,17 +723,12 @@ Ext.define('Ext.field.Input', {
     doFocus: function(e) {
         var me = this;
 
-        if (me.mask) {
-            if (me.maskCorrectionTimer) {
-                clearTimeout(me.maskCorrectionTimer);
-            }
-            me.hideMask();
-        }
+        me.hideMask();
 
         if (!me.getIsFocused()) {
-            me.setIsFocused(true);
             me.setStartValue(me.getValue());
         }
+        me.setIsFocused(true);
     },
 
     onBlur: function(e) {
@@ -724,9 +737,11 @@ Ext.define('Ext.field.Input', {
 
     // @private
     doBlur: function(e) {
-        var me         = this,
-            value      = me.getValue(),
+        var me = this,
+            value = me.getValue(),
             startValue = me.getStartValue();
+
+        me.showMask();
 
         me.setIsFocused(false);
 
@@ -734,7 +749,6 @@ Ext.define('Ext.field.Input', {
             me.onChange(me, value, startValue);
         }
 
-        me.showMask();
     },
 
     // @private
@@ -761,10 +775,23 @@ Ext.define('Ext.field.Input', {
     },
 
     onChange: function(me, value, startValue) {
+        if (this.useManualMaxLength()) {
+            this.trimValueToMaxLength();
+        }
         this.fireEvent('change', me, value, startValue);
     },
 
+    onPaste: function(e) {
+        if (this.useManualMaxLength()) {
+            this.trimValueToMaxLength();
+        }
+        this.fireEvent('paste', e);
+    },
+
     onKeyUp: function(e) {
+        if (this.useManualMaxLength()) {
+            this.trimValueToMaxLength();
+        }
         this.fireEvent('keyup', e);
     },
 
@@ -792,6 +819,7 @@ Ext.define('Ext.field.Input', {
             }
         }, 10);
     },
+
     // Hack for IE10 mobile. Handle pressing 'enter' button and fire keyup event in this case.
     onKeyPress: function(e) {
         if(e.browserEvent.keyCode == 13){
@@ -799,11 +827,17 @@ Ext.define('Ext.field.Input', {
         }
     },
 
-    onPaste: function(e) {
-        this.fireEvent('paste', e);
-    },
-
     onMouseDown: function(e) {
         this.fireEvent('mousedown', e);
+    },
+
+    trimValueToMaxLength: function() {
+        var maxLength = this.getMaxLength();
+        if (maxLength) {
+            var value = this.getValue();
+            if (value.length > this.getMaxLength()) {
+                this.setValue(value.slice(0, maxLength));
+            }
+        }
     }
 });

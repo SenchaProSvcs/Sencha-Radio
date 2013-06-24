@@ -10,6 +10,8 @@ Ext.define('Ext.util.translatable.Abstract', {
     requires: ['Ext.fx.easing.Linear'],
 
     config: {
+        useWrapper: null,
+
         easing: null,
 
         easingX: null,
@@ -217,7 +219,6 @@ Ext.define('Ext.util.translatable.Abstract', {
 
         me.fireEvent('animationframe', me, x, y);
     },
-
 
     stopAnimation: function() {
         if (!this.isAnimating) {

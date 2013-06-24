@@ -127,6 +127,15 @@ Ext.define('Ext.picker.Date', {
         doneButton: true
     },
 
+    platformConfig: [{
+        theme: ['Windows'],
+        doneButton: {
+            iconCls: 'check2',
+            ui: 'round',
+            text: ''
+        }
+    }],
+
     initialize: function() {
         this.callParent();
 
@@ -371,7 +380,7 @@ Ext.define('Ext.picker.Date', {
             return;
         }
 
-        this.callParent();
+        this.callParent(arguments);
 
         //get the new days of the month for this new date
         daysInMonth = this.getDaysInMonth(month + 1, year);
@@ -383,11 +392,11 @@ Ext.define('Ext.picker.Date', {
         }
 
         // We don't need to update the slot days unless it has changed
-        if (slot.getData().length == days.length) {
+        if (slot.getStore().getCount() == days.length) {
             return;
         }
 
-        slot.setData(days);
+        slot.getStore().setData(days);
 
         // Now we have the correct amount of days for the day slot, lets update it
         var store = slot.getStore(),
@@ -404,8 +413,7 @@ Ext.define('Ext.picker.Date', {
 
         slot.selectedIndex = index;
         slot.scrollToItem(item);
-
-//        slot._value = value;
+        slot.setValue(slot.getValue(true));
     },
 
     getDaySlot: function() {

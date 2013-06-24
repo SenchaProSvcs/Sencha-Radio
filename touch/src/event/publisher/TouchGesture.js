@@ -11,9 +11,17 @@ Ext.define('Ext.event.publisher.TouchGesture', {
         'Ext.AnimationQueue'
     ],
 
+    isNotPreventable: /^(select|a)$/i,
+
     handledEvents: ['touchstart', 'touchmove', 'touchend', 'touchcancel'],
 
-    moveEventName: 'touchmove',
+    mouseToTouchMap: {
+        mousedown: 'touchstart',
+        mousemove: 'touchmove',
+        mouseup: 'touchend'
+    },
+
+    lastEventType: null,
 
     config: {
         moveThrottle: 0,
@@ -36,8 +44,21 @@ Ext.define('Ext.event.publisher.TouchGesture', {
 
         this.currentIdentifiers = [];
 
-        this.screenPositionRatio = (!Ext.os.is.Desktop && !Ext.os.is.iOS) ? window.innerWidth / window.screen.width : 1;
-
+        if (Ext.browser.is.Chrome && Ext.os.is.Android) {
+            this.screenPositionRatio = Ext.browser.version.gt('18') ? 1 : 1 / window.devicePixelRatio;
+        }
+        else if (Ext.browser.is.AndroidStock4) {
+            this.screenPositionRatio = 1;
+        }
+        else if (Ext.os.is.BlackBerry) {
+            this.screenPositionRatio = 1 / window.devicePixelRatio;
+        }
+        else if (Ext.browser.engineName == 'WebKit' && Ext.os.is.Desktop) {
+            this.screenPositionRatio = 1;
+        }
+        else {
+            this.screenPositionRatio = window.innerWidth / window.screen.width;
+        }
         this.initConfig(config);
 
         return this.callSuper();
@@ -67,9 +88,43 @@ Ext.define('Ext.event.publisher.TouchGesture', {
         // All touch events bubble
         return true;
     },
-
     onEvent: function(e) {
-        this.eventProcessors[e.type].call(this, e);
+        var type = e.type,
+            lastEventType = this.lastEventType,
+            touchList = [e];
+
+        if (this.eventProcessors[type]) {
+            this.eventProcessors[type].call(this, e);
+            return;
+        }
+
+        if ('button' in e && e.button > 0) {
+            return;
+        }
+        else {
+            // Temporary fix for a recent Chrome bugs where events don't seem to bubble up to document
+            // when the element is being animated with webkit-transition (2 mousedowns without any mouseup)
+            if (type === 'mousedown' && lastEventType && lastEventType !== 'mouseup') {
+                var fixedEvent = document.createEvent("MouseEvent");
+                    fixedEvent.initMouseEvent('mouseup', e.bubbles, e.cancelable,
+                        document.defaultView, e.detail, e.screenX, e.screenY, e.clientX,
+                        e.clientY, e.ctrlKey, e.altKey, e.shiftKey, e.metaKey, e.metaKey,
+                        e.button, e.relatedTarget);
+
+                this.onEvent(fixedEvent);
+            }
+
+            if (type !== 'mousemove') {
+                this.lastEventType = type;
+            }
+
+            e.identifier = 1;
+            e.touches = (type !== 'mouseup') ? touchList : [];
+            e.targetTouches = (type !== 'mouseup') ? touchList : [];
+            e.changedTouches = touchList;
+
+            this.eventProcessors[this.mouseToTouchMap[type]].call(this, e);
+        }
     },
 
     registerRecognizer: function(recognizer) {
@@ -176,41 +231,45 @@ Ext.define('Ext.event.publisher.TouchGesture', {
     updateTouch: function(touch) {
         var identifier = touch.identifier,
             currentTouch = this.touchesMap[identifier],
-            ratio = this.screenPositionRatio,
-            screenX = touch.screenX * ratio,
-            screenY = touch.screenY * ratio,
-            target, targetWindow, framePageBox, x, y, offsets;
+            target, x, y;
+//            ratio = this.screenPositionRatio,
+//            screenX = touch.screenX * ratio,
+//            screenY = touch.screenY * ratio,
+//            target, targetWindow, framePageBox, x, y, offsets;
 
         if (!currentTouch) {
             target = this.getElementTarget(touch.target);
-            targetWindow = target.ownerDocument.defaultView;
+//            targetWindow = target.ownerDocument.defaultView;
 
             this.touchesMap[identifier] = currentTouch = {
                 identifier: identifier,
                 target: target,
-                targets: this.getBubblingTargets(target),
-                offsets: { x: 0, y: 0 }
+                targets: this.getBubblingTargets(target)
+//                offsets: { x: 0, y: 0 }
             };
 
             this.currentIdentifiers.push(identifier);
-
-            offsets = currentTouch.offsets;
-
-            if (targetWindow !== document.defaultView) {
-                framePageBox = targetWindow.frameElement.getBoundingClientRect();
-                offsets.x = framePageBox.left + touch.pageX - screenX;
-                offsets.y = framePageBox.top + touch.pageY - screenY;
-            }
-            else {
-                offsets.x = touch.pageX - screenX;
-                offsets.y = touch.pageY - screenY;
-            }
+//
+//            offsets = currentTouch.offsets;
+//
+//            if (targetWindow !== document.defaultView) {
+//                framePageBox = targetWindow.frameElement.getBoundingClientRect();
+//                offsets.x = framePageBox.left + touch.pageX - screenX;
+//                offsets.y = framePageBox.top + touch.pageY - screenY;
+//            }
+//            else {
+//                offsets.x = touch.pageX - screenX;
+//                offsets.y = touch.pageY - screenY;
+//            }
         }
 
-        offsets = currentTouch.offsets;
+//        offsets = currentTouch.offsets;
 
-        x = offsets.x + screenX;
-        y = offsets.y + screenY;
+//        x = Math.round(offsets.x + screenX);
+//        y = Math.round(offsets.y + screenY);
+
+        x  = touch.pageX;
+        y  = touch.pageY;
 
         if (x === currentTouch.pageX && y === currentTouch.pageY) {
             return false;
@@ -244,8 +303,10 @@ Ext.define('Ext.event.publisher.TouchGesture', {
 
     onTouchStart: function(e) {
         var changedTouches = e.changedTouches,
+            target = e.target,
             ln = changedTouches.length,
-            i, touch;
+            isNotPreventable = this.isNotPreventable,
+            i, touch, parent;
 
         this.updateTouches(changedTouches);
 
@@ -263,6 +324,13 @@ Ext.define('Ext.event.publisher.TouchGesture', {
         }
 
         this.invokeRecognizers('onTouchStart', e);
+
+        parent = target.parentNode || {};
+
+        // Prevent all emulated mouse events by stopping the default of touchstart. This will also stop the focus event.
+        if (Ext.os.is.iOS && !isNotPreventable.test(target.tagName) && !isNotPreventable.test(parent.tagName)) {
+            e.preventDefault();
+        }
     },
 
     onTouchMove: function(e) {
@@ -340,6 +408,13 @@ Ext.define('Ext.event.publisher.TouchGesture', {
 
         this.invokeRecognizers('onTouchEnd', e);
 
+        // Only one touch currently active, and we're ending that one. So currentTouches should be 0 and clear the touchMap.
+        // This resolves an issue in iOS where it can sometimes not report a touchend/touchcancel
+        if (e.touches.length === 1 && currentIdentifiers.length) {
+            currentIdentifiers.length = 0;
+            this.touchesMap = {};
+        }
+
         if (currentIdentifiers.length === 0) {
             this.isStarted = false;
             this.invokeRecognizers('onEnd', e);
@@ -367,14 +442,14 @@ Ext.define('Ext.event.publisher.TouchGesture', {
                 touchcancel: 'MSPointerCancel'
             },
 
-            attachListener: function(eventName) {
+            attachListener: function(eventName, doc) {
                 eventName = this.touchToPointerMap[eventName];
 
                 if (!eventName) {
                     return;
                 }
 
-                return this.callOverridden([eventName]);
+                return this.callOverridden([eventName, doc]);
             },
 
             onEvent: function(e) {
@@ -391,67 +466,19 @@ Ext.define('Ext.event.publisher.TouchGesture', {
             }
         });
     }
-    else if (!Ext.feature.has.Touch) {
+    else if (Ext.os.is.ChromeOS || !Ext.feature.has.Touch) {
         this.override({
-            moveEventName: 'mousemove',
-
-            mouseToTouchMap: {
-                mousedown: 'touchstart',
-                mousemove: 'touchmove',
-                mouseup: 'touchend'
-            },
-
-            touchToMouseMap: {
-                touchstart: 'mousedown',
-                touchmove: 'mousemove',
-                touchend: 'mouseup'
-            },
-
-            attachListener: function(eventName) {
-                eventName = this.touchToMouseMap[eventName];
-
-                if (!eventName) {
-                    return;
-                }
-
-                return this.callOverridden([eventName]);
-            },
-
-            lastEventType: null,
-
-            onEvent: function(e) {
-                if ('button' in e && e.button > 0) {
-                    return;
-                }
-
-                var type = e.type,
-                    lastEventType = this.lastEventType,
-                    touchList = [e];
-
-                // Temporary fix for a recent Chrome bugs where events don't seem to bubble up to document
-                // when the element is being animated
-                // with webkit-transition (2 mousedowns without any mouseup)
-                if (type === 'mousedown' && lastEventType && lastEventType !== 'mouseup') {
-                    var fixedEvent = document.createEvent("MouseEvent");
-                        fixedEvent.initMouseEvent('mouseup', e.bubbles, e.cancelable,
-                            document.defaultView, e.detail, e.screenX, e.screenY, e.clientX,
-                            e.clientY, e.ctrlKey, e.altKey, e.shiftKey, e.metaKey, e.metaKey,
-                            e.button, e.relatedTarget);
-
-                    this.onEvent(fixedEvent);
-                }
-
-                if (type !== 'mousemove') {
-                    this.lastEventType = type;
-                }
-
-                e.identifier = 1;
-                e.touches = (type !== 'mouseup') ? touchList : [];
-                e.targetTouches = (type !== 'mouseup') ? touchList : [];
-                e.changedTouches = touchList;
-
-                this.eventProcessors[this.mouseToTouchMap[e.type]].call(this, e);
-            }
+            handledEvents: ['touchstart', 'touchmove', 'touchend', 'touchcancel', 'mousedown', 'mousemove', 'mouseup']
+        });
+    }
+    else if (!Ext.browser.is.Silk && Ext.feature.has.Touch) {
+        // Stop all mousedown events on Touch capable browsers. This will prevent the 'focus' event from the emulated mouse events on non-iOS devices
+        Ext.onDocumentReady(function() {
+            window.document.body.addEventListener('mousedown', function(e){
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }, true);
         });
     }
 });

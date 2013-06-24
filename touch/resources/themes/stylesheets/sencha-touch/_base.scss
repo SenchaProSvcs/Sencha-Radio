@@ -6,4 +6,7 @@
 @import 'recipes/color';
 
 // All the special mixins used by ST sass
-@import 'base/mixins';
+@import 'base/mixins/Class';
+
+// Components
+@import 'base/all';
